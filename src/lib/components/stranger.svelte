@@ -14,8 +14,45 @@
     let register_password: string;
     let register_confirm_password: string;
 
-    function login(): void
+    async function login(): Promise<void>
     {
+        signing = true;
+        const response: Response = await fetch("/api/login",
+            {
+                method: "POST",
+                body: JSON.stringify(
+                    {
+                        username: login_username,
+                        password: login_password
+                    }
+                )
+            }
+        );
+
+        if(response.status === 200)
+        {
+            const response_json: any = await response.json();
+
+            if(response_json.login === 0)
+            {
+                
+            }
+            else if(response_json.login === -1)
+            {
+                
+            }
+            else if(response_json.login === -2)
+            {
+                
+            }
+            else
+            {
+                console.error("Unknown login value");
+            }
+        }
+
+        signing = false;
+
         form_login_elem.reset();
     }
 
@@ -49,11 +86,11 @@
 
             if(response_json.registered === 0)
             {
-                console.log("ok");
+                
             }
             else if(response_json.registered === -1)
             {
-                console.log("exists");
+                
             }
             else
             {
@@ -166,13 +203,13 @@
             <button on:click={register_tab_clicked} class="nav-link" data-bs-toggle="tab">Register</button>
         </div>
         <div bind:this={form_holder_elem} class="align-self-stretch">
-            <form bind:this={form_login_elem} action="javascript:">
+            <form bind:this={form_login_elem} on:submit={login} action="javascript:">
                 <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="login-username" placeholder="Username" required>
+                    <input bind:value={login_username} type="text" class="form-control" id="login-username" placeholder="Username" required>
                     <label for="login-username">Username</label>
                 </div>
                 <div class="form-floating mb-3">
-                    <input type="password" class="form-control" id="login-password" placeholder="Password" required>
+                    <input bind:value={login_password} type="password" class="form-control" id="login-password" placeholder="Password" required>
                     <label for="login-password">Password</label>
                 </div>
                 <div class="d-flex justify-content-end">

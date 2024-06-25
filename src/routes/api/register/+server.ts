@@ -3,7 +3,7 @@ import { type PostgrestSingleResponse } from "@supabase/supabase-js";
 import argon2 from "argon2";
 import { supabase_client_store } from "$lib/stores.server";
 import { get } from "svelte/store";
-import { make_jwt_cookie } from "$lib/helpers.server";
+import { delete_jwt_cookie, make_jwt_cookie } from "$lib/helpers.server";
 import jwt from "jsonwebtoken";
 import { PUBLIC_JWT_SECRET } from "$env/static/public";
 
@@ -16,7 +16,7 @@ export async function POST(request_event: RequestEvent): Promise<Response>
     const email: string = request_json.email;
     const password: string = request_json.password;
     const password_hash: string = await argon2.hash(password);
-    const add_user_rpc: PostgrestSingleResponse<any> = await get(supabase_client_store).rpc('add_user',
+    const add_user_rpc: PostgrestSingleResponse<any> = await get(supabase_client_store).rpc("add_user",
         {
             given_email: email,
             given_pwd_hash: password_hash,
@@ -31,8 +31,6 @@ export async function POST(request_event: RequestEvent): Promise<Response>
 
         return error(500);
     }
-
-    console.log(add_user_rpc.data);
 
     if(add_user_rpc.data !== null)
     {
@@ -51,10 +49,7 @@ export async function POST(request_event: RequestEvent): Promise<Response>
     }
     else
     {
-        request_event.cookies.delete("pp-jwt",
-            {
-                path: "/"
-            });
+        delete_jwt_cookie(request_event.cookies);
 
         return json(
             {
