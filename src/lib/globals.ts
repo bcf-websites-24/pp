@@ -1,1 +1,0 @@
-export const ANIMATION_DEFAUTL_DURATION: number = 250;
