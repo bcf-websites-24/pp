@@ -10,6 +10,8 @@
     let login_username: string;
     let login_password: string;
     let register_username: string;
+    let register_email: string;
+    let register_student_id: string;
     let register_password: string;
     let register_confirm_password: string;
 
@@ -152,6 +154,14 @@
                 <div class="form-floating mb-3">
                     <input type="text" class="form-control" id="register-username" placeholder="Username" required>
                     <label for="register-username">Username</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="register-email" placeholder="username@mail.com" required>
+                    <label for="register-email">Email</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="register-student-id" placeholder="XXXXXXX" required>
+                    <label for="register-student-id">Student ID</label>
                 </div>
                 <div class="form-floating mb-3">
                     <input type="password" class="form-control" id="register-password" placeholder="Password" required>
