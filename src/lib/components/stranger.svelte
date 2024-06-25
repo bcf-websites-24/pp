@@ -156,11 +156,11 @@
                     <label for="register-username">Username</label>
                 </div>
                 <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="register-email" placeholder="username@mail.com" required>
+                    <input type="email" class="form-control" id="register-email" placeholder="Email" required>
                     <label for="register-email">Email</label>
                 </div>
                 <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="register-student-id" placeholder="XXXXXXX" required>
+                    <input type="text" class="form-control" id="register-student-id" placeholder="Stuent ID" required>
                     <label for="register-student-id">Student ID</label>
                 </div>
                 <div class="form-floating mb-3">
