@@ -1,12 +1,11 @@
 <script lang="ts">
-    import { ANIMATION_DEFAUTL_DURATION } from "$lib/globals";
     import { Tab } from "bootstrap";
-    import { onMount } from "svelte";
 
     let form_holder_elem: HTMLDivElement;
     let form_login_elem: HTMLFormElement;
     let form_register_elem: HTMLFormElement;
     let register_confirm_password_elem: HTMLInputElement;
+    let signing: boolean = false;
     let login_username: string;
     let login_password: string;
     let register_username: string;
@@ -20,7 +19,7 @@
         form_login_elem.reset();
     }
 
-    function register(): void
+    async function register(): Promise<void>
     {
         if(register_password !== register_confirm_password)
         {
@@ -28,6 +27,41 @@
 
             return;
         }
+
+        signing = true;
+        const response: Response = await fetch("/api/register",
+            {
+                method: "POST",
+                body: JSON.stringify(
+                    {
+                        username: register_username,
+                        student_id: register_student_id,
+                        email: register_email,
+                        password: register_password
+                    }
+                )
+            }
+        );
+
+        if(response.status === 200)
+        {
+            const response_json: any = await response.json();
+
+            if(response_json.registered === 0)
+            {
+                console.log("ok");
+            }
+            else if(response_json.registered === -1)
+            {
+                console.log("exists");
+            }
+            else
+            {
+                console.error("Unknown registered value");
+            }
+        }
+
+        signing = false;
 
         form_register_elem.reset();
     }
@@ -50,7 +84,7 @@
                     easing: "ease-in"
                 }
             ],
-            ANIMATION_DEFAUTL_DURATION
+            250
         );
         animation.onfinish = (): void =>
         {
@@ -65,7 +99,7 @@
                         easing: "ease-in"
                     },
                 ],
-                ANIMATION_DEFAUTL_DURATION
+                250
             );
             child_animation.onfinish = (): void =>
             {
@@ -96,7 +130,7 @@
                     easing: "ease-in"
                 }
             ],
-            ANIMATION_DEFAUTL_DURATION
+            250
         );
         animation.onfinish = (): void =>
         {
@@ -111,7 +145,7 @@
                         easing: "ease-in"
                     },
                 ],
-                ANIMATION_DEFAUTL_DURATION
+                250
             );
             child_animation.onfinish = (): void =>
             {
@@ -123,11 +157,6 @@
 
         animation.play();
     }
-
-    onMount((): void =>
-    {
-        
-    });
 </script>
 
 <div class="stranger-root">
@@ -147,32 +176,32 @@
                     <label for="login-password">Password</label>
                 </div>
                 <div class="d-flex justify-content-end">
-                    <button type="submit" class="btn btn-primary">Login</button>
+                    <button type="submit" class="btn btn-primary" disabled={signing}>Login</button>
                 </div>
             </form>
-            <form bind:this={form_register_elem} action="javascript:" hidden>
+            <form bind:this={form_register_elem} on:submit={register} action="javascript:" hidden>
                 <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="register-username" placeholder="Username" required>
+                    <input bind:value={register_username} type="text" class="form-control" id="register-username" placeholder="Username" required>
                     <label for="register-username">Username</label>
                 </div>
                 <div class="form-floating mb-3">
-                    <input type="email" class="form-control" id="register-email" placeholder="Email" required>
+                    <input bind:value={register_email} type="email" class="form-control" id="register-email" placeholder="Email" required>
                     <label for="register-email">Email</label>
                 </div>
                 <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="register-student-id" placeholder="Stuent ID" required>
+                    <input bind:value={register_student_id} type="text" class="form-control" id="register-student-id" placeholder="Stuent ID" required>
                     <label for="register-student-id">Student ID</label>
                 </div>
                 <div class="form-floating mb-3">
-                    <input type="password" class="form-control" id="register-password" placeholder="Password" required>
+                    <input bind:value={register_password} type="password" class="form-control" id="register-password" placeholder="Password" required>
                     <label for="register-password">Password</label>
                 </div>
                 <div class="form-floating mb-3">
-                    <input bind:this={register_confirm_password_elem} type="password" class="form-control" id="register-confirm-password" placeholder="Confirm Password" required>
+                    <input bind:value={register_confirm_password} bind:this={register_confirm_password_elem} type="password" class="form-control" id="register-confirm-password" placeholder="Confirm Password" required>
                     <label for="register-confirm-password">Confirm Password</label>
                 </div>
                 <div class="d-flex justify-content-end">
-                    <button type="submit" class="btn btn-primary">Register</button>
+                    <button type="submit" class="btn btn-primary" disabled={signing}>Register</button>
                 </div>
             </form>
         </div>
