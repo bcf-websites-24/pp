@@ -14,3 +14,12 @@ export function make_jwt_cookie(cookies: Cookies, token: string)
         }
     );
 }
+
+export function delete_jwt_cookie(cookies: Cookies)
+{
+    cookies.delete("pp-jwt",
+        {
+            path: "/"
+        }
+    );
+}
