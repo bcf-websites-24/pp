@@ -49,7 +49,7 @@ export async function POST({
 
     // VERCEL_LOG_SOURCE
     if (can_access_admin_rpc.error) {
-      console.error(can_access_admin_rpc.error);
+      console.error("admin/add_puzzle line 52\n"+can_access_admin_rpc.error);
       return error(500);
     }
 
@@ -110,7 +110,7 @@ export async function POST({
 
     // VERCEL_LOG_SOURCE
     if (add_new_puzzle_rpc.error) {
-      console.error(add_new_puzzle_rpc.error);
+      console.error("admin/add_puzzle line 113"+add_new_puzzle_rpc.error);
       return error(500);
     }
 
@@ -120,7 +120,7 @@ export async function POST({
 
     // VERCEL LOG SOURCE
     if (puzzle_file_upload_rpc.error) {
-      console.error(puzzle_file_upload_rpc.error);
+      console.error("admin/add_puzzle line 123"+puzzle_file_upload_rpc.error);
       return error(500);
     }
 

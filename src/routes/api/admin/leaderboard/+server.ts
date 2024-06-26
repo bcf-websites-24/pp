@@ -34,7 +34,7 @@ export async function POST({ cookies }: RequestEvent): Promise<Response> {
 
     // VERCEL_LOG_SOURCE
     if (can_access_admin_rpc.error) {
-      console.error(can_access_admin_rpc.error);
+      console.error("admin/leaderboard line 37\n"+can_access_admin_rpc.error);
       return error(500);
     }
 
@@ -49,7 +49,7 @@ export async function POST({ cookies }: RequestEvent): Promise<Response> {
 
     // VERCEL_LOG_SOURCE, this will be on the vercel api log
     if (leaderboard_rpc.error) {
-      console.error(leaderboard_rpc.error);
+      console.error("admin/leaderboard line 52\n"+leaderboard_rpc.error);
       return error(500);
     }
 

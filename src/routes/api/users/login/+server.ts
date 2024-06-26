@@ -21,7 +21,7 @@ export async function POST(request_event: RequestEvent): Promise<Response>
 
     if(uuid_hash_rpc.error)
     {
-        console.error(uuid_hash_rpc.error);
+        console.error("users/login line 24\n"+uuid_hash_rpc.error);
 
         return error(500);
     }

@@ -19,11 +19,11 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
   // we need to ensure student id is a string that converts to a positive integer > 0
   // otherwise we cannot get batch from student id.
   // since we could not get a hold of BUET roll formats over time
-  // we are allowing any number 
+  // we are allowing any number
   // regex explanation: ^   : start of string
   //                    \d+ : any number, leading 0s are fine
   //                    $   : end of string
-  // stackOverflow sauce 🤡: https://stackoverflow.com/questions/10834796/validate-that-a-string-is-a-positive-integer#:~:text=function%20isInDesiredForm(str)%20%7B%0A%20%20%20%20return%20/%5E%5C%2B%3F%5Cd%2B%24/.test(str)%3B%0A%7D 
+  // stackOverflow sauce 🤡: https://stackoverflow.com/questions/10834796/validate-that-a-string-is-a-positive-integer#:~:text=function%20isInDesiredForm(str)%20%7B%0A%20%20%20%20return%20/%5E%5C%2B%3F%5Cd%2B%24/.test(str)%3B%0A%7D
   if (!/^\d+$/.test(student_id)) {
     delete_jwt_cookie(request_event.cookies);
 
@@ -42,7 +42,7 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
   });
 
   if (add_user_rpc.error) {
-    console.error(add_user_rpc.error);
+    console.error("users/register line 45\n" + add_user_rpc.error);
 
     return error(500);
   }
