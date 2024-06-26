@@ -7,8 +7,7 @@ import jwt from "jsonwebtoken";
 import { delete_jwt_cookie, make_jwt_cookie } from "$lib/helpers.server";
 import { PUBLIC_JWT_SECRET } from "$env/static/public";
 
-export async function POST(request_event: RequestEvent): Promise<Response>
-{
+export async function POST(request_event: RequestEvent): Promise<Response> {
   const request: Request = request_event.request;
   const request_json: any = await request.json();
   const username: string = request_json.username;
@@ -19,8 +18,7 @@ export async function POST(request_event: RequestEvent): Promise<Response>
     }
   );
 
-  if (uuid_hash_rpc.error)
-  {
+  if (uuid_hash_rpc.error) {
     console.error("users/login line 24\n" + uuid_hash_rpc.error);
 
     return error(500);
@@ -29,8 +27,7 @@ export async function POST(request_event: RequestEvent): Promise<Response>
   const id: string | null = uuid_hash_rpc.data[0].id;
   const hash: string = uuid_hash_rpc.data[0].hash;
 
-  if (id === null)
-  {
+  if (id === null) {
     return json(
       {
         login: -1 // user not found
@@ -38,8 +35,7 @@ export async function POST(request_event: RequestEvent): Promise<Response>
     );
   }
 
-  if (!await argon2.verify(hash, password))
-  {
+  if (!await argon2.verify(hash, password)) {
     return json(
       {
         login: -2 // password mismatch
