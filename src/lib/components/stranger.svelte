@@ -31,6 +31,7 @@
       const response_json: any = await response.json();
 
       if (response_json.login === 0) {
+        location.href = "/";
       } else if (response_json.login === -1) {
       } else if (response_json.login === -2) {
       } else {
@@ -67,6 +68,7 @@
       const response_json: any = await response.json();
 
       if (response_json.registered === 0) {
+        location.href = "/";
       } else if (response_json.registered === -1) {
       } else {
         console.error("Unknown registered value");

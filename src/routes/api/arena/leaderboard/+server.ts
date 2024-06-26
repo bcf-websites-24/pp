@@ -32,7 +32,7 @@ export async function POST({ cookies }: RequestEvent): Promise<Response> {
 
     // VERCEL_LOG_SOURCE, this will be on the vercel api log
     if (leaderboard_rpc.error) {
-      console.error("arena/leaderboard line 35\n"+leaderboard_rpc.error);
+      console.error("arena/leaderboard line 35\n" + leaderboard_rpc.error);
       return error(500);
     }
 
