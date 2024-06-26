@@ -36,7 +36,7 @@ export async function POST(request_event: RequestEvent): Promise<Response>
     {
         const token: string = jwt.sign(
             {
-                uid: add_user_rpc.data,
+                id: add_user_rpc.data,
             }, PUBLIC_JWT_SECRET
         );
         make_jwt_cookie(request_event.cookies, token);
