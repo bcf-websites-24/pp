@@ -28,7 +28,7 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
     delete_jwt_cookie(request_event.cookies);
 
     return json({
-      registered: -1,
+      registered: -2,
     });
   }
 

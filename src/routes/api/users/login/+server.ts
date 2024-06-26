@@ -9,57 +9,57 @@ import { PUBLIC_JWT_SECRET } from "$env/static/public";
 
 export async function POST(request_event: RequestEvent): Promise<Response>
 {
-    const request: Request = request_event.request;
-    const request_json: any = await request.json();
-    const username: string = request_json.username;
-    const password: string = request_json.password;
-    const uuid_hash_rpc: PostgrestSingleResponse<any> = await get(supabase_client_store).rpc("get_uuid_hash",
-        {
-            given_username: username
-        }
+  const request: Request = request_event.request;
+  const request_json: any = await request.json();
+  const username: string = request_json.username;
+  const password: string = request_json.password;
+  const uuid_hash_rpc: PostgrestSingleResponse<any> = await get(supabase_client_store).rpc("get_uuid_hash",
+    {
+      given_username: username
+    }
+  );
+
+  if (uuid_hash_rpc.error)
+  {
+    console.error("users/login line 24\n" + uuid_hash_rpc.error);
+
+    return error(500);
+  }
+
+  const id: string | null = uuid_hash_rpc.data[0].id;
+  const hash: string = uuid_hash_rpc.data[0].hash;
+
+  if (id === null)
+  {
+    return json(
+      {
+        login: -1 // user not found
+      }
     );
+  }
 
-    if(uuid_hash_rpc.error)
-    {
-        console.error("users/login line 24\n"+uuid_hash_rpc.error);
-
-        return error(500);
-    }
-
-    const id: string | null = uuid_hash_rpc.data[0].id;
-    const hash: string = uuid_hash_rpc.data[0].hash;
-
-    if(id === null)
-    {
-        return json(
-            {
-                login: -1   // user not found
-            }
-        );
-    }
-
-    if(!await argon2.verify(hash, password))
-    {
-        delete_jwt_cookie(request_event.cookies);
-
-        return json(
-            {
-                login: -2    // password mismatch
-            }
-        );
-    }
-
-    const token: string = jwt.sign(
-        {
-            id: id
-        }, PUBLIC_JWT_SECRET
-    );
-
-    make_jwt_cookie(request_event.cookies, token);
+  if (!await argon2.verify(hash, password))
+  {
+    delete_jwt_cookie(request_event.cookies);
 
     return json(
-        {
-            login: 0    // success
-        }
+      {
+        login: -2 // password mismatch
+      }
     );
+  }
+
+  const token: string = jwt.sign(
+    {
+      id: id
+    }, PUBLIC_JWT_SECRET
+  );
+
+  make_jwt_cookie(request_event.cookies, token);
+
+  return json(
+    {
+      login: 0    // success
+    }
+  );
 }
