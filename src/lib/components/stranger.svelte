@@ -19,7 +19,7 @@
 
   async function login(): Promise<void> {
     signing = true;
-    const response: Response = await fetch("/api/login", {
+    const response: Response = await fetch("/api/users/login", {
       method: "POST",
       body: JSON.stringify({
         username: login_username,
@@ -53,7 +53,7 @@
     }
 
     signing = true;
-    const response: Response = await fetch("/api/register", {
+    const response: Response = await fetch("/api/users/register", {
       method: "POST",
       body: JSON.stringify({
         username: register_username,
