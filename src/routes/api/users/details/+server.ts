@@ -16,6 +16,7 @@ export async function POST({ cookies }: RequestEvent): Promise<Response> {
       decoded_token = jwt.verify(jwt_token, PUBLIC_JWT_SECRET);
     } catch (err) {
       // verify error means malformed token/wrong secret
+      console.log(1);
       return error(403);
     }
 
@@ -34,7 +35,7 @@ export async function POST({ cookies }: RequestEvent): Promise<Response> {
 
     // VERCEL_LOG_SOURCE, this will be on the vercel api log
     if (user_detail_rpc.error) {
-      console.error("users/details 37\n"+user_detail_rpc.error);
+      console.error("users/details 37\n" + user_detail_rpc.error);
       return error(500);
     }
 
@@ -43,6 +44,23 @@ export async function POST({ cookies }: RequestEvent): Promise<Response> {
       user_detail_rpc.data.id === "" ||
       user_detail_rpc.data.username === ""
     ) {
+      return error(500);
+    }
+
+    // create limited time signed url of file
+    const puzzle_file_download_rpc: any = await get(supabase_client_store)
+      .storage.from("puzzles")
+      .createSignedUrl(user_detail_rpc.data.next_puzzle_url, 12 * 60 * 60);
+
+    // VERCEL LOG SOURCE
+    if (
+      puzzle_file_download_rpc.error ||
+      puzzle_file_download_rpc.data.signedUrl === undefined ||
+      puzzle_file_download_rpc.data.signedUrl === null
+    ) {
+      console.error(
+        "puzles/next_puzzle line 66\n" + puzzle_file_download_rpc.error
+      );
       return error(500);
     }
 
@@ -64,8 +82,12 @@ export async function POST({ cookies }: RequestEvent): Promise<Response> {
       email: user_detail_rpc.data.email,
       current_level: user_detail_rpc.data.curr_level,
       current_position: user_detail_rpc.data.current_position,
+      next_puzzle_url: puzzle_file_download_rpc.data.signedUrl,
+      next_puzzle_id: user_detail_rpc.data.next_puzzle_id,
+      next_puzzle_level: user_detail_rpc.data.next_puzzle_level,
     });
   } else {
+    console.log(2);
     return error(403);
   }
 }
