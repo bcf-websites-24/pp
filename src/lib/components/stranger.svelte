@@ -1,268 +1,309 @@
 <script lang="ts">
-    import { Tab } from "bootstrap";
+  import { Tab } from "bootstrap";
 
-    let form_holder_elem: HTMLDivElement;
-    let form_login_elem: HTMLFormElement;
-    let form_register_elem: HTMLFormElement;
-    let register_confirm_password_elem: HTMLInputElement;
-    let signing: boolean = false;
-    let login_username: string;
-    let login_password: string;
-    let register_username: string;
-    let register_email: string;
-    let register_student_id: string;
-    let register_password: string;
-    let register_confirm_password: string;
+  const username_pattern = "\\w{4,32}";
+  const student_id_pattern = "\\d{9}";
+  let form_holder_elem: HTMLDivElement;
+  let form_login_elem: HTMLFormElement;
+  let form_register_elem: HTMLFormElement;
+  let register_student_id_elem: HTMLInputElement;
+  let register_confirm_password_elem: HTMLInputElement;
+  let signing: boolean = false;
+  let login_username: string;
+  let login_password: string;
+  let register_username: string;
+  let register_email: string;
+  let register_student_id: string;
+  let register_password: string;
+  let register_confirm_password: string;
 
-    async function login(): Promise<void>
-    {
-        signing = true;
-        const response: Response = await fetch("/api/login",
-            {
-                method: "POST",
-                body: JSON.stringify(
-                    {
-                        username: login_username,
-                        password: login_password
-                    }
-                )
-            }
-        );
+  async function login(): Promise<void> {
+    signing = true;
+    const response: Response = await fetch("/api/login", {
+      method: "POST",
+      body: JSON.stringify({
+        username: login_username,
+        password: login_password,
+      }),
+    });
 
-        if(response.status === 200)
-        {
-            const response_json: any = await response.json();
+    if (response.status === 200) {
+      const response_json: any = await response.json();
 
-            if(response_json.login === 0)
-            {
-                
-            }
-            else if(response_json.login === -1)
-            {
-                
-            }
-            else if(response_json.login === -2)
-            {
-                
-            }
-            else
-            {
-                console.error("Unknown login value");
-            }
-        }
-
-        signing = false;
-
-        form_login_elem.reset();
+      if (response_json.login === 0) {
+      } else if (response_json.login === -1) {
+      } else if (response_json.login === -2) {
+      } else {
+        console.error("Unknown login value");
+      }
     }
 
-    async function register(): Promise<void>
-    {
-        if(register_password !== register_confirm_password)
-        {
-            register_confirm_password_elem.setCustomValidity("Password did not match");
+    signing = false;
 
-            return;
-        }
+    form_login_elem.reset();
+  }
 
-        signing = true;
-        const response: Response = await fetch("/api/register",
-            {
-                method: "POST",
-                body: JSON.stringify(
-                    {
-                        username: register_username,
-                        student_id: register_student_id,
-                        email: register_email,
-                        password: register_password
-                    }
-                )
-            }
-        );
+  async function register(): Promise<void> {
+    if (register_password !== register_confirm_password) {
+      register_confirm_password_elem.setCustomValidity(
+        "Password did not match",
+      );
 
-        if(response.status === 200)
-        {
-            const response_json: any = await response.json();
-
-            if(response_json.registered === 0)
-            {
-                
-            }
-            else if(response_json.registered === -1)
-            {
-                
-            }
-            else
-            {
-                console.error("Unknown registered value");
-            }
-        }
-
-        signing = false;
-
-        form_register_elem.reset();
+      return;
     }
 
-    function login_tab_clicked(): void
-    {
-        const old_height: number = form_holder_elem.clientHeight;
-        form_login_elem.hidden = false;
-        form_register_elem.hidden = true;
-        const new_height: number = form_holder_elem.clientHeight;
-        form_login_elem.style.opacity = "0";
-        const animation: Animation = form_holder_elem.animate(
-            [
-                {
-                    height: old_height + "px",
-                    easing: "ease-out"
-                },
-                {
-                    height: new_height + "px",
-                    easing: "ease-in"
-                }
-            ],
-            250
-        );
-        animation.onfinish = (): void =>
-        {
-            const child_animation: Animation = form_login_elem.animate(
-                [
-                    {
-                        opacity: 0.0,
-                        easing: "ease-out"
-                    },
-                    {
-                        opacity: 1.0,
-                        easing: "ease-in"
-                    },
-                ],
-                250
-            );
-            child_animation.onfinish = (): void =>
-            {
-                form_login_elem.style.opacity = "1";
-            };
+    signing = true;
+    const response: Response = await fetch("/api/register", {
+      method: "POST",
+      body: JSON.stringify({
+        username: register_username,
+        student_id: register_student_id,
+        email: register_email,
+        password: register_password,
+      }),
+    });
 
-            child_animation.play();
-        };
+    if (response.status === 200) {
+      const response_json: any = await response.json();
 
-        animation.play();
+      if (response_json.registered === 0) {
+      } else if (response_json.registered === -1) {
+      } else {
+        console.error("Unknown registered value");
+      }
     }
 
-    function register_tab_clicked(): void
-    {
-        const old_height: number = form_holder_elem.clientHeight;
-        form_login_elem.hidden = true;
-        form_register_elem.hidden = false;
-        const new_height: number = form_holder_elem.clientHeight;
-        form_register_elem.style.opacity = "0";
-        const animation: Animation = form_holder_elem.animate(
-            [
-                {
-                    height: old_height + "px",
-                    easing: "ease-out"
-                },
-                {
-                    height: new_height + "px",
-                    easing: "ease-in"
-                }
-            ],
-            250
-        );
-        animation.onfinish = (): void =>
+    signing = false;
+
+    form_register_elem.reset();
+  }
+
+  function login_tab_clicked(): void {
+    const old_height: number = form_holder_elem.clientHeight;
+    form_login_elem.hidden = false;
+    form_register_elem.hidden = true;
+    const new_height: number = form_holder_elem.clientHeight;
+    form_login_elem.style.opacity = "0";
+    const animation: Animation = form_holder_elem.animate(
+      [
         {
-            const child_animation: Animation = form_register_elem.animate(
-                [
-                    {
-                        opacity: 0.0,
-                        easing: "ease-out"
-                    },
-                    {
-                        opacity: 1.0,
-                        easing: "ease-in"
-                    },
-                ],
-                250
-            );
-            child_animation.onfinish = (): void =>
-            {
-                form_register_elem.style.opacity = "1";
-            };
+          height: old_height + "px",
+          easing: "ease-out",
+        },
+        {
+          height: new_height + "px",
+          easing: "ease-in",
+        },
+      ],
+      250,
+    );
+    animation.onfinish = (): void => {
+      const child_animation: Animation = form_login_elem.animate(
+        [
+          {
+            opacity: 0.0,
+            easing: "ease-out",
+          },
+          {
+            opacity: 1.0,
+            easing: "ease-in",
+          },
+        ],
+        250,
+      );
+      child_animation.onfinish = (): void => {
+        form_login_elem.style.opacity = "1";
+      };
 
-            child_animation.play();
-        };
+      child_animation.play();
+    };
 
-        animation.play();
-    }
+    animation.play();
+  }
+
+  function register_tab_clicked(): void {
+    const old_height: number = form_holder_elem.clientHeight;
+    form_login_elem.hidden = true;
+    form_register_elem.hidden = false;
+    const new_height: number = form_holder_elem.clientHeight;
+    form_register_elem.style.opacity = "0";
+    const animation: Animation = form_holder_elem.animate(
+      [
+        {
+          height: old_height + "px",
+          easing: "ease-out",
+        },
+        {
+          height: new_height + "px",
+          easing: "ease-in",
+        },
+      ],
+      250,
+    );
+    animation.onfinish = (): void => {
+      const child_animation: Animation = form_register_elem.animate(
+        [
+          {
+            opacity: 0.0,
+            easing: "ease-out",
+          },
+          {
+            opacity: 1.0,
+            easing: "ease-in",
+          },
+        ],
+        250,
+      );
+      child_animation.onfinish = (): void => {
+        form_register_elem.style.opacity = "1";
+      };
+
+      child_animation.play();
+    };
+
+    animation.play();
+  }
 </script>
 
 <div class="stranger-root">
-    <div class="stranger-card card card-body shadow m-2">
-        <div class="nav nav-pills mb-3">
-            <button on:click={login_tab_clicked} class="nav-link active" data-bs-toggle="tab">Login</button>
-            <button on:click={register_tab_clicked} class="nav-link" data-bs-toggle="tab">Register</button>
-        </div>
-        <div bind:this={form_holder_elem} class="align-self-stretch">
-            <form bind:this={form_login_elem} on:submit={login} action="javascript:">
-                <div class="form-floating mb-3">
-                    <input bind:value={login_username} type="text" class="form-control" id="login-username" placeholder="Username" required>
-                    <label for="login-username">Username</label>
-                </div>
-                <div class="form-floating mb-3">
-                    <input bind:value={login_password} type="password" class="form-control" id="login-password" placeholder="Password" required>
-                    <label for="login-password">Password</label>
-                </div>
-                <div class="d-flex justify-content-end">
-                    <button type="submit" class="btn btn-primary" disabled={signing}>Login</button>
-                </div>
-            </form>
-            <form bind:this={form_register_elem} on:submit={register} action="javascript:" hidden>
-                <div class="form-floating mb-3">
-                    <input bind:value={register_username} type="text" class="form-control" id="register-username" placeholder="Username" required>
-                    <label for="register-username">Username</label>
-                </div>
-                <div class="form-floating mb-3">
-                    <input bind:value={register_email} type="email" class="form-control" id="register-email" placeholder="Email" required>
-                    <label for="register-email">Email</label>
-                </div>
-                <div class="form-floating mb-3">
-                    <input bind:value={register_student_id} type="text" class="form-control" id="register-student-id" placeholder="Stuent ID" required>
-                    <label for="register-student-id">Student ID</label>
-                </div>
-                <div class="form-floating mb-3">
-                    <input bind:value={register_password} type="password" class="form-control" id="register-password" placeholder="Password" required>
-                    <label for="register-password">Password</label>
-                </div>
-                <div class="form-floating mb-3">
-                    <input bind:value={register_confirm_password} bind:this={register_confirm_password_elem} type="password" class="form-control" id="register-confirm-password" placeholder="Confirm Password" required>
-                    <label for="register-confirm-password">Confirm Password</label>
-                </div>
-                <div class="d-flex justify-content-end">
-                    <button type="submit" class="btn btn-primary" disabled={signing}>Register</button>
-                </div>
-            </form>
-        </div>
+  <div class="stranger-card card card-body shadow m-2">
+    <div class="nav nav-pills mb-3">
+      <button
+        on:click={login_tab_clicked}
+        class="nav-link active"
+        data-bs-toggle="tab">Login</button
+      >
+      <button
+        on:click={register_tab_clicked}
+        class="nav-link"
+        data-bs-toggle="tab">Register</button
+      >
     </div>
+    <div bind:this={form_holder_elem} class="align-self-stretch">
+      <form bind:this={form_login_elem} on:submit={login} action="javascript:">
+        <div class="form-floating mb-3">
+          <input
+            bind:value={login_username}
+            type="text"
+            class="form-control"
+            id="login-username"
+            placeholder="Username"
+            pattern={username_pattern}
+            required
+          />
+          <label for="login-username">Username</label>
+        </div>
+        <div class="form-floating mb-3">
+          <input
+            bind:value={login_password}
+            type="password"
+            class="form-control"
+            id="login-password"
+            placeholder="Password"
+            required
+          />
+          <label for="login-password">Password</label>
+        </div>
+        <div class="d-flex justify-content-end">
+          <button type="submit" class="btn btn-primary" disabled={signing}
+            >Login</button
+          >
+        </div>
+      </form>
+      <form
+        bind:this={form_register_elem}
+        on:submit={register}
+        action="javascript:"
+        hidden
+      >
+        <div class="form-floating mb-3">
+          <input
+            bind:value={register_username}
+            type="text"
+            class="form-control"
+            id="register-username"
+            placeholder="Username"
+            pattern={username_pattern}
+            required
+          />
+          <label for="register-username">Username</label>
+        </div>
+        <div class="form-floating mb-3">
+          <input
+            bind:value={register_email}
+            type="email"
+            class="form-control"
+            id="register-email"
+            placeholder="Email"
+            minlength="8"
+            required
+          />
+          <label for="register-email">Email</label>
+        </div>
+        <div class="form-floating mb-3">
+          <input
+            bind:value={register_student_id}
+            bind:this={register_student_id_elem}
+            type="text"
+            class="form-control"
+            id="register-student-id"
+            placeholder="Stuent ID"
+            pattern={student_id_pattern}
+            required
+          />
+          <label for="register-student-id">Student ID</label>
+        </div>
+        <div class="form-floating mb-3">
+          <input
+            bind:value={register_password}
+            type="password"
+            class="form-control"
+            id="register-password"
+            placeholder="Password"
+            minlength="8"
+            required
+          />
+          <label for="register-password">Password</label>
+        </div>
+        <div class="form-floating mb-3">
+          <input
+            bind:value={register_confirm_password}
+            bind:this={register_confirm_password_elem}
+            type="password"
+            class="form-control"
+            id="register-confirm-password"
+            placeholder="Confirm Password"
+            minlength="8"
+            required
+          />
+          <label for="register-confirm-password">Confirm Password</label>
+        </div>
+        <div class="d-flex justify-content-end">
+          <button type="submit" class="btn btn-primary" disabled={signing}
+            >Register</button
+          >
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
 
 <style>
-    .stranger-root
-    {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .stranger-card
-    {
-        max-width: 30rem;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        border: 0;
-    }
+  .stranger-root {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .stranger-card {
+    max-width: 30rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 0;
+  }
 </style>
