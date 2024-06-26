@@ -3,7 +3,7 @@ import { type PostgrestSingleResponse } from "@supabase/supabase-js";
 import argon2 from "argon2";
 import { supabase_client_store } from "$lib/stores.server";
 import { get } from "svelte/store";
-import { delete_jwt_cookie, make_jwt_cookie } from "$lib/helpers.server";
+import { make_jwt_cookie } from "$lib/helpers.server";
 import jwt from "jsonwebtoken";
 import validator from "validator";
 import { PUBLIC_JWT_SECRET } from "$env/static/public";
@@ -29,9 +29,7 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
   const password_hash: string = await argon2.hash(password);
 
   // allowing only [a-zA-Z0-9_] in username
-  if (!/^\w+$/.test(username)) {
-    delete_jwt_cookie(request_event.cookies);
-
+  if (!/^\w{4,32}$/.test(username)) {
     // Error code -4 means username has spaces/empty
     return json({
       registered: -4,
@@ -39,8 +37,6 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
   }
 
   if (!validator.isEmail(email)) {
-    delete_jwt_cookie(request_event.cookies);
-
     // Error code -6 means invalid email address
     return json({
       registered: -6,
@@ -56,8 +52,6 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
   //                    $   : end of string
   // stackOverflow sauce 🤡: https://stackoverflow.com/questions/10834796/validate-that-a-string-is-a-positive-integer#:~:text=function%20isInDesiredForm(str)%20%7B%0A%20%20%20%20return%20/%5E%5C%2B%3F%5Cd%2B%24/.test(str)%3B%0A%7D
   if (!/^\d{9}$/.test(student_id)) {
-    delete_jwt_cookie(request_event.cookies);
-
     // Error code -2 means roll is not numeric
     return json({
       registered: -2,
@@ -65,18 +59,16 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
   }
 
   let batch: number = Number(student_id.substring(0, 4));
-  let dept: number = Number(student_id.substring(5, 7));
-  let roll: number = Number(student_id.substring(7, 9));
+  // let dept: number = Number(student_id.substring(5, 7));
+  // let roll: number = Number(student_id.substring(7, 9));
   let user_type: string = "";
 
-  if (roll < 1 || roll > 183) {
-    delete_jwt_cookie(request_event.cookies);
-
-    // Error code: -3 means wrong roll, we include 183 to allow for 21-23 batch + 3 foreign students (there is one in 22 batch I know)
-    return json({
-      registered: -3,
-    });
-  }
+  // if (roll < 1 || roll > 183) {
+  //   // Error code: -3 means wrong roll, we include 183 to allow for 21-23 batch + 3 foreign students (there is one in 22 batch I know)
+  //   return json({
+  //     registered: -3,
+  //   });
+  // }
 
   // 19,20,21,22,23
   if (batch > 2018 && batch < 2024) {
@@ -124,10 +116,7 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
       registered: 0,
     });
   } else {
-    delete_jwt_cookie(request_event.cookies);
     // Database error
-    return json({
-      registered: -1,
-    });
+    return error(500);
   }
 }

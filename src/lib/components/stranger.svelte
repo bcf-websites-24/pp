@@ -1,8 +1,8 @@
 <script lang="ts">
   import { Tab } from "bootstrap";
 
-  const username_pattern = "\\w{4,32}";
-  const student_id_pattern = "\\d{9}";
+  const username_pattern = /^\w{4,32}$/;
+  const student_id_pattern = /^\d{9}$/;
   let form_holder_elem: HTMLDivElement;
   let form_login_elem: HTMLFormElement;
   let form_register_elem: HTMLFormElement;
@@ -188,7 +188,7 @@
             class="form-control"
             id="login-username"
             placeholder="Username"
-            pattern={username_pattern}
+            pattern={username_pattern.source}
             required
           />
           <label for="login-username">Username</label>
@@ -223,7 +223,7 @@
             class="form-control"
             id="register-username"
             placeholder="Username"
-            pattern={username_pattern}
+            pattern={username_pattern.source}
             required
           />
           <label for="register-username">Username</label>
@@ -248,7 +248,7 @@
             class="form-control"
             id="register-student-id"
             placeholder="Stuent ID"
-            pattern={student_id_pattern}
+            pattern={student_id_pattern.source}
             required
           />
           <label for="register-student-id">Student ID</label>
