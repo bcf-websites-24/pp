@@ -3,18 +3,19 @@ import type { PostgrestSingleResponse } from "@supabase/supabase-js";
 import { error, json, type RequestEvent } from "@sveltejs/kit";
 import { get } from "svelte/store";
 import jwt from "jsonwebtoken";
+import { v4 as uuidv4 } from "uuid";
 import { PUBLIC_JWT_SECRET } from "$env/static/public";
 
 /**
  * request format:
  *  {
         "hashed_ans": "test_api",
-        "img_url": "test.com",
         "info": "test info",
         "info_link": "test.com",
         "puzzle_level": 9,
         "title": ""
     }
+    and puzzle_file field in formData
  */
 export async function POST({
   request,
@@ -57,20 +58,27 @@ export async function POST({
       return error(403);
     }
 
-    const request_json: any = await request.json();
-    const given_hashed_ans: string = request_json.hashed_ans;
-    const given_img_url: string = request_json.img_url;
-    const given_info: string = request_json.info;
-    const given_info_link: string = request_json.info_link;
-    const given_puzzle_level: number = request_json.puzzle_level;
-    const given_title: string = request_json.title;
+    const request_formdata: any = await request.formData();
+
+    if (request_formdata === undefined) {
+      return error(422);
+    }
+
+    const given_hashed_ans: string = request_formdata.get(
+      "hashed_ans"
+    ) as string;
+    const given_info: string = request_formdata.get("info") as string;
+    const given_info_link: string = request_formdata.get("info_link") as string;
+    const given_puzzle_level: number = request_formdata.get(
+      "puzzle_level"
+    ) as number;
+    const given_title: string = request_formdata.get("title") as string;
+    const puzzle_file: File = request_formdata.get("puzzle_file") as File;
 
     // client side did not give correct request fields
     if (
       given_hashed_ans === null ||
       given_hashed_ans === undefined ||
-      given_img_url === undefined ||
-      given_img_url === null ||
       given_info === null ||
       given_info === undefined ||
       given_info_link === null ||
@@ -78,10 +86,16 @@ export async function POST({
       given_puzzle_level === null ||
       given_puzzle_level === undefined ||
       given_title === null ||
-      given_title === undefined
+      given_title === undefined ||
+      puzzle_file === undefined ||
+      puzzle_file === null
     ) {
       return error(422);
     }
+
+    let given_img_url: string = (uuidv4() +
+      "." +
+      puzzle_file.name?.split(".").pop()) as string;
 
     const add_new_puzzle_rpc: PostgrestSingleResponse<any> = await get(
       supabase_client_store
@@ -99,6 +113,17 @@ export async function POST({
       console.error(add_new_puzzle_rpc.error);
       return error(500);
     }
+
+    const puzzle_file_upload_rpc: any = await get(supabase_client_store)
+      .storage.from("puzzles")
+      .upload(given_img_url, puzzle_file);
+
+    // VERCEL LOG SOURCE
+    if (puzzle_file_upload_rpc.error) {
+      console.error(puzzle_file_upload_rpc.error);
+      return error(500);
+    }
+
     /**
      * format
      *  {
