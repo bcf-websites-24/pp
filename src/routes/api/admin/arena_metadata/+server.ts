@@ -34,7 +34,7 @@ export async function POST({ cookies }: RequestEvent): Promise<Response> {
     });
 
     if (can_access_admin_rpc.error) {
-      console.error(can_access_admin_rpc.error);
+      console.error("admin/arena_metadata line 37\n"+can_access_admin_rpc.error);
       return error(500);
     }
 
@@ -49,7 +49,7 @@ export async function POST({ cookies }: RequestEvent): Promise<Response> {
 
     // VERCEL_LOG_SOURCE, this will be on the vercel api log
     if (get_arena_metadata_rpc.error) {
-      console.error(get_arena_metadata_rpc.error);
+      console.error("admin/arena_metadata line 52\n"+get_arena_metadata_rpc.error);
       return error(500);
     }
 

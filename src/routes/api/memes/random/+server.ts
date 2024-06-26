@@ -32,7 +32,7 @@ export async function POST({ cookies }: RequestEvent): Promise<Response> {
 
     // VERCEL_LOG_SOURCE, this will be on the vercel api log
     if (random_meme_rpc.error) {
-      console.error(random_meme_rpc.error);
+      console.error("memes/random line 35\n"+random_meme_rpc.error);
       return error(500);
     }
 
@@ -48,7 +48,7 @@ export async function POST({ cookies }: RequestEvent): Promise<Response> {
       meme_file_download_rpc.data.signedUrl === undefined ||
       meme_file_download_rpc.data.signedUrl === null
     ) {
-      console.error("line 50"+meme_file_download_rpc.error);
+      console.error("memes/random line 51\n"+meme_file_download_rpc.error);
       return error(500);
     }
 
@@ -65,7 +65,7 @@ export async function POST({ cookies }: RequestEvent): Promise<Response> {
         meme_sound_download_rpc.data.signedUrl === undefined ||
         meme_sound_download_rpc.data.signedUrl === null
       ) {
-        console.error(meme_sound_download_rpc.error);
+        console.error("memes/random line 68\n"+meme_sound_download_rpc.error);
         return error(500);
       }
 
