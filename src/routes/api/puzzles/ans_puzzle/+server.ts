@@ -4,7 +4,13 @@ import { error, json, type RequestEvent } from "@sveltejs/kit";
 import { get } from "svelte/store";
 import jwt from "jsonwebtoken";
 import { PUBLIC_JWT_SECRET } from "$env/static/public";
-
+/**
+ * request format:
+ *  {
+      "puzzle_id": "6130b8f1-4415-4648-ba49-e4ec61a74c20",
+      "ans": "test2"
+    }
+ */
 export async function POST({
   request,
   cookies,
