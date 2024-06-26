@@ -45,7 +45,7 @@ export async function POST({
 
     // VERCEL_LOG_SOURCE
     if (can_access_admin_rpc.error) {
-      console.error("admin/add_meme line 48\n"+can_access_admin_rpc.error);
+      console.error("admin/add_meme line 48\n" + can_access_admin_rpc.error);
       return error(500);
     }
 
@@ -82,7 +82,7 @@ export async function POST({
 
       // VERCEL LOG SOURCE
       if (meme_image_upload_rpc.error) {
-        console.error("admin/add_meme line 85\n"+meme_image_upload_rpc.error);
+        console.error("admin/add_meme line 85\n" + meme_image_upload_rpc.error);
         return error(500);
       }
     }
@@ -96,7 +96,7 @@ export async function POST({
 
       // VERCEL LOG SOURCE
       if (meme_sound_upload_rpc.error) {
-        console.error("admin/add_meme line 99\n"+meme_sound_upload_rpc.error);
+        console.error("admin/add_meme line 99\n" + meme_sound_upload_rpc.error);
         return error(500);
       }
     }
@@ -111,7 +111,7 @@ export async function POST({
 
     // VERCEL_LOG_SOURCE
     if (add_new_meme.error) {
-      console.error("admin/add_meme line 114"+add_new_meme.error);
+      console.error("admin/add_meme line 114" + add_new_meme.error);
       return error(500);
     }
     /**

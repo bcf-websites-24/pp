@@ -34,7 +34,7 @@ export async function POST({ cookies }: RequestEvent): Promise<Response> {
 
     // VERCEL_LOG_SOURCE, this will be on the vercel api log
     if (user_detail_rpc.error) {
-      console.error("users/details 37\n"+user_detail_rpc.error);
+      console.error("users/details 37\n" + user_detail_rpc.error);
       return error(500);
     }
 
