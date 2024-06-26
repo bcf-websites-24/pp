@@ -7,15 +7,15 @@ import { v4 as uuidv4 } from "uuid";
 import { PUBLIC_JWT_SECRET } from "$env/static/public";
 
 /**
- * request format:
+ * request format, formData with fields,
  *  {
         "hashed_ans": "test_api",
         "info": "test info",
         "info_link": "test.com",
         "puzzle_level": 9,
-        "title": ""
+        "title": "",
+        puzzle_file: file
     }
-    and puzzle_file field in formData
  */
 export async function POST({
   request,
