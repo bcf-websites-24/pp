@@ -40,8 +40,6 @@ export async function POST(request_event: RequestEvent): Promise<Response>
 
   if (!await argon2.verify(hash, password))
   {
-    delete_jwt_cookie(request_event.cookies);
-
     return json(
       {
         login: -2 // password mismatch
