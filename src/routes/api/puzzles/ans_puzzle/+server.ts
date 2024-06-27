@@ -67,8 +67,10 @@ export async function POST({
     //  {
     //     "is_correct_ans": false
     //  }
-    return json({
-      is_correct_ans: add_puzzle_attempt_rpc.data,
+    return new Response(JSON.stringify(add_puzzle_attempt_rpc.data[0]), {
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
   } else {
     return error(403);
