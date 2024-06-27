@@ -3,10 +3,10 @@
     current_level_state,
     next_level_id_state,
     next_level_url_state,
+    wrong_answer_toast_store,
   } from "$lib/stores";
   import { fade, slide } from "svelte/transition";
 
-  let puzzle_loading = false;
   let image_data: string;
   let image_loaded = false;
   let submitting = false;
@@ -30,26 +30,14 @@
       if (response.status === 200) {
         const response_json = await response.json();
 
-        if (response_json.is_correct_ans) {
-          const animation = player_root_loaded_elem.animate(
-            [
-              {
-                opacity: 1,
-              },
-              {
-                opacity: 0,
-              },
-            ],
-            250,
-          );
-          animation.onfinish = (): void => {
-            puzzle_loading = true;
-          };
-
-          animation.play();
+        if (response_json.ans.f_is_correct) {
+          $next_level_id_state = response_json.ans.f_next_puzzle_id;
+          $next_level_url_state = response_json.ans.f_next_puzzle_img_url;
+          $current_level_state = response_json.ans.f_next_puzzle_level + 1;
         } else {
           wrong_answer = true;
 
+          $wrong_answer_toast_store.show();
           setTimeout((): void => {
             wrong_answer = false;
           }, 3000);
@@ -60,13 +48,15 @@
         // unauthorised, deal later
       }
     });
-
-    answer_submit_form_elem.reset();
   }
 
   function load_puzzle(level_url: string): void {
     wrong_answer = false;
     image_loaded = false;
+
+    if (answer_submit_form_elem !== undefined) {
+      answer_submit_form_elem.reset();
+    }
 
     fetch("/api/puzzles/get_image_data", {
       method: "POST",
@@ -85,74 +75,51 @@
   }
 </script>
 
-{#if puzzle_loading}
-  <div
-    class="position-absolute top-0 bottom-0 start-0 end-0 d-flex flex-column justify-content-center align-items-center"
-    in:fade={{ duration: 250 }}
-  >
-    <p class="text-beat fs-4 text-secondary">Loading Next Puzzle...</p>
-  </div>
-{:else}
-  <div
-    bind:this={player_root_loaded_elem}
-    class="player-root-loaded mx-auto mt-4 p-2"
-    in:fade={{ duration: 250 }}
-  >
-    <p class="fs-3 fw-semibold text-center">Level: {$current_level_state}</p>
-    {#if image_loaded}
-      <img
-        src={image_data}
-        class="puzzle-img rounded mb-3"
-        alt="puzzle-img"
+<div
+  bind:this={player_root_loaded_elem}
+  class="player-root-loaded mx-auto mt-4 p-2"
+>
+  <p class="fs-3 fw-semibold text-center">Level: {$current_level_state}</p>
+  {#if image_loaded}
+    <img
+      src={image_data}
+      class="puzzle-img rounded mb-3"
+      alt="puzzle-img"
+      in:fade={{ duration: 250 }}
+    />
+    <div class="d-flex align-items-center">
+      <form
+        bind:this={answer_submit_form_elem}
+        on:submit={answer_submit}
+        class="input-group"
+        action="javascript:"
         in:fade={{ duration: 250 }}
-      />
-      <div class="d-flex align-items-center">
-        <form
-          bind:this={answer_submit_form_elem}
-          on:submit={answer_submit}
-          class="input-group"
-          action="javascript:"
-          in:fade={{ duration: 250 }}
-        >
-          <input
-            bind:value={answer}
-            type="text"
-            class="form-control {wrong_answer ? 'is-invalid' : ''}"
-            placeholder="Answer..."
-            required
-          />
-          <button class="btn btn-primary" type="submit" disabled={submitting}>
-            <span>Send</span>
-          </button>
-        </form>
-        {#if submitting}
-          <div transition:slide={{ duration: 250, axis: "x" }}>
-            <div class="spinner-border text-primary ms-2"></div>
-          </div>
-        {/if}
-      </div>
-      {#if wrong_answer}
-        <div
-          class="alert alert-danger mt-2"
-          transition:fade={{ duration: 250 }}
-        >
-          Oops! Wrong Answer
+      >
+        <input
+          bind:value={answer}
+          type="text"
+          class="form-control {wrong_answer ? 'is-invalid' : ''}"
+          placeholder="Answer..."
+          required
+        />
+        <button class="btn btn-primary" type="submit" disabled={submitting}>
+          <span>Send</span>
+        </button>
+      </form>
+      {#if submitting}
+        <div transition:slide={{ duration: 250, axis: "x" }}>
+          <div class="spinner-border text-primary ms-2"></div>
         </div>
       {/if}
-    {:else}
-      <div class="placeholder-glow">
-        <span class="image-placeholder placeholder bg-secondary rounded"></span>
-      </div>
-    {/if}
-  </div>
-{/if}
+    </div>
+  {:else}
+    <div class="placeholder-glow">
+      <span class="image-placeholder placeholder bg-secondary rounded"></span>
+    </div>
+  {/if}
+</div>
 
 <style>
-  .text-beat {
-    animation-name: text-beat-animation;
-    animation-duration: 1s;
-    animation-iteration-count: infinite;
-  }
   .player-root-loaded {
     max-width: 40rem;
   }
