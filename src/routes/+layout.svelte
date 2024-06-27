@@ -40,7 +40,7 @@
       <div class="d-flex justify-content-end">
         <div class="dropdown">
           <button
-            class="btn btn-link link-secondary"
+            class="btn btn-link link-secondary px-0"
             type="button"
             data-bs-toggle="dropdown"
             aria-expanded="false"
