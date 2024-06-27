@@ -3,7 +3,7 @@
     current_level_state,
     current_rank_state,
     logged_in_state,
-    next_level_state,
+    next_level_id_state,
     next_level_url_state,
     username_state,
   } from "$lib/stores";
@@ -21,7 +21,7 @@
       $logged_in_state = true;
       $username_state = data.details.username;
       $current_level_state = data.details.curr_level + 1;
-      $next_level_state = data.details.next_puzzle_id;
+      $next_level_id_state = data.details.next_puzzle_id;
       $next_level_url_state = data.details.next_puzzle_url;
 
       if (data.details.current_position === null) {
@@ -31,7 +31,7 @@
       }
     }
 
-    console.log(data.details);
+    // console.log(data.details);
   });
 </script>
 
