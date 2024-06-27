@@ -68,7 +68,7 @@ export async function POST({
     //     "is_correct_ans": false
     //  }
     return json({
-      is_correct_ans: add_puzzle_attempt_rpc.data,
+      ans: add_puzzle_attempt_rpc.data[0],
     });
   } else {
     return error(403);
