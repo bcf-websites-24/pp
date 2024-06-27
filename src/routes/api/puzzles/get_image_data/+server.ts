@@ -15,14 +15,19 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
       // verify error means malformed token/wrong secret
       return error(403);
     }
+  } else {
+    // user not logged in
+    return error(403);
   }
 
   const request = request_event.request;
   const request_json = await request.json();
-  const image_blob = await get(supabase_client_store).storage.from("puzzles").download(request_json.url);
+  const image_blob = await get(supabase_client_store)
+    .storage.from("puzzles")
+    .download(request_json.url);
 
   if (image_blob.error) {
-    console.error(image_blob.error);
+    console.error("puzzles/get_image_data line 28\n" + image_blob.error);
 
     return error(500);
   }
