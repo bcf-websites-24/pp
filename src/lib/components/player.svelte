@@ -4,7 +4,7 @@
     next_level_id_state,
     next_level_url_state,
   } from "$lib/stores";
-  import { fade } from "svelte/transition";
+  import { fade, slide } from "svelte/transition";
 
   let puzzle_loading = false;
   let image_data: string;
@@ -14,31 +14,11 @@
   let answer: string;
   let player_root_loaded_elem: HTMLDivElement;
   let answer_submit_form_elem: HTMLFormElement;
-  let submitting_animator_elem: HTMLDivElement;
 
   $: load_puzzle($next_level_url_state);
 
   function answer_submit(): void {
     submitting = true;
-
-    {
-      submitting_animator_elem.hidden = false;
-      const target_width = submitting_animator_elem.clientHeight;
-
-      submitting_animator_elem
-        .animate(
-          [
-            {
-              width: "0",
-            },
-            {
-              width: target_width + "px",
-            },
-          ],
-          100,
-        )
-        .play();
-    }
 
     fetch("/api/puzzles/ans_puzzle", {
       method: "POST",
@@ -60,7 +40,7 @@
                 opacity: 0,
               },
             ],
-            100,
+            250,
           );
           animation.onfinish = (): void => {
             puzzle_loading = true;
@@ -73,26 +53,6 @@
           setTimeout((): void => {
             wrong_answer = false;
           }, 3000);
-        }
-
-        {
-          const init_width = submitting_animator_elem.clientHeight;
-          const animation = submitting_animator_elem.animate(
-            [
-              {
-                width: init_width + "px",
-              },
-              {
-                width: init_width + "px",
-              },
-            ],
-            100,
-          );
-          animation.onfinish = (): void => {
-            submitting_animator_elem.hidden = true;
-          };
-
-          animation.play();
         }
 
         submitting = false;
@@ -165,9 +125,11 @@
             <span>Send</span>
           </button>
         </form>
-        <div bind:this={submitting_animator_elem} hidden>
-          <div class="spinner-border text-primary ms-2"></div>
-        </div>
+        {#if submitting}
+          <div transition:slide={{ duration: 250, axis: "x" }}>
+            <div class="spinner-border text-primary ms-2"></div>
+          </div>
+        {/if}
       </div>
       {#if wrong_answer}
         <div
