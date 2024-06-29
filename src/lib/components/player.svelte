@@ -1,6 +1,7 @@
 <script lang="ts">
   import {
     current_level_state,
+    logged_in_state,
     next_level_id_state,
     next_level_url_state,
     wrong_answer_toast_store,
@@ -44,7 +45,7 @@
 
         submitting = false;
       } else if (response.status === 403) {
-        // unauthorised, deal later
+        $logged_in_state = false;
       }
     });
   }
@@ -68,13 +69,13 @@
         image_data = URL.createObjectURL(response_blob);
         image_loaded = true;
       } else if (response.status === 403) {
-        // unauthorised, deal later
+        $logged_in_state = false;
       }
     });
   }
 </script>
 
-<div class="player-root mx-auto mt-4 p-2">
+<div class="page-root mx-auto mt-4 p-2">
   <p class="fs-3 fw-semibold text-center">Level: {$current_level_state}</p>
   {#if image_loaded}
     <img
@@ -116,9 +117,6 @@
 </div>
 
 <style>
-  .player-root {
-    max-width: 40rem;
-  }
   .puzzle-img {
     width: 100%;
   }

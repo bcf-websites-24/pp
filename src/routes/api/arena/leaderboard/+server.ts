@@ -47,11 +47,7 @@ export async function POST({ cookies }: RequestEvent): Promise<Response> {
             }
         ]   
      */
-    return new Response(JSON.stringify(leaderboard_rpc.data), {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    return json(leaderboard_rpc.data);
   } else {
     return error(403);
   }

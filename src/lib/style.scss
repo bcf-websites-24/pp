@@ -1,6 +1,9 @@
 @import "../node_modules/bootstrap/scss/bootstrap.scss";
 
-body
-{
-    background-color: #efefef;
+body {
+  background-color: #efefef;
+}
+
+.page-root {
+  max-width: 40rem;
 }

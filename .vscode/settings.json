@@ -7,4 +7,6 @@
   "typescript.format.placeOpenBraceOnNewLineForFunctions": false,
   "javascript.format.placeOpenBraceOnNewLineForControlBlocks": false,
   "javascript.format.placeOpenBraceOnNewLineForFunctions": false,
+  "scss.format.braceStyle": "collapse",
+  "css.format.braceStyle": "collapse",
 }
