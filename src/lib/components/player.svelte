@@ -12,7 +12,6 @@
   let submitting = false;
   let wrong_answer = false;
   let answer: string;
-  let player_root_loaded_elem: HTMLDivElement;
   let answer_submit_form_elem: HTMLFormElement;
 
   $: load_puzzle($next_level_url_state);
@@ -75,10 +74,7 @@
   }
 </script>
 
-<div
-  bind:this={player_root_loaded_elem}
-  class="player-root-loaded mx-auto mt-4 p-2"
->
+<div class="player-root mx-auto mt-4 p-2">
   <p class="fs-3 fw-semibold text-center">Level: {$current_level_state}</p>
   {#if image_loaded}
     <img
@@ -120,7 +116,7 @@
 </div>
 
 <style>
-  .player-root-loaded {
+  .player-root {
     max-width: 40rem;
   }
   .puzzle-img {
