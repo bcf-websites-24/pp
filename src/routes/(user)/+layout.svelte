@@ -2,9 +2,8 @@
   import {
     current_level_state,
     current_rank_state,
-    logged_in_state,
-    next_level_id_state,
     next_level_url_state,
+    user_logged_in_state,
     username_state,
     wrong_answer_toast_store,
   } from "$lib/stores";
@@ -21,10 +20,10 @@
 
   onMount((): void => {
     if (data.details !== null) {
-      $logged_in_state = true;
+      $user_logged_in_state = true;
       $username_state = data.details.username;
       $current_level_state = data.details.curr_level + 1;
-      $next_level_id_state = data.details.next_puzzle_id;
+      $next_level_url_state = data.details.next_puzzle_id;
       $next_level_url_state = data.details.next_puzzle_url;
       $current_rank_state = -1;
     }
@@ -33,7 +32,7 @@
   });
 </script>
 
-{#if $logged_in_state}
+{#if $user_logged_in_state}
   <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
       <a class="navbar-brand" href="/">Picture Puzzle 2024</a>

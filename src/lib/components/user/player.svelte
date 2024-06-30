@@ -1,7 +1,7 @@
 <script lang="ts">
   import {
     current_level_state,
-    logged_in_state,
+    user_logged_in_state,
     next_level_id_state,
     next_level_url_state,
     wrong_answer_toast_store,
@@ -45,7 +45,7 @@
 
         submitting = false;
       } else if (response.status === 403) {
-        $logged_in_state = false;
+        $user_logged_in_state = false;
       }
     });
   }
@@ -69,7 +69,7 @@
         image_data = URL.createObjectURL(response_blob);
         image_loaded = true;
       } else if (response.status === 403) {
-        $logged_in_state = false;
+        $user_logged_in_state = false;
       }
     });
   }
