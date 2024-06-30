@@ -58,6 +58,7 @@ export async function POST({
     const given_content: string = request_formdata.get("content") as string;
     const meme_sound: File = request_formdata.get("meme_sound") as File;
     const meme_image: File = request_formdata.get("meme_image") as File;
+    const given_is_audio: boolean = request_formdata.get("is_audio") as boolean;
 
     // client side did not give correct request fields
     if (
@@ -106,6 +107,7 @@ export async function POST({
     ).rpc("add_new_meme", {
       given_content,
       given_img_url,
+      given_is_audio,
       given_sound_url,
     });
 
