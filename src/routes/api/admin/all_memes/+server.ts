@@ -43,32 +43,30 @@ export async function POST({ cookies }: RequestEvent): Promise<Response> {
       return error(403);
     }
 
-    const puzzle_list_rpc: PostgrestSingleResponse<any> = await get(
+    const meme_list_rpc: PostgrestSingleResponse<any> = await get(
       supabase_client_store
-    ).rpc("get_all_puzzles");
+    ).rpc("get_all_memes");
 
     // VERCEL_LOG_SOURCE, this will be on the vercel api log
-    if (puzzle_list_rpc.error) {
-      console.error("admin/all_puzzles line 52\n" + puzzle_list_rpc.error);
+    if (meme_list_rpc.error) {
+      console.error("admin/all_memes line 52\n" + meme_list_rpc.error);
       return error(500);
     }
 
-    // puzzles in serial of puzzle level. Array of objects. format:
+    // memes in serial of creation time. Array of objects. format:
     /**
      *  [
             {
-                "f_id": "512b711e-6d9c-480e-a353-043bf7a37931",
                 "f_created_at": "2024-06-26T07:46:38.652019+00:00",
                 "f_img_url": "de28065e-da39-4c88-a00c-b1e9da441c2f.jpg",
-                "f_ans": "test_api",
-                "f_puzzle_level": 1,
-                "f_title": "test title",
-                "f_info": "test info",
-                "f_info_link": "test.com"
+                "f_sound_url": "de28065e-da39-4c88-a00c-b1e9da441c2f.jpg",
+                "f_content": "test",
+                "f_is_audio": false,
+                "f_id": "512b711e-6d9c-480e-a353-043bf7a37931"
             }
         ]      
      */
-    return new Response(JSON.stringify(puzzle_list_rpc.data), {
+    return new Response(JSON.stringify(meme_list_rpc.data), {
       headers: {
         "Content-Type": "application/json",
       },
