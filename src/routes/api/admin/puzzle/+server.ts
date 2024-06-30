@@ -11,10 +11,8 @@ import { ADMIN_JWT_ID } from "$env/static/private";
  * request format, formData with fields,
  *  {
         "hashed_ans": "test_api",
-        "info": "test info",
         "info_link": "test.com",
         "puzzle_level": 9,
-        "title": "",
         "editing" : false,
         "puzzle_file": file,
         "puzzle_id": test
@@ -57,12 +55,12 @@ export async function POST({
     const given_hashed_ans: string = request_formdata.get(
       "hashed_ans"
     ) as string;
-    const given_info: string = request_formdata.get("info") as string;
+    const given_info: string = '';
     const given_info_link: string = request_formdata.get("info_link") as string;
     const given_puzzle_level: number = request_formdata.get(
       "puzzle_level"
     ) as number;
-    const given_title: string = request_formdata.get("title") as string;
+    const given_title: string = '';
     const puzzle_file: File = request_formdata.get("puzzle_file") as File;
     const editing: boolean = request_formdata.get("editing") as boolean;
     const given_puzzle_id: string = request_formdata.get("puzzle_id") as string;
