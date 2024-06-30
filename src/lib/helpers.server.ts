@@ -14,6 +14,22 @@ export function make_jwt_cookie(cookies: Cookies, token: string) {
   );
 }
 
+export function make_admin_cookie(cookies: Cookies, token: string) {
+  let expire_date: Date = new Date();
+
+  expire_date.setTime(Date.now() + 86400 * 1000 * 30);
+  cookies.set("pp-admin-jwt", token,
+    {
+      path: "/",
+      secure: true,
+      httpOnly: true,
+      expires: expire_date
+    }
+  );
+}
+
+
+
 export function delete_jwt_cookie(cookies: Cookies) {
   cookies.delete("pp-jwt",
     {
