@@ -37,7 +37,7 @@ export async function POST({ cookies }: RequestEvent): Promise<Response> {
 
     // VERCEL_LOG_SOURCE, this will be on the vercel api log
     if (puzzle_list_rpc.error) {
-      console.error("admin/all_puzzles line 52\n" + puzzle_list_rpc.error);
+      console.error("admin/all_puzzles line 40\n" + puzzle_list_rpc.error);
       return error(500);
     }
 
