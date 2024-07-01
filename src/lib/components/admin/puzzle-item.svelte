@@ -1,7 +1,6 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { AdminPuzzleItem } from "$lib/helpers";
-  import { onMount } from "svelte";
   import { fade } from "svelte/transition";
 
   export let puzzles: Array<AdminPuzzleItem>;
@@ -85,6 +84,13 @@
       }
 
       puzzles = puzzles.slice(0, index).concat(puzzles.slice(index + 1));
+
+      fetch("/api/admin/rmv_puzzle", {
+        method: "POST",
+        body: JSON.stringify({
+          puzzle_id: puzzle.id,
+        }),
+      });
     };
 
     animation.play();
