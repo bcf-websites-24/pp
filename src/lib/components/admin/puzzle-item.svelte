@@ -1,6 +1,5 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
-  import { onMount } from "svelte";
 
   export let name: string;
   export let answer: string;
