@@ -1,7 +1,6 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
 
-  export let name: string;
   export let level: number;
   export let answer: string;
   export let img_url: string;
@@ -29,15 +28,13 @@
   }
 </script>
 
-<img src={img_data} class="puzzle-image rounded me-2" alt="puzzle-img" />
+<a href={img_data} target="_blank">
+  <img src={img_data} class="puzzle-image rounded me-2" alt="puzzle-img" />
+</a>
 <div class="flex-fill d-flex flex-column justify-content-between">
   <div>
-    <p class="fs-5 fw-semibold m-0">Name: {name}</p>
-    <div class="d-flex">
-      <p class="fs-6 text-secondary m-0">Level: {level}</p>
-      <p class="fs-6 text-secondary mx-2">&#x2022;</p>
-      <p class="fs-6 text-secondary m-0">Answer: {answer}</p>
-    </div>
+    <p class="fs-5 fw-semibold m-0">Level: {level.toString()}</p>
+    <p class="fs-6 text-secondary m-0">Answer: {answer}</p>
   </div>
   <div class="d-flex justify-content-end">
     <button class="btn btn-link link-secondary p-0 me-3">
@@ -81,6 +78,7 @@
 <style>
   .puzzle-image {
     width: 5rem;
-    /* object-fit: scale-down; */
+    height: 5rem;
+    object-fit: cover;
   }
 </style>

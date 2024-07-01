@@ -6,7 +6,6 @@
 
   class AdminPuzzleItem {
     public level: number = -1;
-    public name: string = "";
     public answer: string = "";
     public img_url: string = "";
   }
@@ -37,13 +36,32 @@
       body: form_data,
     }).then(async (response: Response): Promise<void> => {
       if (response.status === 200) {
-        puzzle_submitting = false;
+        const response_json = await response.json();
+        const new_puzzle: AdminPuzzleItem = {
+          level: response_json.puzzle_level,
+          answer: response_json.ans,
+          img_url: response_json.img_url,
+        };
+        let put_in = puzzles.length;
+
+        for (let i = 0; i < puzzles.length; ++i) {
+          if (new_puzzle.level < puzzles[i].level) {
+            put_in = i;
+
+            break;
+          }
+        }
+
+        puzzles = puzzles
+          .slice(0, put_in)
+          .concat([new_puzzle])
+          .concat(puzzles.slice(put_in));
+
+        add_puzzle_form_elem.reset();
       } else if (response.status === 403) {
         goto("/admin");
       }
     });
-
-    add_puzzle_form_elem.reset();
   }
 
   onMount((): void => {
@@ -54,7 +72,6 @@
 
       for (let i = 0; i < puzzles.length; ++i) {
         puzzles[i] = {
-          name: data.puzzles[i].f_title,
           level: data.puzzles[i].f_puzzle_level,
           answer: data.puzzles[i].f_ans,
           img_url: data.puzzles[i].f_img_url,
@@ -134,7 +151,6 @@
       {#each puzzles as item}
         <li class="list-group-item d-flex flex-wrap align-items-start px-0">
           <PuzzleItem
-            name={item.name}
             level={item.level}
             answer={item.answer}
             img_url={item.img_url}
