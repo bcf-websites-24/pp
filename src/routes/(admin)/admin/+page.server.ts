@@ -5,11 +5,11 @@ import jwt from "jsonwebtoken";
 import { get } from "svelte/store";
 
 export async function load(load_event: ServerLoadEvent): Promise<any> {
-  const null_details = { details: null };
+  const null_details = { leaderboard: null };
   const token = load_event.cookies.get("pp-admin-jwt");
 
   if (token === undefined) {
-    return null_details;
+    return error(403);
   }
 
   let id: any;
@@ -17,7 +17,7 @@ export async function load(load_event: ServerLoadEvent): Promise<any> {
   try {
     id = (jwt.verify(token, JWT_SECRET) as any).id;
   } catch (err) {
-    return null_details;
+    return error(403);
   }
 
   const user_detail_rpc = await get(supabase_client_store).rpc("get_leaderboard_for_admins");
