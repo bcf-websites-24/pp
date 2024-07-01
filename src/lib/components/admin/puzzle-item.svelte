@@ -1,13 +1,15 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
+  import { AdminPuzzleItem } from "$lib/helpers";
+  import { fade } from "svelte/transition";
 
-  export let level: number;
-  export let answer: string;
-  export let img_url: string;
+  export let puzzles: Array<AdminPuzzleItem>;
+  export let puzzle: AdminPuzzleItem;
+  let deleting = false;
   let img_loading = false;
   let img_data: string;
 
-  $: load_image(img_url);
+  $: load_image(puzzle.img_url);
 
   function load_image(url: string): void {
     img_loading = true;
@@ -21,23 +23,41 @@
       if (response.status === 200) {
         const response_blob = await response.blob();
         img_data = URL.createObjectURL(response_blob);
+        img_loading = false;
       } else if (response.status === 403) {
         goto("/admin");
       }
     });
   }
+
+  function delete_puzzle(): void {
+    const index = puzzles.indexOf(puzzle);
+
+    if (index === -1) {
+      return;
+    }
+
+    puzzles = puzzles.slice(0, index).concat(puzzles.slice(index + 1));
+  }
 </script>
 
-<a href={img_data} target="_blank">
-  <img src={img_data} class="puzzle-image rounded me-2" alt="puzzle-img" />
-</a>
+{#if img_loading}
+  <div class="placeholder-glow">
+    <span class="puzzle-image rounded bg-secondary placeholder me-2"></span>
+  </div>
+{:else}
+  <a href={img_data} target="_blank" in:fade={{ duration: 250 }}>
+    <img src={img_data} class="puzzle-image rounded me-2" alt="puzzle-img" />
+  </a>
+{/if}
+
 <div class="flex-fill d-flex flex-column justify-content-between">
   <div>
-    <p class="fs-5 fw-semibold m-0">Level: {level}</p>
-    <p class="fs-6 text-secondary m-0">Answer: {answer}</p>
+    <p class="fs-5 fw-semibold m-0">Level: {puzzle.level}</p>
+    <p class="fs-6 text-secondary m-0">Answer: {puzzle.answer}</p>
   </div>
   <div class="d-flex justify-content-end">
-    <button class="btn btn-link link-secondary p-0 me-3">
+    <button class="btn btn-link link-secondary p-0 me-3" disabled={deleting}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="16"
@@ -55,7 +75,11 @@
         />
       </svg>
     </button>
-    <button class="btn btn-link link-danger p-0">
+    <button
+      on:click={delete_puzzle}
+      class="btn btn-link link-danger p-0"
+      disabled={deleting}
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="16"
