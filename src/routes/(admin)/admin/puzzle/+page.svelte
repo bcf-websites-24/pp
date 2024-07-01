@@ -33,6 +33,7 @@
       if (response.status === 200) {
         const response_json = await response.json();
         const new_puzzle: AdminPuzzleItem = {
+          id: response_json.id,
           loaded: false,
           level: response_json.puzzle_level,
           answer: response_json.ans,
@@ -69,6 +70,7 @@
 
       for (let i = 0; i < puzzles.length; ++i) {
         puzzles[i] = {
+          id: data.puzzles[i].f_id,
           loaded: true,
           level: data.puzzles[i].f_puzzle_level,
           answer: data.puzzles[i].f_ans,
