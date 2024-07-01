@@ -1,13 +1,17 @@
 <script lang="ts">
   import {
     current_level_state,
-    logged_in_state,
+    user_logged_in_state,
     next_level_id_state,
     next_level_url_state,
     wrong_answer_toast_store,
+    current_rank_state,
+    username_state,
   } from "$lib/stores";
+  import { onMount } from "svelte";
   import { fade, slide } from "svelte/transition";
 
+  export let data: any;
   let image_data: string;
   let image_loaded = false;
   let submitting = false;
@@ -45,7 +49,7 @@
 
         submitting = false;
       } else if (response.status === 403) {
-        $logged_in_state = false;
+        $user_logged_in_state = false;
       }
     });
   }
@@ -69,10 +73,21 @@
         image_data = URL.createObjectURL(response_blob);
         image_loaded = true;
       } else if (response.status === 403) {
-        $logged_in_state = false;
+        $user_logged_in_state = false;
       }
     });
   }
+
+  onMount((): void => {
+    if (data.details !== null) {
+      $user_logged_in_state = true;
+      $username_state = data.details.username;
+      $current_level_state = data.details.curr_level + 1;
+      $next_level_url_state = data.details.next_puzzle_id;
+      $next_level_url_state = data.details.next_puzzle_url;
+      $current_rank_state = -1;
+    }
+  });
 </script>
 
 <div class="page-root mx-auto mt-4 p-2">

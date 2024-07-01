@@ -4,8 +4,7 @@ import { error, json, type RequestEvent } from "@sveltejs/kit";
 import { get } from "svelte/store";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
-import { JWT_SECRET } from "$env/static/private";
-import { ADMIN_JWT_ID } from "$env/static/private";
+import { JWT_SECRET, ADMIN_JWT_ID } from "$env/static/private";
 
 /**
  * request format, formData with fields,
@@ -62,7 +61,7 @@ export async function POST({
     ) as number;
     const given_title: string = '';
     const puzzle_file: File = request_formdata.get("puzzle_file") as File;
-    const editing: boolean = request_formdata.get("editing") as boolean;
+    const editing: boolean = request_formdata.get("editing") === 'true';
     const given_puzzle_id: string = request_formdata.get("puzzle_id") as string;
 
     // client side did not give correct request fields
@@ -166,7 +165,7 @@ export async function POST({
           console.error("admin/puzzle line 166" + update_puzzle_rpc.error);
           return error(500);
         }
-        
+
         puzzle_uuid = update_puzzle_rpc.data;
         const puzzle_file_upload_rpc: any = await get(supabase_client_store)
           .storage.from("puzzles")
@@ -186,9 +185,7 @@ export async function POST({
             "puzzle_id": "c742e1b7-21f9-4827-ba39-34b7b53eb2e4"
           }
        */
-    return json({
-      puzzle_id: puzzle_uuid,
-    });
+    return json(puzzle_uuid);
   } else {
     return error(403);
   }

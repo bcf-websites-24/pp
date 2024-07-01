@@ -4,7 +4,7 @@ import { error, json, type RequestEvent } from "@sveltejs/kit";
 import { get } from "svelte/store";
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
-import { delete_jwt_cookie, make_jwt_cookie } from "$lib/helpers.server";
+import { make_user_cookie } from "$lib/helpers.server";
 import { JWT_SECRET } from "$env/static/private";
 
 export async function POST(request_event: RequestEvent): Promise<Response> {
@@ -49,7 +49,7 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
     }, JWT_SECRET
   );
 
-  make_jwt_cookie(request_event.cookies, token);
+  make_user_cookie(request_event.cookies, token);
 
   return json(
     {
