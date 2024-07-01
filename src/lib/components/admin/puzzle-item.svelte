@@ -2,6 +2,7 @@
   import { goto } from "$app/navigation";
 
   export let name: string;
+  export let level: number;
   export let answer: string;
   export let img_url: string;
   let img_loading = false;
@@ -32,7 +33,11 @@
 <div class="flex-fill d-flex flex-column justify-content-between">
   <div>
     <p class="fs-5 fw-semibold m-0">Name: {name}</p>
-    <p class="fs-6 text-secondary m-0">Answer: {answer}</p>
+    <div class="d-flex">
+      <p class="fs-6 text-secondary m-0">Level: {level}</p>
+      <p class="fs-6 text-secondary mx-2">&#x2022;</p>
+      <p class="fs-6 text-secondary m-0">Answer: {answer}</p>
+    </div>
   </div>
   <div class="d-flex justify-content-end">
     <button class="btn btn-link link-secondary p-0 me-3">
@@ -75,6 +80,7 @@
 
 <style>
   .puzzle-image {
-    height: 5rem;
+    width: 5rem;
+    /* object-fit: scale-down; */
   }
 </style>
