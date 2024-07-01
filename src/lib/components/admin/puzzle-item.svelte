@@ -33,7 +33,7 @@
 </a>
 <div class="flex-fill d-flex flex-column justify-content-between">
   <div>
-    <p class="fs-5 fw-semibold m-0">Level: {level.toString()}</p>
+    <p class="fs-5 fw-semibold m-0">Level: {level}</p>
     <p class="fs-6 text-secondary m-0">Answer: {answer}</p>
   </div>
   <div class="d-flex justify-content-end">
