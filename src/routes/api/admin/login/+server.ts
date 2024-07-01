@@ -2,7 +2,7 @@ import { json, type RequestEvent } from "@sveltejs/kit";
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import { make_admin_cookie } from "$lib/helpers.server";
-import { PUBLIC_JWT_SECRET } from "$env/static/public";
+import { JWT_SECRET } from "$env/static/private";
 import { ADMIN_PWD_HASH, ADMIN_JWT_ID } from "$env/static/private";
 
 export async function POST(request_event: RequestEvent): Promise<Response> {
@@ -21,7 +21,7 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
     {
       id: ADMIN_JWT_ID,
     },
-    PUBLIC_JWT_SECRET
+    JWT_SECRET
   );
 
   make_admin_cookie(request_event.cookies, token);

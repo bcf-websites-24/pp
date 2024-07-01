@@ -3,7 +3,7 @@ import type { PostgrestSingleResponse } from "@supabase/supabase-js";
 import { error, json, type RequestEvent } from "@sveltejs/kit";
 import { get } from "svelte/store";
 import jwt from "jsonwebtoken";
-import { PUBLIC_JWT_SECRET } from "$env/static/public";
+import { JWT_SECRET } from "$env/static/private";
 /**
  * request format:
  *  {
@@ -22,7 +22,7 @@ export async function POST({
     let decoded_token: any = null;
 
     try {
-      decoded_token = jwt.verify(jwt_token, PUBLIC_JWT_SECRET);
+      decoded_token = jwt.verify(jwt_token, JWT_SECRET);
     } catch (err) {
       // verify error means malformed token/wrong secret
       return error(403);

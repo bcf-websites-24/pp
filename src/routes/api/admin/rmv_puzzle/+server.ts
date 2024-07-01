@@ -1,12 +1,15 @@
 import { supabase_client_store } from "$lib/stores.server";
 import type { PostgrestSingleResponse } from "@supabase/supabase-js";
-import { error, type RequestEvent } from "@sveltejs/kit";
+import { error, json, type RequestEvent } from "@sveltejs/kit";
 import { get } from "svelte/store";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "$env/static/private";
 import { ADMIN_JWT_ID } from "$env/static/private";
 
-export async function POST({ cookies }: RequestEvent): Promise<Response> {
+export async function POST({
+  request,
+  cookies,
+}: RequestEvent): Promise<Response> {
   const jwt_token: string | undefined = cookies.get("pp-admin-jwt");
 
   // no cookie means user is not logged in
@@ -30,33 +33,29 @@ export async function POST({ cookies }: RequestEvent): Promise<Response> {
     if (uid !== ADMIN_JWT_ID) {
       return error(403);
     }
-    const meme_list_rpc: PostgrestSingleResponse<any> = await get(
+
+    const request_json: any = await request.json();
+    const puzzle_id: string = request_json.puzzle_id;
+
+    if (puzzle_id === undefined || puzzle_id === null) {
+      return error(422);
+    }
+
+    const del_puzzle_rpc: PostgrestSingleResponse<any> = await get(
       supabase_client_store
-    ).rpc("get_all_memes");
+    ).rpc("delete_puzzle", {
+      given_id: puzzle_id,
+    });
 
     // VERCEL_LOG_SOURCE, this will be on the vercel api log
-    if (meme_list_rpc.error) {
-      console.error("admin/all_memes line 39\n" + meme_list_rpc.error);
+    if (del_puzzle_rpc.error) {
+      console.error("puzzles/rmv_puzzle line 52\n" + del_puzzle_rpc.error);
       return error(500);
     }
 
-    // memes in serial of creation time. Array of objects. format:
-    /**
-     *  [
-            {
-                "f_created_at": "2024-06-26T07:46:38.652019+00:00",
-                "f_img_url": "de28065e-da39-4c88-a00c-b1e9da441c2f.jpg",
-                "f_sound_url": "de28065e-da39-4c88-a00c-b1e9da441c2f.jpg",
-                "f_content": "test",
-                "f_is_audio": false,
-                "f_id": "512b711e-6d9c-480e-a353-043bf7a37931"
-            }
-        ]      
-     */
-    return new Response(JSON.stringify(meme_list_rpc.data), {
-      headers: {
-        "Content-Type": "application/json",
-      },
+    return json({
+      success: del_puzzle_rpc.data,
+      // file_blob: ret_text,
     });
   } else {
     return error(403);

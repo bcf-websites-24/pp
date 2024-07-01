@@ -6,7 +6,7 @@ import { get } from "svelte/store";
 import { make_jwt_cookie } from "$lib/helpers.server";
 import jwt from "jsonwebtoken";
 import validator from "validator";
-import { PUBLIC_JWT_SECRET } from "$env/static/public";
+import { JWT_SECRET } from "$env/static/private";
 
 /**
  *
@@ -108,7 +108,7 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
       {
         id: add_user_rpc.data,
       },
-      PUBLIC_JWT_SECRET
+      JWT_SECRET
     );
     make_jwt_cookie(request_event.cookies, token);
 

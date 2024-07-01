@@ -1,4 +1,4 @@
-import { PUBLIC_JWT_SECRET } from "$env/static/public";
+import { JWT_SECRET } from "$env/static/private";
 import { supabase_client_store } from "$lib/stores.server";
 import { error, type RequestEvent } from "@sveltejs/kit";
 import jwt from "jsonwebtoken";
@@ -10,7 +10,7 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
   // no cookie means user is not logged in
   if (jwt_token) {
     try {
-      jwt.verify(jwt_token, PUBLIC_JWT_SECRET);
+      jwt.verify(jwt_token, JWT_SECRET);
     } catch (err) {
       // verify error means malformed token/wrong secret
       return error(403);

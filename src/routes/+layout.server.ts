@@ -1,4 +1,4 @@
-import { PUBLIC_JWT_SECRET } from "$env/static/public";
+import { JWT_SECRET } from "$env/static/private";
 import { supabase_client_store } from "$lib/stores.server";
 import { get } from "svelte/store";
 import jwt from "jsonwebtoken";
@@ -15,7 +15,7 @@ export async function load(load_event: ServerLoadEvent): Promise<any> {
   let id: any;
 
   try {
-    id = (jwt.verify(token, PUBLIC_JWT_SECRET) as any).id;
+    id = (jwt.verify(token, JWT_SECRET) as any).id;
   } catch (err) {
     return null_details;
   }
