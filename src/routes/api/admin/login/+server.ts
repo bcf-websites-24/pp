@@ -8,7 +8,6 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
   const request: Request = request_event.request;
   const request_json: any = await request.json();
   const password: string = request_json.password;
-
   if (!(await argon2.verify(ADMIN_PWD_HASH, password))) {
     return json({
       login: -2, // password mismatch
