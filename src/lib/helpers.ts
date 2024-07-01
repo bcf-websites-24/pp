@@ -1,5 +1,7 @@
 export class AdminPuzzleItem {
-  public level: number = -1;
-  public answer: string = "";
-  public img_url: string = "";
+  public loaded = false;
+  public level = -1;
+  public answer = "";
+  public img_url = "";
+  public img_data = "";
 }
