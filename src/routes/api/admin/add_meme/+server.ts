@@ -4,8 +4,7 @@ import { error, json, type RequestEvent } from "@sveltejs/kit";
 import { get } from "svelte/store";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
-import { JWT_SECRET } from "$env/static/private";
-import { ADMIN_JWT_ID } from "$env/static/private";
+import { JWT_SECRET, ADMIN_JWT_ID } from "$env/static/private";
 /**
  * request format, formData
  *  {

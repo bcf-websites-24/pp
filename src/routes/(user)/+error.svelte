@@ -1,5 +1,9 @@
 <script lang="ts">
+  import { page } from "$app/stores";
+  import Error from "$lib/components/error.svelte";
+  import { user_logged_in_state } from "$lib/stores";
   import { Tab } from "bootstrap";
+  import { onMount } from "svelte";
 
   const username_pattern = /^\w{4,32}$/;
   const student_id_pattern = /^\d{9}$/;
@@ -165,130 +169,144 @@
 
     animation.play();
   }
+
+  onMount((): void => {
+    $user_logged_in_state = false;
+
+    console.log("dhukse");
+  });
 </script>
 
-<div class="stranger-root">
-  <div class="stranger-card card card-body shadow m-2">
-    <div class="nav nav-pills mb-3">
-      <button
-        on:click={login_tab_clicked}
-        class="nav-link active"
-        data-bs-toggle="tab">Login</button
-      >
-      <button
-        on:click={register_tab_clicked}
-        class="nav-link"
-        data-bs-toggle="tab">Register</button
-      >
-    </div>
-    <div bind:this={form_holder_elem} class="align-self-stretch">
-      <form bind:this={form_login_elem} on:submit={login} action="javascript:">
-        <div class="form-floating mb-3">
-          <input
-            bind:value={login_username}
-            type="text"
-            class="form-control"
-            id="login-username"
-            placeholder="Username"
-            pattern={username_pattern.source}
-            required
-          />
-          <label for="login-username">Username</label>
-        </div>
-        <div class="form-floating mb-3">
-          <input
-            bind:value={login_password}
-            type="password"
-            class="form-control"
-            id="login-password"
-            placeholder="Password"
-            required
-          />
-          <label for="login-password">Password</label>
-        </div>
-        <div class="d-flex justify-content-end">
-          <button type="submit" class="btn btn-primary" disabled={signing}
-            >Login</button
-          >
-        </div>
-      </form>
-      <form
-        bind:this={form_register_elem}
-        on:submit={register}
-        action="javascript:"
-        hidden
-      >
-        <div class="form-floating mb-3">
-          <input
-            bind:value={register_username}
-            type="text"
-            class="form-control"
-            id="register-username"
-            placeholder="Username"
-            pattern={username_pattern.source}
-            required
-          />
-          <label for="register-username">Username</label>
-        </div>
-        <div class="form-floating mb-3">
-          <input
-            bind:value={register_email}
-            type="email"
-            class="form-control"
-            id="register-email"
-            placeholder="Email"
-            minlength="8"
-            required
-          />
-          <label for="register-email">Email</label>
-        </div>
-        <div class="form-floating mb-3">
-          <input
-            bind:value={register_student_id}
-            bind:this={register_student_id_elem}
-            type="text"
-            class="form-control"
-            id="register-student-id"
-            placeholder="Stuent ID"
-            pattern={student_id_pattern.source}
-            required
-          />
-          <label for="register-student-id">Student ID</label>
-        </div>
-        <div class="form-floating mb-3">
-          <input
-            bind:value={register_password}
-            type="password"
-            class="form-control"
-            id="register-password"
-            placeholder="Password"
-            minlength="8"
-            required
-          />
-          <label for="register-password">Password</label>
-        </div>
-        <div class="form-floating mb-3">
-          <input
-            bind:value={register_confirm_password}
-            bind:this={register_confirm_password_elem}
-            type="password"
-            class="form-control"
-            id="register-confirm-password"
-            placeholder="Confirm Password"
-            minlength="8"
-            required
-          />
-          <label for="register-confirm-password">Confirm Password</label>
-        </div>
-        <div class="d-flex justify-content-end">
-          <button type="submit" class="btn btn-primary" disabled={signing}
-            >Register</button
-          >
-        </div>
-      </form>
+{#if $page.status === 403}
+  <div class="stranger-root">
+    <div class="stranger-card card card-body shadow m-2">
+      <div class="nav nav-pills mb-3">
+        <button
+          on:click={login_tab_clicked}
+          class="nav-link active"
+          data-bs-toggle="tab">Login</button
+        >
+        <button
+          on:click={register_tab_clicked}
+          class="nav-link"
+          data-bs-toggle="tab">Register</button
+        >
+      </div>
+      <div bind:this={form_holder_elem} class="align-self-stretch">
+        <form
+          bind:this={form_login_elem}
+          on:submit={login}
+          action="javascript:"
+        >
+          <div class="form-floating mb-3">
+            <input
+              bind:value={login_username}
+              type="text"
+              class="form-control"
+              id="login-username"
+              placeholder="Username"
+              pattern={username_pattern.source}
+              required
+            />
+            <label for="login-username">Username</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input
+              bind:value={login_password}
+              type="password"
+              class="form-control"
+              id="login-password"
+              placeholder="Password"
+              required
+            />
+            <label for="login-password">Password</label>
+          </div>
+          <div class="d-flex justify-content-end">
+            <button type="submit" class="btn btn-primary" disabled={signing}
+              >Login</button
+            >
+          </div>
+        </form>
+        <form
+          bind:this={form_register_elem}
+          on:submit={register}
+          action="javascript:"
+          hidden
+        >
+          <div class="form-floating mb-3">
+            <input
+              bind:value={register_username}
+              type="text"
+              class="form-control"
+              id="register-username"
+              placeholder="Username"
+              pattern={username_pattern.source}
+              required
+            />
+            <label for="register-username">Username</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input
+              bind:value={register_email}
+              type="email"
+              class="form-control"
+              id="register-email"
+              placeholder="Email"
+              minlength="8"
+              required
+            />
+            <label for="register-email">Email</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input
+              bind:value={register_student_id}
+              bind:this={register_student_id_elem}
+              type="text"
+              class="form-control"
+              id="register-student-id"
+              placeholder="Stuent ID"
+              pattern={student_id_pattern.source}
+              required
+            />
+            <label for="register-student-id">Student ID</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input
+              bind:value={register_password}
+              type="password"
+              class="form-control"
+              id="register-password"
+              placeholder="Password"
+              minlength="8"
+              required
+            />
+            <label for="register-password">Password</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input
+              bind:value={register_confirm_password}
+              bind:this={register_confirm_password_elem}
+              type="password"
+              class="form-control"
+              id="register-confirm-password"
+              placeholder="Confirm Password"
+              minlength="8"
+              required
+            />
+            <label for="register-confirm-password">Confirm Password</label>
+          </div>
+          <div class="d-flex justify-content-end">
+            <button type="submit" class="btn btn-primary" disabled={signing}
+              >Register</button
+            >
+          </div>
+        </form>
+      </div>
     </div>
   </div>
-</div>
+{:else}
+  <Error />
+{/if}
 
 <style>
   .stranger-root {

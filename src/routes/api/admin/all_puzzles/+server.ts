@@ -3,8 +3,7 @@ import type { PostgrestSingleResponse } from "@supabase/supabase-js";
 import { error, type RequestEvent } from "@sveltejs/kit";
 import { get } from "svelte/store";
 import jwt from "jsonwebtoken";
-import { JWT_SECRET } from "$env/static/private";
-import { ADMIN_JWT_ID } from "$env/static/private";
+import { JWT_SECRET, ADMIN_JWT_ID } from "$env/static/private";
 
 export async function POST({ cookies }: RequestEvent): Promise<Response> {
   const jwt_token: string | undefined = cookies.get("pp-admin-jwt");
