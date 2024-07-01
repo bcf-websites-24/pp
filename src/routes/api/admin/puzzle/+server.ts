@@ -4,8 +4,7 @@ import { error, json, type RequestEvent } from "@sveltejs/kit";
 import { get } from "svelte/store";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
-import { PUBLIC_JWT_SECRET } from "$env/static/public";
-import { ADMIN_JWT_ID } from "$env/static/private";
+import { JWT_SECRET, ADMIN_JWT_ID } from "$env/static/private";
 
 /**
  * request format, formData with fields,
@@ -29,7 +28,7 @@ export async function POST({
     let decoded_token: any = null;
 
     try {
-      decoded_token = jwt.verify(jwt_token, PUBLIC_JWT_SECRET);
+      decoded_token = jwt.verify(jwt_token, JWT_SECRET);
     } catch (err) {
       // verify error means malformed token/wrong secret
       return error(403);
@@ -166,7 +165,7 @@ export async function POST({
           console.error("admin/puzzle line 166" + update_puzzle_rpc.error);
           return error(500);
         }
-        
+
         puzzle_uuid = update_puzzle_rpc.data;
         const puzzle_file_upload_rpc: any = await get(supabase_client_store)
           .storage.from("puzzles")

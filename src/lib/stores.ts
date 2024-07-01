@@ -1,7 +1,7 @@
 import { Toast } from "bootstrap";
 import { writable } from "svelte/store";
 
-export const admin_logged_in_state = writable(true);
+export const admin_logged_in_state = writable(false);
 export const user_logged_in_state = writable(false);
 export const username_state = writable("");
 export const current_level_state = writable(-1);

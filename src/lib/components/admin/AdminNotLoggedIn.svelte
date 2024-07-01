@@ -1,7 +1,20 @@
 <script lang="ts">
+  import { admin_logged_in_state } from "$lib/stores";
+
   let login_password: string;
 
-  function admin_login(): void {}
+  function admin_login(): void {
+    fetch("/api/admin/login", {
+      method: "POST",
+      body: JSON.stringify({
+        password: login_password,
+      }),
+    }).then(async (response: Response): Promise<void> => {
+      if (response.status === 200) {
+        $admin_logged_in_state = true;
+      }
+    });
+  }
 </script>
 
 <div
