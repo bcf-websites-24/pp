@@ -30,33 +30,30 @@ export async function POST({ cookies }: RequestEvent): Promise<Response> {
     if (uid !== ADMIN_JWT_ID) {
       return error(403);
     }
-
-    const get_arena_metadata_rpc: PostgrestSingleResponse<any> = await get(
+    const meme_list_rpc: PostgrestSingleResponse<any> = await get(
       supabase_client_store
-    ).rpc("get_arena_metadata");
+    ).rpc("get_all_memes");
 
     // VERCEL_LOG_SOURCE, this will be on the vercel api log
-    if (get_arena_metadata_rpc.error) {
-      console.error(
-        "admin/arena_metadata line 41\n" + get_arena_metadata_rpc.error
-      );
+    if (meme_list_rpc.error) {
+      console.error("admin/all_memes line 39\n" + meme_list_rpc.error);
       return error(500);
     }
 
-    // format:
+    // memes in serial of creation time. Array of objects. format:
     /**
-     *  {
-            "total_users": 10,
-            "total_staff": 1,
-            "total_alums": 5,
-            "total_students": 4,
-            "total_submissions": 6,
-            "total_puzzles": 3,
-            "max_user_level": 1,
-            "total_memes": 2
-        } 
+     *  [
+            {
+                "f_created_at": "2024-06-26T07:46:38.652019+00:00",
+                "f_img_url": "de28065e-da39-4c88-a00c-b1e9da441c2f.jpg",
+                "f_sound_url": "de28065e-da39-4c88-a00c-b1e9da441c2f.jpg",
+                "f_content": "test",
+                "f_is_audio": false,
+                "f_id": "512b711e-6d9c-480e-a353-043bf7a37931"
+            }
+        ]      
      */
-    return new Response(JSON.stringify(get_arena_metadata_rpc.data), {
+    return new Response(JSON.stringify(meme_list_rpc.data), {
       headers: {
         "Content-Type": "application/json",
       },

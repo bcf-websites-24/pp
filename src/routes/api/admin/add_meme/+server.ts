@@ -5,6 +5,7 @@ import { get } from "svelte/store";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 import { PUBLIC_JWT_SECRET } from "$env/static/public";
+import { ADMIN_JWT_ID } from "$env/static/private";
 /**
  * request format, formData
  *  {
@@ -17,7 +18,7 @@ export async function POST({
   request,
   cookies,
 }: RequestEvent): Promise<Response> {
-  const jwt_token: string | undefined = cookies.get("pp-jwt");
+  const jwt_token: string | undefined = cookies.get("pp-admin-jwt");
 
   // no cookie means user is not logged in
   if (jwt_token) {
@@ -30,27 +31,14 @@ export async function POST({
       return error(403);
     }
 
-    let given_user_id: string = decoded_token.id;
+    let uid: string = decoded_token.id;
 
     // this can happen if jwt token field names were changed for example, this is a server side coding error
-    if (given_user_id === null || given_user_id === undefined) {
+    if (uid === null || uid === undefined) {
       return error(500);
     }
 
-    const can_access_admin_rpc: PostgrestSingleResponse<any> = await get(
-      supabase_client_store
-    ).rpc("can_access_admin", {
-      given_user_id,
-    });
-
-    // VERCEL_LOG_SOURCE
-    if (can_access_admin_rpc.error) {
-      console.error("admin/add_meme line 48\n" + can_access_admin_rpc.error);
-      return error(500);
-    }
-
-    // data is single boolean value, should be true for access
-    if (!can_access_admin_rpc.data) {
+    if (uid !== ADMIN_JWT_ID) {
       return error(403);
     }
 
@@ -58,6 +46,7 @@ export async function POST({
     const given_content: string = request_formdata.get("content") as string;
     const meme_sound: File = request_formdata.get("meme_sound") as File;
     const meme_image: File = request_formdata.get("meme_image") as File;
+    const given_is_audio: boolean = request_formdata.get("is_audio") as boolean;
 
     // client side did not give correct request fields
     if (
@@ -82,7 +71,7 @@ export async function POST({
 
       // VERCEL LOG SOURCE
       if (meme_image_upload_rpc.error) {
-        console.error("admin/add_meme line 85\n" + meme_image_upload_rpc.error);
+        console.error("admin/add_meme line 74\n" + meme_image_upload_rpc.error);
         return error(500);
       }
     }
@@ -96,7 +85,7 @@ export async function POST({
 
       // VERCEL LOG SOURCE
       if (meme_sound_upload_rpc.error) {
-        console.error("admin/add_meme line 99\n" + meme_sound_upload_rpc.error);
+        console.error("admin/add_meme line 88\n" + meme_sound_upload_rpc.error);
         return error(500);
       }
     }
@@ -106,12 +95,13 @@ export async function POST({
     ).rpc("add_new_meme", {
       given_content,
       given_img_url,
+      given_is_audio,
       given_sound_url,
     });
 
     // VERCEL_LOG_SOURCE
     if (add_new_meme.error) {
-      console.error("admin/add_meme line 114" + add_new_meme.error);
+      console.error("admin/add_meme line 104" + add_new_meme.error);
       return error(500);
     }
     /**
