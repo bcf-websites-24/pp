@@ -61,7 +61,7 @@ export async function POST({
     ) as number;
     const given_title: string = '';
     const puzzle_file: File = request_formdata.get("puzzle_file") as File;
-    const editing: boolean = request_formdata.get("editing") as boolean;
+    const editing: boolean = request_formdata.get("editing") === 'true' ? true : false;
     const given_puzzle_id: string = request_formdata.get("puzzle_id") as string;
 
     // client side did not give correct request fields
