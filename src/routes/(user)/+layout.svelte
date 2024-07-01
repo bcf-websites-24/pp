@@ -2,34 +2,14 @@
   import {
     current_level_state,
     current_rank_state,
-    next_level_url_state,
     user_logged_in_state,
     username_state,
-    wrong_answer_toast_store,
   } from "$lib/stores";
-  import "$lib/style.scss";
-  import { Toast } from "bootstrap";
-  import { onMount } from "svelte";
 
-  export let data: any;
-  let wrong_answer_toast_elem: HTMLDivElement;
   let rank_text: string = "Unranked";
 
   $: rank_text =
     $current_rank_state === -1 ? "Unranked" : $current_rank_state.toString();
-
-  onMount((): void => {
-    if (data.details !== null) {
-      $user_logged_in_state = true;
-      $username_state = data.details.username;
-      $current_level_state = data.details.curr_level + 1;
-      $next_level_url_state = data.details.next_puzzle_id;
-      $next_level_url_state = data.details.next_puzzle_url;
-      $current_rank_state = -1;
-    }
-
-    $wrong_answer_toast_store = new Toast(wrong_answer_toast_elem);
-  });
 </script>
 
 {#if $user_logged_in_state}
@@ -85,20 +65,3 @@
 {/if}
 
 <slot></slot>
-
-<div class="toast-container position-fixed bottom-0 end-0 p-3">
-  <div
-    bind:this={wrong_answer_toast_elem}
-    class="toast align-items-center text-bg-danger border-0"
-  >
-    <div class="d-flex">
-      <div class="toast-body">Oops! Wrong answer</div>
-      <button
-        type="button"
-        class="btn-close btn-close-white me-2 m-auto"
-        data-bs-dismiss="toast"
-        aria-label="Close"
-      ></button>
-    </div>
-  </div>
-</div>
