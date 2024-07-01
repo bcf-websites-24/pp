@@ -3,12 +3,7 @@
   import { onMount } from "svelte";
   import PuzzleItem from "$lib/components/admin/puzzle-item.svelte";
   import { goto } from "$app/navigation";
-
-  class AdminPuzzleItem {
-    public level: number = -1;
-    public answer: string = "";
-    public img_url: string = "";
-  }
+  import { AdminPuzzleItem } from "$lib/helpers";
 
   export let data: any;
   let puzzle_submitting = false;
@@ -148,13 +143,9 @@
   <div class="card card-body shadow border-0">
     <p class="fs-4 fw-semibold">Puzzles</p>
     <ul class="list-group list-group-flush">
-      {#each puzzles as item}
+      {#each puzzles as puzzle}
         <li class="list-group-item d-flex flex-wrap align-items-start px-0">
-          <PuzzleItem
-            level={item.level}
-            answer={item.answer}
-            img_url={item.img_url}
-          />
+          <PuzzleItem {puzzle} bind:puzzles />
         </li>
       {/each}
     </ul>
