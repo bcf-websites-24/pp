@@ -33,9 +33,11 @@
       if (response.status === 200) {
         const response_json = await response.json();
         const new_puzzle: AdminPuzzleItem = {
+          loaded: false,
           level: response_json.puzzle_level,
           answer: response_json.ans,
           img_url: response_json.img_url,
+          img_data: "",
         };
         let put_in = puzzles.length;
 
@@ -67,9 +69,11 @@
 
       for (let i = 0; i < puzzles.length; ++i) {
         puzzles[i] = {
+          loaded: true,
           level: data.puzzles[i].f_puzzle_level,
           answer: data.puzzles[i].f_ans,
           img_url: data.puzzles[i].f_img_url,
+          img_data: "",
         };
       }
     }
@@ -144,9 +148,7 @@
     <p class="fs-4 fw-semibold">Puzzles</p>
     <ul class="list-group list-group-flush">
       {#each puzzles as puzzle}
-        <li class="list-group-item d-flex flex-wrap align-items-start px-0">
-          <PuzzleItem {puzzle} bind:puzzles />
-        </li>
+        <PuzzleItem {puzzle} bind:puzzles />
       {/each}
     </ul>
   </div>
