@@ -1,4 +1,15 @@
 <script lang="ts">
+  import { admin_logged_in_state } from "$lib/stores";
+  import { onMount } from "svelte";
+
+  class AdminPuzzleItem {
+    public name?: string;
+    public answer?: string;
+    public img_url?: string;
+  }
+
+  export let data: any;
+  let puzzles: Array<AdminPuzzleItem> = [];
   let add_puzzle_images: FileList;
   let add_puzzle_answer: string;
   let add_puzzle_form_elem: HTMLFormElement;
@@ -6,9 +17,27 @@
   function puzzle_submit(): void {
     add_puzzle_form_elem.reset();
   }
+
+  onMount((): void => {
+    $admin_logged_in_state = true;
+
+    if (data.puzzles) {
+      console.log(data);
+
+      puzzles = new Array<AdminPuzzleItem>(data.puzzles.length);
+
+      for (let i = 0; i < puzzles.length; ++i) {
+        puzzles[i] = {
+          name: data.puzzles[i].f_title,
+          answer: data.puzzles[i].f_ans,
+          img_url: data.puzzles[i].f_img_url,
+        };
+      }
+    }
+  });
 </script>
 
-<div class="page-root mx-auto mt-4 p-2">
+<div class="page-root mx-auto my-4 p-2">
   <form
     bind:this={add_puzzle_form_elem}
     on:submit={puzzle_submit}
@@ -64,7 +93,7 @@
   <div class="card card-body shadow border-0">
     <p class="fs-4 fw-semibold">Puzzles</p>
     <ul class="list-group list-group-flush">
-      {#each new Array(2) as item, i}
+      {#each puzzles as item}
         <li class="list-group-item d-flex flex-wrap px-0">
           <img
             src="/favicon.png"
@@ -73,8 +102,8 @@
           />
           <div class="flex-fill d-flex flex-column justify-content-between">
             <div>
-              <p class="fs-5 fw-semibold m-0">Level: {i + 1}</p>
-              <p class="fs-6 text-secondary m-0">Answer: hehe</p>
+              <p class="fs-5 fw-semibold m-0">Name: {item.name}</p>
+              <p class="fs-6 text-secondary m-0">Answer: {item.answer}</p>
             </div>
             <div class="d-flex justify-content-end">
               <button class="btn btn-link link-secondary p-0 me-3">

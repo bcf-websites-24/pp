@@ -1,17 +1,6 @@
 <script lang="ts">
   import "$lib/style.scss";
   import { admin_logged_in_state } from "$lib/stores";
-  import { onMount } from "svelte";
-
-  export let data: any;
-
-  onMount((): void => {
-    console.log(data.leaderboard);
-
-    if (data.leaderboard) {
-      $admin_logged_in_state = true;
-    }
-  });
 </script>
 
 {#if $admin_logged_in_state}
