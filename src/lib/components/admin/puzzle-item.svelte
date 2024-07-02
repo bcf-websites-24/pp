@@ -9,6 +9,7 @@
   export let puzzle: AdminPuzzleItem;
   let editing = false;
   let deleting = false;
+  let edit_submiting = false;
   let img_loading = false;
   let item_elem: HTMLLIElement;
   let edit_form_elem: HTMLFormElement;
@@ -67,7 +68,73 @@
     init_animation();
   }
 
+  async function edit_submit(): Promise<void> {
+    edit_submiting = true;
+    let file: Blob;
+
+    if (edit_puzzle_files) {
+      file = edit_puzzle_files.item(0) as File;
+    } else {
+      file = await (await fetch(puzzle.img_data)).blob();
+    }
+
+    const form_data = new FormData();
+
+    form_data.append("hashed_ans", edit_puzzle_answer);
+    form_data.append("info_link", "");
+    form_data.append("puzzle_level", edit_puzzle_level.toString());
+    form_data.append("editing", "true");
+    form_data.append("puzzle_file", file);
+    form_data.append("puzzle_id", puzzle.id);
+    fetch("/api/admin/puzzle", {
+      method: "POST",
+      body: form_data,
+    }).then(async (response: Response): Promise<void> => {
+      if (response.status === 200) {
+        editing = false;
+        const response_json = await response.json();
+        const new_puzzle: AdminPuzzleItem = {
+          id: puzzle.id,
+          loaded: true,
+          alive: true,
+          level: edit_puzzle_level,
+          answer: edit_puzzle_answer,
+          img_url: puzzle.img_url,
+          img_data: URL.createObjectURL(file),
+        };
+
+        const index = puzzles.indexOf(puzzle);
+
+        if (index === -1) {
+          return;
+        }
+
+        puzzles = puzzles.slice(0, index).concat(puzzles.slice(index + 1));
+        let put_in = puzzles.length;
+
+        for (let i = 0; i < puzzles.length; ++i) {
+          if (new_puzzle.level < puzzles[i].level) {
+            put_in = i;
+
+            break;
+          }
+        }
+
+        puzzles = puzzles
+          .slice(0, put_in)
+          .concat([new_puzzle])
+          .concat(puzzles.slice(put_in));
+        edit_submiting = false;
+      } else if (response.status === 403) {
+        goto("/admin");
+      }
+    });
+  }
+
   function edit_puzzle(): void {
+    edit_puzzle_level = puzzle.level;
+    edit_puzzle_answer = puzzle.answer;
+    edit_puzzle_link = "";
     editing = true;
   }
 
@@ -118,14 +185,19 @@
       </div>
       {#if editing}
         <div transition:slide={{ duration: 250, axis: "y" }}>
-          <form bind:this={edit_form_elem} class="p-2" action="javascript:">
+          <form
+            bind:this={edit_form_elem}
+            on:submit={edit_submit}
+            class="p-2"
+            action="javascript:"
+          >
             <div class="d-flex mb-2">
               <div class="input-group input-group-sm pe-2">
                 <span class="edit-puzzle-field-size input-group-text"
                   >Level</span
                 >
                 <input
-                  bind:value={edit_puzzle_link}
+                  bind:value={edit_puzzle_level}
                   type="text"
                   class="form-control"
                   required
@@ -139,7 +211,6 @@
                   bind:files={edit_puzzle_files}
                   type="file"
                   class="form-control"
-                  required
                 />
               </div>
             </div>
@@ -162,16 +233,19 @@
                   bind:value={edit_puzzle_link}
                   type="text"
                   class="form-control"
-                  required
                 />
               </div>
             </div>
             <div class="d-flex justify-content-end mt-2">
               <button
                 on:click={cancel_edit}
-                class="btn btn-sm btn-outline-danger me-2">Cancel</button
+                class="btn btn-sm btn-outline-danger me-2"
+                disabled={edit_submiting}>Cancel</button
               >
-              <button type="submit" class="btn btn-sm btn-primary">Apply</button
+              <button
+                type="submit"
+                class="btn btn-sm btn-primary"
+                disabled={edit_submiting}>Apply</button
               >
             </div>
           </form>
