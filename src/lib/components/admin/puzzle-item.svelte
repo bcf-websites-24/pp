@@ -3,38 +3,60 @@
   import { AdminPuzzleItem } from "$lib/helpers";
   import { fade, slide } from "svelte/transition";
   import PuzzleItemDeleter from "./puzzle-item-deleter.svelte";
+  import { onMount } from "svelte";
 
   export let puzzles: Array<AdminPuzzleItem>;
   export let puzzle: AdminPuzzleItem;
-  let alive = true;
   let editing = false;
   let deleting = false;
   let img_loading = false;
   let item_elem: HTMLLIElement;
 
-  $: load_image(puzzle.img_url);
+  $: load_puzzle(puzzle);
 
-  function load_image(url: string): void {
-    if (puzzle.img_data.length > 0) {
-      return;
+  function init_animation(): void {
+    if (item_elem && !puzzle.loaded) {
+      puzzle.loaded = true;
+      const target_height = item_elem.clientHeight;
+      item_elem
+        .animate(
+          [
+            {
+              height: "0",
+              easing: "ease-out",
+            },
+            {
+              height: target_height + "px",
+              easing: "ease-in",
+            },
+          ],
+          250,
+        )
+        .play();
+    }
+  }
+
+  function load_puzzle(puzzle: AdminPuzzleItem): void {
+    if (puzzle.img_data.length === 0) {
+      img_loading = true;
+
+      fetch("/api/admin/puzzle/get_image", {
+        method: "POST",
+        body: JSON.stringify({
+          url: puzzle.img_url,
+        }),
+      }).then(async (response: Response): Promise<void> => {
+        if (response.status === 200) {
+          const response_blob = await response.blob();
+          puzzle.img_data = URL.createObjectURL(response_blob);
+          img_loading = false;
+        } else if (response.status === 403) {
+          goto("/admin");
+        }
+      });
     }
 
-    img_loading = true;
-
-    fetch("/api/admin/puzzle/get_image", {
-      method: "POST",
-      body: JSON.stringify({
-        url: url,
-      }),
-    }).then(async (response: Response): Promise<void> => {
-      if (response.status === 200) {
-        const response_blob = await response.blob();
-        puzzle.img_data = URL.createObjectURL(response_blob);
-        img_loading = false;
-      } else if (response.status === 403) {
-        goto("/admin");
-      }
-    });
+    init_animation();
   }
 
   function edit_puzzle(): void {
@@ -46,15 +68,19 @@
   }
 
   function delete_puzzle(): void {
-    alive = false;
+    puzzle.alive = false;
   }
+
+  onMount((): void => {
+    init_animation();
+  });
 </script>
 
-{#if alive}
+{#if puzzle.alive}
   <li
     bind:this={item_elem}
     class="list-group-item p-0"
-    out:slide={{ duration: 250, axis: "y" }}
+    transition:slide={{ duration: 250, axis: "y" }}
   >
     <div class="py-2">
       <div class="d-flex flex-wrap align-items-start">
