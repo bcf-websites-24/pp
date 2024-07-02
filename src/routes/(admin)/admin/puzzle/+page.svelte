@@ -25,7 +25,6 @@
     form_data.append("editing", "false");
     form_data.append("puzzle_file", add_puzzle_images.item(0) as File);
     form_data.append("puzzle_id", "");
-
     fetch("/api/admin/puzzle", {
       method: "POST",
       body: form_data,

@@ -152,18 +152,18 @@ export async function POST({
         const update_puzzle_rpc: PostgrestSingleResponse<any> = await get(
           supabase_client_store
         ).rpc("update_puzzle", {
-          given_hashed_ans,
-          given_img_url,
-          given_info,
-          given_info_link,
-          given_puzzle_id,
-          given_puzzle_level,
-          given_title,
+          given_hashed_ans: given_hashed_ans,
+          given_id: given_puzzle_id,
+          given_img_url: given_img_url,
+          given_info: given_info,
+          given_info_link: given_info_link,
+          given_puzzle_level: given_puzzle_level,
+          given_title: given_title,
         });
 
         // VERCEL_LOG_SOURCE
         if (update_puzzle_rpc.error) {
-          console.error("admin/puzzle line 166" + update_puzzle_rpc.error);
+          console.error("admin/puzzle line 166 " + update_puzzle_rpc.error.message);
           return error(500);
         }
 
