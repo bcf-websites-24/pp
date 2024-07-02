@@ -54,6 +54,7 @@
           .slice(0, put_in)
           .concat([new_puzzle])
           .concat(puzzles.slice(put_in));
+        puzzle_submitting = false;
 
         add_puzzle_form_elem.reset();
       } else if (response.status === 403) {
