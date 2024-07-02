@@ -56,9 +56,10 @@ export async function POST({
     ) as string;
     const given_info: string = '';
     const given_info_link: string = request_formdata.get("info_link") as string;
-    const given_puzzle_level: number = request_formdata.get(
+    const given_puzzle_level: number = parseInt(request_formdata.get(
       "puzzle_level"
-    ) as number;
+    ));
+
     const given_title: string = '';
     const puzzle_file: File = request_formdata.get("puzzle_file") as File;
     const editing: boolean = request_formdata.get("editing") === 'true';
