@@ -84,14 +84,14 @@
   });
 </script>
 
-<div class="page-root mx-auto my-4 p-2">
+<div class="admin-page-root mx-auto my-4 p-2">
   <form
     bind:this={add_puzzle_form_elem}
     on:submit={puzzle_submit}
     class="card card-body shadow border-0 mb-4"
     action="javascript:"
   >
-    <p class="fs-4 fw-semibold">Add Puzzle</p>
+    <p class="fs-3 fw-semibold">Add Puzzle</p>
     <div class="container mb-2">
       <div class="row">
         <div class="col ps-0">
@@ -149,7 +149,7 @@
   </form>
 
   <div class="card card-body shadow border-0">
-    <p class="fs-4 fw-semibold">Puzzles</p>
+    <p class="fs-3 fw-semibold">Puzzles</p>
     <ul class="list-group list-group-flush">
       {#each puzzles as puzzle}
         <PuzzleItem {puzzle} bind:puzzles />

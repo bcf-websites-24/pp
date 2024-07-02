@@ -92,7 +92,6 @@
     }).then(async (response: Response): Promise<void> => {
       if (response.status === 200) {
         editing = false;
-        const response_json = await response.json();
         const new_puzzle: AdminPuzzleItem = {
           id: puzzle.id,
           loaded: true,
@@ -178,7 +177,7 @@
 
         <div class="flex-fill">
           <div>
-            <p class="fs-5 fw-semibold m-0">Level: {puzzle.level}</p>
+            <p class="fs-4 fw-semibold m-0">Level: {puzzle.level}</p>
             <p class="fs-6 text-secondary m-0">Answer: {puzzle.answer}</p>
           </div>
         </div>
@@ -192,7 +191,7 @@
             action="javascript:"
           >
             <div class="d-flex mb-2">
-              <div class="input-group input-group-sm pe-2">
+              <div class="input-group pe-2">
                 <span class="edit-puzzle-field-size input-group-text"
                   >Level</span
                 >
@@ -203,7 +202,7 @@
                   required
                 />
               </div>
-              <div class="input-group input-group-sm">
+              <div class="input-group">
                 <span class="edit-puzzle-field-size input-group-text"
                   >Image</span
                 >
@@ -215,7 +214,7 @@
               </div>
             </div>
             <div class="d-flex">
-              <div class="input-group input-group-sm pe-2">
+              <div class="input-group pe-2">
                 <span class="edit-puzzle-field-size input-group-text"
                   >Answer</span
                 >
@@ -226,7 +225,7 @@
                   required
                 />
               </div>
-              <div class="input-group input-group-sm">
+              <div class="input-group">
                 <span class="edit-puzzle-field-size input-group-text">Link</span
                 >
                 <input
@@ -240,12 +239,12 @@
               <button
                 on:click={cancel_edit}
                 type="button"
-                class="btn btn-sm btn-outline-danger me-2"
+                class="btn btn-outline-danger me-2"
                 disabled={edit_submiting}>Cancel</button
               >
               <button
                 type="submit"
-                class="btn btn-sm btn-primary"
+                class="btn btn-primary"
                 disabled={edit_submiting}>Apply</button
               >
             </div>
@@ -262,7 +261,6 @@
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="16"
                 height="16"
                 fill="currentColor"
                 class="bi bi-pencil-square"
@@ -284,7 +282,6 @@
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="16"
                 height="16"
                 fill="currentColor"
                 class="bi bi-trash"
