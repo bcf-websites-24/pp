@@ -188,7 +188,7 @@
           <form
             bind:this={edit_form_elem}
             on:submit={edit_submit}
-            class="p-2"
+            class="py-2"
             action="javascript:"
           >
             <div class="d-flex mb-2">
@@ -239,6 +239,7 @@
             <div class="d-flex justify-content-end mt-2">
               <button
                 on:click={cancel_edit}
+                type="button"
                 class="btn btn-sm btn-outline-danger me-2"
                 disabled={edit_submiting}>Cancel</button
               >
