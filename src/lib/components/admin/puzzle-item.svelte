@@ -11,6 +11,11 @@
   let deleting = false;
   let img_loading = false;
   let item_elem: HTMLLIElement;
+  let edit_form_elem: HTMLFormElement;
+  let edit_puzzle_level: number;
+  let edit_puzzle_answer: string;
+  let edit_puzzle_link: string;
+  let edit_puzzle_files: FileList;
 
   $: load_puzzle(puzzle);
 
@@ -36,14 +41,14 @@
     }
   }
 
-  function load_puzzle(puzzle: AdminPuzzleItem): void {
+  function load_puzzle_img(url: string): void {
     if (puzzle.img_data.length === 0) {
       img_loading = true;
 
       fetch("/api/admin/puzzle/get_image", {
         method: "POST",
         body: JSON.stringify({
-          url: puzzle.img_url,
+          url: url,
         }),
       }).then(async (response: Response): Promise<void> => {
         if (response.status === 200) {
@@ -55,7 +60,10 @@
         }
       });
     }
+  }
 
+  function load_puzzle(puzzle: AdminPuzzleItem): void {
+    load_puzzle_img(puzzle.img_url);
     init_animation();
   }
 
@@ -64,6 +72,8 @@
   }
 
   function cancel_edit(): void {
+    edit_form_elem.reset();
+
     editing = false;
   }
 
@@ -80,7 +90,7 @@
   <li
     bind:this={item_elem}
     class="list-group-item p-0"
-    transition:slide={{ duration: 250, axis: "y" }}
+    out:slide={{ duration: 250, axis: "y" }}
   >
     <div class="py-2">
       <div class="d-flex flex-wrap align-items-start">
@@ -108,19 +118,29 @@
       </div>
       {#if editing}
         <div transition:slide={{ duration: 250, axis: "y" }}>
-          <form class="p-2" action="javascript:">
+          <form bind:this={edit_form_elem} class="p-2" action="javascript:">
             <div class="d-flex mb-2">
               <div class="input-group input-group-sm pe-2">
                 <span class="edit-puzzle-field-size input-group-text"
                   >Level</span
                 >
-                <input type="text" class="form-control" />
+                <input
+                  bind:value={edit_puzzle_link}
+                  type="text"
+                  class="form-control"
+                  required
+                />
               </div>
               <div class="input-group input-group-sm">
                 <span class="edit-puzzle-field-size input-group-text"
                   >Image</span
                 >
-                <input type="file" class="form-control" />
+                <input
+                  bind:files={edit_puzzle_files}
+                  type="file"
+                  class="form-control"
+                  required
+                />
               </div>
             </div>
             <div class="d-flex">
@@ -128,12 +148,22 @@
                 <span class="edit-puzzle-field-size input-group-text"
                   >Answer</span
                 >
-                <input type="text" class="form-control" />
+                <input
+                  bind:value={edit_puzzle_answer}
+                  type="text"
+                  class="form-control"
+                  required
+                />
               </div>
               <div class="input-group input-group-sm">
                 <span class="edit-puzzle-field-size input-group-text">Link</span
                 >
-                <input type="text" class="form-control" />
+                <input
+                  bind:value={edit_puzzle_link}
+                  type="text"
+                  class="form-control"
+                  required
+                />
               </div>
             </div>
             <div class="d-flex justify-content-end mt-2">
