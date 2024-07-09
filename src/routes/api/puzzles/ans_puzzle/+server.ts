@@ -32,7 +32,8 @@ export async function POST({
 
     const request_json: any = await request.json();
     const given_puzzle_id: string = request_json.puzzle_id;
-    const given_ans: string = request_json.ans;
+    let given_ans: string = request_json.ans;
+    given_ans = given_ans.trim().toLowerCase();
 
     // this can happen if jwt token field names were changed for example, this is a server side coding error
     if (given_user_id === null || given_user_id === undefined) {
