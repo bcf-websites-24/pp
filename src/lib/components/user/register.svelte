@@ -130,8 +130,9 @@
           required
         />
         <label for="register-student-id">Student ID</label>
+        <p class="fs-6 text-secondary mb-0">*9 digits student ID</p>
       </div>
-      <div class="d-flex justify-content-end">
+      <div class="d-flex align-items-center justify-content-end">
         <button type="submit" class="btn btn-primary">Next</button>
       </div>
     </form>
