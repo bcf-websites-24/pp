@@ -106,47 +106,50 @@
         >
           <div
             bind:this={forms_elem}
-            class="d-flex"
+            class="d-flex align-items-start"
             style="width: 200%; transform: translate({$form_translate}px, 0); {mounted
               ? `height: ${$form_height}px`
               : ''}"
           >
-            <form
-              bind:this={login_form_elem}
-              on:submit={login}
-              class="p-1"
-              action="javascript:"
-              style="min-width: 50%; max-width: 50%;"
-            >
-              <div class="form-floating mb-3">
-                <input
-                  bind:value={login_username}
-                  type="text"
-                  class="form-control"
-                  id="login-username"
-                  placeholder="Username"
-                  pattern={username_pattern.source}
-                  required
-                />
-                <label for="login-username">Username</label>
-              </div>
-              <div class="form-floating mb-3">
-                <input
-                  bind:value={login_password}
-                  type="password"
-                  class="form-control"
-                  id="login-password"
-                  placeholder="Password"
-                  required
-                />
-                <label for="login-password">Password</label>
-              </div>
-              <div class="d-flex justify-content-end">
-                <button type="submit" class="btn btn-primary" disabled={signing}
-                  >Login</button
-                >
-              </div>
-            </form>
+            <div style="min-width: 50%; max-width: 50%;">
+              <form
+                bind:this={login_form_elem}
+                on:submit={login}
+                class="w-100 p-1"
+                action="javascript:"
+              >
+                <div class="form-floating mb-3">
+                  <input
+                    bind:value={login_username}
+                    type="text"
+                    class="form-control"
+                    id="login-username"
+                    placeholder="Username"
+                    pattern={username_pattern.source}
+                    required
+                  />
+                  <label for="login-username">Username</label>
+                </div>
+                <div class="form-floating mb-3">
+                  <input
+                    bind:value={login_password}
+                    type="password"
+                    class="form-control"
+                    id="login-password"
+                    placeholder="Password"
+                    required
+                  />
+                  <label for="login-password">Password</label>
+                </div>
+                <div class="d-flex justify-content-end">
+                  <button
+                    type="submit"
+                    class="btn btn-primary"
+                    disabled={signing}>Login</button
+                  >
+                </div>
+              </form>
+            </div>
             <Register
               bind:signing
               bind:height={reg_height}
