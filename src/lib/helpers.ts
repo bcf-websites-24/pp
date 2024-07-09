@@ -1,3 +1,6 @@
+export const username_pattern = /^\w{4,32}$/;
+export const student_id_pattern = /^\d{9}$/;
+
 export class AdminPuzzleItem {
   public id: string = "";
   public loaded = false;
