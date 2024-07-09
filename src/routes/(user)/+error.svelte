@@ -13,6 +13,7 @@
   let form_holder_elem: HTMLDivElement;
   let reg_height: number;
   let forms_elem: HTMLDivElement;
+  let login_form_height: number;
   let login_form_elem: HTMLFormElement;
   let signing: boolean = false;
   let login_username: string;
@@ -59,7 +60,7 @@
     reg_reset();
 
     $form_translate = 0;
-    $form_height = login_form_elem.clientHeight;
+    $form_height = login_form_height;
   }
 
   function register_tab_clicked(): void {
@@ -75,14 +76,15 @@
 
   onMount((): void => {
     $user_logged_in_state = false;
-    $form_height = login_form_elem.clientHeight;
+    login_form_height = login_form_elem.clientHeight;
+    $form_height = login_form_height;
     mounted = true;
   });
 </script>
 
 {#if $page.status === 403}
   <div class="stranger-root">
-    <div>
+    <div class="stranger-root-1">
       <p class="fs-5 text-center text-secondary mb-0">Welcome to</p>
       <p class="fs-1 text-center">Picture Puzzle 2024</p>
       <div class="stranger-card card card-body shadow m-2">
@@ -112,9 +114,9 @@
             <form
               bind:this={login_form_elem}
               on:submit={login}
-              class="w-100 p-1"
+              class="p-1"
               action="javascript:"
-              style="height: fit-content;"
+              style="min-width: 50%; max-width: 50%;"
             >
               <div class="form-floating mb-3">
                 <input
@@ -170,6 +172,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+  .stranger-root-1 {
+    max-width: 100%;
   }
   .stranger-card {
     max-width: 30rem;
