@@ -93,7 +93,7 @@
   });
 </script>
 
-<div class="w-100" style="height: {height}px;">
+<div style="height: {height}px; min-width: 50%; max-width: 50%;">
   <div
     bind:clientWidth={width}
     class="d-flex align-items-start h-100"
