@@ -60,7 +60,7 @@ export async function POST({
 
     // VERCEL_LOG_SOURCE
     if (add_puzzle_attempt_rpc.error) {
-      console.error("puzzles/ans_puzzle line 62\n" + add_puzzle_attempt_rpc.error);
+      console.error("puzzles/ans_puzzle line 62\n" + add_puzzle_attempt_rpc.error.message);
       return error(500);
     }
 

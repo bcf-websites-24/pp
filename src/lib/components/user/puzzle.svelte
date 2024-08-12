@@ -38,7 +38,7 @@
           show_puzzle = false;
           $next_level_id_state = response_json.ans.f_next_puzzle_id;
           $next_level_url_state = response_json.ans.f_next_puzzle_img_url;
-          $current_level_state = response_json.ans.f_next_puzzle_level + 1;
+          $current_level_state = response_json.ans.f_next_puzzle_level;
         } else {
           wrong_answer = true;
 
