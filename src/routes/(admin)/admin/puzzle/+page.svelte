@@ -34,7 +34,6 @@
         const new_puzzle: AdminPuzzleItem = {
           id: response_json.id,
           loaded: false,
-          alive: true,
           level: response_json.puzzle_level,
           answer: response_json.ans,
           img_url: response_json.img_url,
@@ -73,7 +72,6 @@
         puzzles[i] = {
           id: data.puzzles[i].f_id,
           loaded: true,
-          alive: true,
           level: data.puzzles[i].f_puzzle_level,
           answer: data.puzzles[i].f_ans,
           img_url: data.puzzles[i].f_img_url,
