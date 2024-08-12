@@ -6,6 +6,7 @@
     next_level_url_state,
     wrong_answer_toast_store,
   } from "$lib/stores";
+  import { onMount } from "svelte";
   import { fade, slide } from "svelte/transition";
 
   export let show_puzzle: boolean;
@@ -55,6 +56,10 @@
   }
 
   function load_puzzle(level_url: string): void {
+    if (level_url === "") {
+      return;
+    }
+
     wrong_answer = false;
     image_loaded = false;
 
