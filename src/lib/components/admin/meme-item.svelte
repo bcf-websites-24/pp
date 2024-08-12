@@ -265,7 +265,4 @@
     height: 5rem;
     object-fit: cover;
   }
-  .edit-meme-field {
-    width: 5rem;
-  }
 </style>
