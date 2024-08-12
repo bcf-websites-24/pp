@@ -29,11 +29,10 @@
           [
             {
               height: "0",
-              easing: "ease-out",
+              easing: "ease-in-out",
             },
             {
               height: target_height + "px",
-              easing: "ease-in",
             },
           ],
           250,
@@ -159,7 +158,7 @@
     out:slide={{ duration: 250, axis: "y" }}
   >
     <div class="py-2">
-      <div class="d-flex flex-wrap align-items-start">
+      <div class="d-flex flex-wrap align-items-start px-1">
         {#if img_loading}
           <div class="placeholder-glow">
             <span class="puzzle-image rounded bg-secondary placeholder me-2"
@@ -190,11 +189,9 @@
             class="py-2"
             action="javascript:"
           >
-            <div class="d-flex mb-2">
-              <div class="input-group pe-2">
-                <span class="edit-puzzle-field-size input-group-text"
-                  >Level</span
-                >
+            <div class="edit-puzzle-pair">
+              <div class="input-group p-1">
+                <span class="edit-puzzle-field input-group-text">Level</span>
                 <input
                   bind:value={edit_puzzle_level}
                   type="text"
@@ -202,10 +199,8 @@
                   required
                 />
               </div>
-              <div class="input-group">
-                <span class="edit-puzzle-field-size input-group-text"
-                  >Image</span
-                >
+              <div class="input-group p-1">
+                <span class="edit-puzzle-field input-group-text">Image</span>
                 <input
                   bind:files={edit_puzzle_files}
                   type="file"
@@ -213,11 +208,9 @@
                 />
               </div>
             </div>
-            <div class="d-flex">
-              <div class="input-group pe-2">
-                <span class="edit-puzzle-field-size input-group-text"
-                  >Answer</span
-                >
+            <div class="edit-puzzle-pair">
+              <div class="input-group p-1">
+                <span class="edit-puzzle-field input-group-text">Answer</span>
                 <input
                   bind:value={edit_puzzle_answer}
                   type="text"
@@ -225,9 +218,8 @@
                   required
                 />
               </div>
-              <div class="input-group">
-                <span class="edit-puzzle-field-size input-group-text">Link</span
-                >
+              <div class="input-group p-1">
+                <span class="edit-puzzle-field input-group-text">Link</span>
                 <input
                   bind:value={edit_puzzle_link}
                   type="text"
@@ -235,7 +227,7 @@
                 />
               </div>
             </div>
-            <div class="d-flex justify-content-end mt-2">
+            <div class="d-flex justify-content-end mt-2 px-1">
               <button
                 on:click={cancel_edit}
                 type="button"
@@ -310,7 +302,15 @@
     height: 5rem;
     object-fit: cover;
   }
-  .edit-puzzle-field-size {
+  .edit-puzzle-pair {
+    display: flex;
+  }
+  .edit-puzzle-field {
     width: 5rem;
+  }
+  @media (max-width: 45rem) {
+    .edit-puzzle-pair {
+      display: block;
+    }
   }
 </style>
