@@ -150,7 +150,7 @@
     <p class="fs-3 fw-semibold">Puzzles</p>
     <ul class="list-group list-group-flush">
       {#each puzzles as puzzle}
-        <PuzzleItem {puzzle} bind:puzzles />
+        <PuzzleItem bind:puzzle bind:puzzles />
       {/each}
     </ul>
   </div>
