@@ -143,7 +143,7 @@
   function delete_puzzle(): void {
     deleting = true;
 
-    fetch("/api/admin/rmv_puzzle", {
+    fetch("/api/admin/puzzle/rm", {
       method: "POST",
       body: JSON.stringify({
         puzzle_id: puzzle.id,

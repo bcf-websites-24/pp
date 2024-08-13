@@ -5,12 +5,13 @@ import { get } from "svelte/store";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 import { JWT_SECRET, ADMIN_JWT_ID } from "$env/static/private";
+
 /**
- * request format, formData
+ * request format, formData with fields,
  *  {
-        "content": "",
-        "meme_image" : file,
-        "meme_sound" : file
+        "editing" : false,
+        "meme_file": file,
+        "meme_id": test
     }
  */
 export async function POST({
@@ -42,76 +43,101 @@ export async function POST({
     }
 
     const request_formdata: any = await request.formData();
-    const given_content: string = request_formdata.get("content") as string;
-    const meme_sound: File = request_formdata.get("meme_sound") as File;
-    const meme_image: File = request_formdata.get("meme_image") as File;
-    const given_is_audio: boolean = request_formdata.get("is_audio") as boolean;
 
-    // client side did not give correct request fields
-    if (
-      given_content === null ||
-      given_content === undefined ||
-      ((meme_image === null || meme_image === undefined) &&
-        (meme_sound === null || meme_sound === undefined))
-    ) {
+    if (request_formdata === undefined) {
       return error(422);
     }
 
-    let given_img_url: string = "";
-    let given_sound_url: string = "";
+    const meme_file: File = request_formdata.get("meme_file") as File;
+    const editing: boolean = request_formdata.get("editing") === 'true';
+    const given_meme_id: string = request_formdata.get("meme_id") as string;
+    let meme_uuid: string = "";
 
-    if (meme_image) {
-      given_img_url = (uuidv4() +
+    if (!editing) {
+      if (meme_file === undefined || meme_file === null) {
+        return error(422);
+      }
+
+      let given_img_url: string = (uuidv4() +
         "." +
-        meme_image.name?.split(".").pop()) as string;
-      const meme_image_upload_rpc: any = await get(supabase_client_store)
-        .storage.from("memes")
-        .upload(given_img_url, meme_image);
+        meme_file.name?.split(".").pop()) as string;
 
-      // VERCEL LOG SOURCE
-      if (meme_image_upload_rpc.error) {
-        console.error("admin/add_meme line 74\n" + meme_image_upload_rpc.error);
+      const add_new_meme_rpc: PostgrestSingleResponse<any> = await get(
+        supabase_client_store
+      ).rpc("add_new_meme", {
+        given_img_url,
+      });
+
+      // VERCEL_LOG_SOURCE
+      if (add_new_meme_rpc.error) {
+        console.error("admin/meme line 73" + add_new_meme_rpc.error);
+
         return error(500);
       }
-    }
-    if (meme_sound) {
-      given_sound_url = (uuidv4() +
-        "." +
-        meme_sound.name?.split(".").pop()) as string;
-      const meme_sound_upload_rpc: any = await get(supabase_client_store)
-        .storage.from("meme_sounds")
-        .upload(given_sound_url, meme_sound);
+
+      const meme_file_upload_rpc: any = await get(supabase_client_store).storage.from("memes")
+        .upload(given_img_url, meme_file);
 
       // VERCEL LOG SOURCE
-      if (meme_sound_upload_rpc.error) {
-        console.error("admin/add_meme line 88\n" + meme_sound_upload_rpc.error);
+      if (meme_file_upload_rpc.error) {
+        console.error("admin/meme line 83" + meme_file_upload_rpc.error);
+
         return error(500);
       }
-    }
 
-    const add_new_meme: PostgrestSingleResponse<any> = await get(
-      supabase_client_store
-    ).rpc("add_new_meme", {
-      given_content,
-      given_img_url,
-      given_is_audio,
-      given_sound_url,
-    });
+      meme_uuid = add_new_meme_rpc.data;
+    } else {
+      if (given_meme_id === undefined || given_meme_id === null) {
+        return error(422);
+      }
 
-    // VERCEL_LOG_SOURCE
-    if (add_new_meme.error) {
-      console.error("admin/add_meme line 104" + add_new_meme.error);
-      return error(500);
-    }
-    /**
-     * format
-     *  {
-            "meme_id": 3
+      if (meme_file === undefined || meme_file === null) {
+        const update_meme_rpc = await get(supabase_client_store).rpc("update_meme_nofile", {
+          given_meme_id,
+        });
+
+        // VERCEL_LOG_SOURCE
+        if (update_meme_rpc.error) {
+          console.error("admin/meme line 142" + update_meme_rpc.error);
+          return error(500);
         }
-     */
-    return json({
-      meme_id: add_new_meme.data,
-    });
+
+        meme_uuid = update_meme_rpc.data;
+      } else {
+        let given_img_url: string = (uuidv4() +
+          "." +
+          meme_file.name?.split(".").pop()) as string;
+
+        const update_meme_rpc = await get(supabase_client_store).rpc("update_meme", {
+          given_id: given_meme_id,
+          given_img_url: given_img_url,
+        });
+
+        // VERCEL_LOG_SOURCE
+        if (update_meme_rpc.error) {
+          console.error("admin/meme line 166 " + update_meme_rpc.error.message);
+          return error(500);
+        }
+
+        meme_uuid = update_meme_rpc.data;
+        const meme_file_upload_rpc = await get(supabase_client_store).storage.from("memes")
+          .upload(given_img_url, meme_file);
+
+        // VERCEL LOG SOURCE
+        if (meme_file_upload_rpc.error) {
+          console.error("admin/meme line 177" + meme_file_upload_rpc.error);
+          return error(500);
+        }
+      }
+    }
+
+    /**
+       * format
+       *  {
+            "meme_id": "c742e1b7-21f9-4827-ba39-34b7b53eb2e4"
+          }
+       */
+    return json(meme_uuid);
   } else {
     return error(403);
   }
