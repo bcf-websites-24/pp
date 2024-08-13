@@ -54,14 +54,14 @@
         } else if (response.status === 403) {
           goto("/admin");
         } else {
-          console.log(meme.id);
+          console.log("added", meme);
         }
       });
     }
   }
 
-  function load_meme(puzzle: AdminMemeItem): void {
-    load_meme_img(puzzle.img_url);
+  function load_meme(meme: AdminMemeItem): void {
+    load_meme_img(meme.img_url);
     init_animation();
   }
 
@@ -144,6 +144,7 @@
         animation.onfinish = () => {
           const index = memes.indexOf(meme);
           memes = memes.slice(0, index).concat(memes.slice(index + 1));
+          deleting = false;
         };
 
         animation.play();
@@ -156,11 +157,7 @@
   });
 </script>
 
-<li
-  bind:this={item_elem}
-  class="list-group-item p-0"
-  out:slide={{ duration: 250, axis: "y" }}
->
+<li bind:this={item_elem} class="list-group-item p-0">
   <div class="py-2">
     <div class="d-flex flex-wrap align-items-start px-1">
       {#if img_loading}

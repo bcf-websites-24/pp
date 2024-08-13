@@ -18,7 +18,7 @@
     form_data.append("editing", "false");
     form_data.append("meme_file", add_meme_images.item(0) as File);
     form_data.append("meme_id", "");
-    fetch("", {
+    fetch("/api/admin/meme", {
       method: "POST",
       body: form_data,
     }).then(async (response: Response): Promise<void> => {
@@ -88,7 +88,7 @@
   <div class="card card-body shadow border-0">
     <p class="fs-3 fw-semibold">Memes</p>
     <ul class="list-group list-group-flush">
-      {#each memes as meme}
+      {#each memes as meme, index}
         <MemeItem bind:meme bind:memes />
       {/each}
     </ul>
