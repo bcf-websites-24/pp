@@ -123,7 +123,7 @@
     fetch("/api/admin/meme/rm", {
       method: "POST",
       body: JSON.stringify({
-        puzzle_id: meme.id,
+        meme_id: meme.id,
       }),
     }).then((response: Response): void => {
       if (response.status === 200) {
