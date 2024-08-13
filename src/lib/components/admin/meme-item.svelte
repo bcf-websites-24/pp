@@ -1,27 +1,24 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
-  import { AdminPuzzleItem } from "$lib/helpers";
   import { fade, slide } from "svelte/transition";
   import { onMount } from "svelte";
+  import type { AdminMemeItem } from "$lib/helpers";
 
-  export let puzzles: Array<AdminPuzzleItem>;
-  export let puzzle: AdminPuzzleItem;
+  export let memes: Array<AdminMemeItem>;
+  export let meme: AdminMemeItem;
   let editing = false;
   let deleting = false;
   let edit_submiting = false;
   let img_loading = false;
   let item_elem: HTMLLIElement;
   let edit_form_elem: HTMLFormElement;
-  let edit_puzzle_level: number;
-  let edit_puzzle_answer: string;
-  let edit_puzzle_link: string;
-  let edit_puzzle_files: FileList;
+  let edit_meme_files: FileList;
 
-  $: load_puzzle(puzzle);
+  $: load_meme(meme);
 
   function init_animation(): void {
-    if (item_elem && !puzzle.loaded) {
-      puzzle.loaded = true;
+    if (item_elem && !meme.loaded) {
+      meme.loaded = true;
       const target_height = item_elem.clientHeight;
       item_elem
         .animate(
@@ -40,11 +37,11 @@
     }
   }
 
-  function load_puzzle_img(url: string): void {
-    if (puzzle.img_data.length === 0) {
+  function load_meme_img(url: string): void {
+    if (meme.img_data.length === 0) {
       img_loading = true;
 
-      fetch("/api/admin/puzzle/get_image", {
+      fetch("/api/admin/meme/get_image", {
         method: "POST",
         body: JSON.stringify({
           url: url,
@@ -52,17 +49,19 @@
       }).then(async (response: Response): Promise<void> => {
         if (response.status === 200) {
           const response_blob = await response.blob();
-          puzzle.img_data = URL.createObjectURL(response_blob);
+          meme.img_data = URL.createObjectURL(response_blob);
           img_loading = false;
         } else if (response.status === 403) {
           goto("/admin");
+        } else {
+          console.log("added", meme);
         }
       });
     }
   }
 
-  function load_puzzle(puzzle: AdminPuzzleItem): void {
-    load_puzzle_img(puzzle.img_url);
+  function load_meme(meme: AdminMemeItem): void {
+    load_meme_img(meme.img_url);
     init_animation();
   }
 
@@ -70,56 +69,37 @@
     edit_submiting = true;
     let file: Blob;
 
-    if (edit_puzzle_files) {
-      file = edit_puzzle_files.item(0) as File;
+    if (edit_meme_files) {
+      file = edit_meme_files.item(0) as File;
     } else {
-      file = await (await fetch(puzzle.img_data)).blob();
+      file = await (await fetch(meme.img_data)).blob();
     }
 
     const form_data = new FormData();
 
-    form_data.append("hashed_ans", edit_puzzle_answer);
-    form_data.append("info_link", "");
-    form_data.append("puzzle_level", edit_puzzle_level.toString());
     form_data.append("editing", "true");
-    form_data.append("puzzle_file", file);
-    form_data.append("puzzle_id", puzzle.id);
-    fetch("/api/admin/puzzle", {
+    form_data.append("meme_file", file);
+    form_data.append("meme_id", meme.id);
+    fetch("/api/admin/meme", {
       method: "POST",
       body: form_data,
     }).then(async (response: Response): Promise<void> => {
       if (response.status === 200) {
         editing = false;
-        const new_puzzle: AdminPuzzleItem = {
-          id: puzzle.id,
+        const new_meme: AdminMemeItem = {
+          id: meme.id,
           loaded: true,
-          level: edit_puzzle_level,
-          answer: edit_puzzle_answer,
-          img_url: puzzle.img_url,
+          img_url: meme.img_url,
           img_data: URL.createObjectURL(file),
         };
 
-        const index = puzzles.indexOf(puzzle);
+        const index = memes.indexOf(meme);
 
         if (index === -1) {
           return;
         }
 
-        puzzles = puzzles.slice(0, index).concat(puzzles.slice(index + 1));
-        let put_in = puzzles.length;
-
-        for (let i = 0; i < puzzles.length; ++i) {
-          if (new_puzzle.level < puzzles[i].level) {
-            put_in = i;
-
-            break;
-          }
-        }
-
-        puzzles = puzzles
-          .slice(0, put_in)
-          .concat([new_puzzle])
-          .concat(puzzles.slice(put_in));
+        meme.img_url = new_meme.img_url;
         edit_submiting = false;
       } else if (response.status === 403) {
         goto("/admin");
@@ -127,10 +107,7 @@
     });
   }
 
-  function edit_puzzle(): void {
-    edit_puzzle_level = puzzle.level;
-    edit_puzzle_answer = puzzle.answer;
-    edit_puzzle_link = "";
+  function edit_meme(): void {
     editing = true;
   }
 
@@ -140,13 +117,13 @@
     editing = false;
   }
 
-  function delete_puzzle(): void {
+  function delete_meme(): void {
     deleting = true;
 
-    fetch("/api/admin/puzzle/rm", {
+    fetch("/api/admin/meme/rm", {
       method: "POST",
       body: JSON.stringify({
-        puzzle_id: puzzle.id,
+        meme_id: meme.id,
       }),
     }).then((response: Response): void => {
       if (response.status === 200) {
@@ -165,8 +142,8 @@
         );
 
         animation.onfinish = () => {
-          const index = puzzles.indexOf(puzzle);
-          puzzles = puzzles.slice(0, index).concat(puzzles.slice(index + 1));
+          const index = memes.indexOf(meme);
+          memes = memes.slice(0, index).concat(memes.slice(index + 1));
           deleting = false;
         };
 
@@ -189,21 +166,14 @@
           ></span>
         </div>
       {:else}
-        <a href={puzzle.img_data} target="_blank" in:fade={{ duration: 250 }}>
+        <a href={meme.img_data} target="_blank" in:fade={{ duration: 250 }}>
           <img
-            src={puzzle.img_data}
+            src={meme.img_data}
             class="puzzle-image rounded me-2"
             alt="puzzle-img"
           />
         </a>
       {/if}
-
-      <div class="flex-fill">
-        <div>
-          <p class="fs-4 fw-semibold m-0">Level: {puzzle.level}</p>
-          <p class="fs-6 text-secondary m-0">Answer: {puzzle.answer}</p>
-        </div>
-      </div>
     </div>
     {#if editing}
       <div transition:slide={{ duration: 250, axis: "y" }}>
@@ -213,43 +183,12 @@
           class="py-2"
           action="javascript:"
         >
-          <div class="edit-puzzle-pair">
-            <div class="input-group p-1">
-              <span class="edit-puzzle-field input-group-text">Level</span>
-              <input
-                bind:value={edit_puzzle_level}
-                type="text"
-                class="form-control"
-                required
-              />
-            </div>
-            <div class="input-group p-1">
-              <span class="edit-puzzle-field input-group-text">Image</span>
-              <input
-                bind:files={edit_puzzle_files}
-                type="file"
-                class="form-control"
-              />
-            </div>
-          </div>
-          <div class="edit-puzzle-pair">
-            <div class="input-group p-1">
-              <span class="edit-puzzle-field input-group-text">Answer</span>
-              <input
-                bind:value={edit_puzzle_answer}
-                type="text"
-                class="form-control"
-                required
-              />
-            </div>
-            <div class="input-group p-1">
-              <span class="edit-puzzle-field input-group-text">Link</span>
-              <input
-                bind:value={edit_puzzle_link}
-                type="text"
-                class="form-control"
-              />
-            </div>
+          <div class="px-1">
+            <input
+              bind:files={edit_meme_files}
+              type="file"
+              class="form-control"
+            />
           </div>
           <div class="d-flex justify-content-end mt-2 px-1">
             <button
@@ -271,7 +210,7 @@
       <div transition:slide={{ duration: 250 }}>
         <div class="d-flex justify-content-end p-2">
           <button
-            on:click={edit_puzzle}
+            on:click={edit_meme}
             class="btn btn-link link-secondary p-0 me-3"
             disabled={deleting}
           >
@@ -292,7 +231,7 @@
             </svg>
           </button>
           <button
-            on:click={delete_puzzle}
+            on:click={delete_meme}
             class="btn btn-link link-danger p-0"
             disabled={deleting}
           >
@@ -322,16 +261,5 @@
     width: 5rem;
     height: 5rem;
     object-fit: cover;
-  }
-  .edit-puzzle-pair {
-    display: flex;
-  }
-  .edit-puzzle-field {
-    width: 5rem;
-  }
-  @media (max-width: 45rem) {
-    .edit-puzzle-pair {
-      display: block;
-    }
   }
 </style>

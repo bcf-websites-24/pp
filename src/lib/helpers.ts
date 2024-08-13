@@ -4,9 +4,15 @@ export const student_id_pattern = /^\d{9}$/;
 export class AdminPuzzleItem {
   public id: string = "";
   public loaded = false;
-  public alive = true;
   public level = -1;
   public answer = "";
+  public img_url = "";
+  public img_data = "";
+}
+
+export class AdminMemeItem {
+  public id: string = "";
+  public loaded = false;
   public img_url = "";
   public img_data = "";
 }

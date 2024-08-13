@@ -1,11 +1,11 @@
 import { supabase_client_store } from "$lib/stores.server";
 import type { PostgrestSingleResponse } from "@supabase/supabase-js";
-import { error, json, type RequestEvent } from "@sveltejs/kit";
+import { error, type RequestEvent } from "@sveltejs/kit";
 import { get } from "svelte/store";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "$env/static/private";
 
-export async function POST({ cookies }: RequestEvent): Promise<Response> {
+export async function GET({ cookies }: RequestEvent): Promise<Response> {
   const jwt_token: string | undefined = cookies.get("pp-jwt");
 
   // no cookie means user is not logged in
@@ -26,65 +26,58 @@ export async function POST({ cookies }: RequestEvent): Promise<Response> {
       return error(500);
     }
 
-    const random_meme_rpc: PostgrestSingleResponse<any> = await get(
+    const random_meme_rpc = await get(
       supabase_client_store
     ).rpc("get_random_meme");
 
     // VERCEL_LOG_SOURCE, this will be on the vercel api log
     if (random_meme_rpc.error) {
-      console.error("memes/random line 35\n" + random_meme_rpc.error);
+      console.error("memes/random line 35\n" + random_meme_rpc.error.message);
       return error(500);
     }
 
-
     // create limited time signed url of file
-    const meme_file_download_rpc: any = await get(supabase_client_store)
+    const meme_image_rpc = await get(supabase_client_store)
       .storage.from("memes")
-      .createSignedUrl(random_meme_rpc.data.img_url, 12 * 60 * 60);
+      .download(random_meme_rpc.data.img_url);
 
     // VERCEL LOG SOURCE
     if (
-      meme_file_download_rpc.error ||
-      meme_file_download_rpc.data.signedUrl === undefined ||
-      meme_file_download_rpc.data.signedUrl === null
+      meme_image_rpc.error
     ) {
-      console.error("memes/random line 51\n" + meme_file_download_rpc.error);
+      console.error("memes/random line 51\n" + meme_image_rpc.error);
       return error(500);
     }
 
-    let sound_url: string = "";
+    let meme_audio_blob: Blob | null = null;
+
     if (random_meme_rpc.data.sound_url !== null) {
       // create limited time signed url of file
-      const meme_sound_download_rpc: any = await get(supabase_client_store)
+      const meme_sound_download_rpc = await get(supabase_client_store)
         .storage.from("meme_sounds")
-        .createSignedUrl(random_meme_rpc.data.sound_url, 12 * 60 * 60);
+        .download(random_meme_rpc.data.sound_url);
 
       // VERCEL LOG SOURCE
       if (
-        meme_sound_download_rpc.error ||
-        meme_sound_download_rpc.data.signedUrl === undefined ||
-        meme_sound_download_rpc.data.signedUrl === null
+        meme_sound_download_rpc.error
       ) {
         console.error("memes/random line 68\n" + meme_sound_download_rpc.error);
         return error(500);
       }
 
-      sound_url = meme_sound_download_rpc.data.signedUrl;
+      meme_audio_blob = meme_sound_download_rpc.data;
     }
 
-    // random meme. format:
-    /**
-     *  {
-            "id": 2
-            "img_url": "tst",
-            "sound_url": "test"
-        }   
-     */
-    return json({
-      id: random_meme_rpc.data.id,
-      img_url: meme_file_download_rpc.data.signedUrl,
-      sound_url,
-    });
+    const form_data = new FormData();
+
+    form_data.append("id", random_meme_rpc.data.id);
+    form_data.append("image", meme_image_rpc.data);
+
+    if (meme_audio_blob) {
+      form_data.append("audio", meme_audio_blob);
+    }
+
+    return new Response(form_data);
   } else {
     return error(403);
   }

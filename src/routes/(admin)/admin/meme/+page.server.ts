@@ -24,15 +24,15 @@ export async function load(load_event: ServerLoadEvent): Promise<any> {
     return error(403);
   }
 
-  const puzzle_list_rpc = await get(supabase_client_store).rpc("get_all_puzzles");
+  const meme_list_rpc = await get(supabase_client_store).rpc("get_all_memes");
 
-  if (puzzle_list_rpc.error) {
-    console.error(puzzle_list_rpc.error);
+  if (meme_list_rpc.error) {
+    console.error(meme_list_rpc.error);
 
     return error(500);
   }
 
   return {
-    puzzles: puzzle_list_rpc.data
+    memes: meme_list_rpc.data
   };
 }

@@ -81,7 +81,7 @@ export async function POST({
       return error(422);
     }
 
-    let puzzle_uuid: string = "";
+    let puzzle_data: string = "";
 
     if (!editing) {
       if (puzzle_file === undefined || puzzle_file === null) {
@@ -119,7 +119,7 @@ export async function POST({
         return error(500);
       }
 
-      puzzle_uuid = add_new_puzzle_rpc.data;
+      puzzle_data = add_new_puzzle_rpc.data;
     } else {
       if (given_puzzle_id === undefined || given_puzzle_id === null) {
         return error(422);
@@ -143,7 +143,7 @@ export async function POST({
           return error(500);
         }
 
-        puzzle_uuid = update_puzzle_rpc.data;
+        puzzle_data = update_puzzle_rpc.data;
       } else {
         let given_img_url: string = (uuidv4() +
           "." +
@@ -167,7 +167,7 @@ export async function POST({
           return error(500);
         }
 
-        puzzle_uuid = update_puzzle_rpc.data;
+        puzzle_data = update_puzzle_rpc.data;
         const puzzle_file_upload_rpc: any = await get(supabase_client_store)
           .storage.from("puzzles")
           .upload(given_img_url, puzzle_file);
@@ -180,13 +180,7 @@ export async function POST({
       }
     }
 
-    /**
-       * format
-       *  {
-            "puzzle_id": "c742e1b7-21f9-4827-ba39-34b7b53eb2e4"
-          }
-       */
-    return json(puzzle_uuid);
+    return json(puzzle_data);
   } else {
     return error(403);
   }

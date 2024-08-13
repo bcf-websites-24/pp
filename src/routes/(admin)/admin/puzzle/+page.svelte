@@ -34,7 +34,6 @@
         const new_puzzle: AdminPuzzleItem = {
           id: response_json.id,
           loaded: false,
-          alive: true,
           level: response_json.puzzle_level,
           answer: response_json.ans,
           img_url: response_json.img_url,
@@ -73,7 +72,6 @@
         puzzles[i] = {
           id: data.puzzles[i].f_id,
           loaded: true,
-          alive: true,
           level: data.puzzles[i].f_puzzle_level,
           answer: data.puzzles[i].f_ans,
           img_url: data.puzzles[i].f_img_url,
@@ -91,56 +89,54 @@
     class="card card-body shadow border-0 mb-4"
     action="javascript:"
   >
-    <p class="fs-3 fw-semibold">Add Puzzle</p>
-    <div class="container mb-2">
-      <div class="row">
-        <div class="col ps-0">
-          <label for="answer-input" class="form-label">Answer</label>
-          <input
-            bind:value={add_puzzle_answer}
-            id="answer-input"
-            type="text"
-            class="form-control"
-            autocomplete="off"
-            required
-          />
-        </div>
-        <div class="col pe-0">
-          <label for="puzzle-image-input" class="form-label">Image</label>
-          <input
-            bind:files={add_puzzle_images}
-            id="puzzle-image-input"
-            class="form-control mb-2"
-            type="file"
-            required
-          />
-        </div>
+    <p class="fs-3 fw-semibold px-1">Add Puzzle</p>
+    <div class="add-puzzle-inputs-pair">
+      <div class="add-puzzle-input p-1">
+        <label for="answer-input" class="form-label">Answer</label>
+        <input
+          bind:value={add_puzzle_answer}
+          id="answer-input"
+          type="text"
+          class="form-control"
+          autocomplete="off"
+          required
+        />
       </div>
-      <div class="row">
-        <div class="col ps-0">
-          <label for="level-input" class="form-label">Level</label>
-          <input
-            bind:value={add_puzzle_level}
-            id="level-input"
-            type="number"
-            class="form-control"
-            autocomplete="off"
-            required
-          />
-        </div>
-        <div class="col pe-0">
-          <label for="link-input" class="form-label">Link</label>
-          <input
-            bind:value={add_puzzle_link}
-            id="link-input"
-            class="form-control mb-2"
-            autocomplete="off"
-            type="url"
-          />
-        </div>
+      <div class="add-puzzle-input p-1">
+        <label for="puzzle-image-input" class="form-label">Image</label>
+        <input
+          bind:files={add_puzzle_images}
+          id="puzzle-image-input"
+          class="form-control mb-2"
+          type="file"
+          required
+        />
       </div>
     </div>
-    <div class="d-flex justify-content-end">
+    <div class="add-puzzle-inputs-pair">
+      <div class="add-puzzle-input p-1">
+        <label for="level-input" class="form-label">Level</label>
+        <input
+          bind:value={add_puzzle_level}
+          id="level-input"
+          type="number"
+          class="form-control"
+          autocomplete="off"
+          required
+        />
+      </div>
+      <div class="add-puzzle-input p-1">
+        <label for="link-input" class="form-label">Link</label>
+        <input
+          bind:value={add_puzzle_link}
+          id="link-input"
+          class="form-control mb-2"
+          autocomplete="off"
+          type="url"
+        />
+      </div>
+    </div>
+    <div class="d-flex justify-content-end px-1">
       <button type="reset" class="btn btn-outline-danger me-2">Reset</button>
       <button type="submit" class="btn btn-primary" disabled={puzzle_submitting}
         >Add</button
@@ -152,8 +148,23 @@
     <p class="fs-3 fw-semibold">Puzzles</p>
     <ul class="list-group list-group-flush">
       {#each puzzles as puzzle}
-        <PuzzleItem {puzzle} bind:puzzles />
+        <PuzzleItem bind:puzzle bind:puzzles />
       {/each}
     </ul>
   </div>
 </div>
+
+<style lang="scss">
+  .add-puzzle-input {
+    min-width: 50%;
+  }
+  .add-puzzle-inputs-pair {
+    display: flex;
+    width: 100%;
+  }
+  @media (max-width: 35rem) {
+    .add-puzzle-inputs-pair {
+      display: block;
+    }
+  }
+</style>
