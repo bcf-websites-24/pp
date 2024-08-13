@@ -167,6 +167,7 @@
         animation.onfinish = () => {
           const index = puzzles.indexOf(puzzle);
           puzzles = puzzles.slice(0, index).concat(puzzles.slice(index + 1));
+          deleting = false;
         };
 
         animation.play();
@@ -179,11 +180,7 @@
   });
 </script>
 
-<li
-  bind:this={item_elem}
-  class="list-group-item p-0"
-  out:slide={{ duration: 250, axis: "y" }}
->
+<li bind:this={item_elem} class="list-group-item p-0">
   <div class="py-2">
     <div class="d-flex flex-wrap align-items-start px-1">
       {#if img_loading}

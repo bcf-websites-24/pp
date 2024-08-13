@@ -51,7 +51,7 @@ export async function POST({
     const meme_file: File = request_formdata.get("meme_file") as File;
     const editing: boolean = request_formdata.get("editing") === 'true';
     const given_meme_id: string = request_formdata.get("meme_id") as string;
-    let meme_uuid: string = "";
+    let meme_data: string = "";
 
     if (!editing) {
       if (meme_file === undefined || meme_file === null) {
@@ -66,11 +66,14 @@ export async function POST({
         supabase_client_store
       ).rpc("add_new_meme", {
         given_img_url,
+        given_sound_url: "",
+        given_content: "",
+        given_is_audio: false
       });
 
       // VERCEL_LOG_SOURCE
       if (add_new_meme_rpc.error) {
-        console.error("admin/meme line 73" + add_new_meme_rpc.error);
+        console.error("admin/meme line 73" + add_new_meme_rpc.error.message);
 
         return error(500);
       }
@@ -85,7 +88,7 @@ export async function POST({
         return error(500);
       }
 
-      meme_uuid = add_new_meme_rpc.data;
+      meme_data = add_new_meme_rpc.data;
     } else {
       if (given_meme_id === undefined || given_meme_id === null) {
         return error(422);
@@ -102,7 +105,7 @@ export async function POST({
           return error(500);
         }
 
-        meme_uuid = update_meme_rpc.data;
+        meme_data = update_meme_rpc.data;
       } else {
         let given_img_url: string = (uuidv4() +
           "." +
@@ -119,7 +122,7 @@ export async function POST({
           return error(500);
         }
 
-        meme_uuid = update_meme_rpc.data;
+        meme_data = update_meme_rpc.data;
         const meme_file_upload_rpc = await get(supabase_client_store).storage.from("memes")
           .upload(given_img_url, meme_file);
 
@@ -131,13 +134,7 @@ export async function POST({
       }
     }
 
-    /**
-       * format
-       *  {
-            "meme_id": "c742e1b7-21f9-4827-ba39-34b7b53eb2e4"
-          }
-       */
-    return json(meme_uuid);
+    return json(meme_data);
   } else {
     return error(403);
   }
