@@ -16,7 +16,6 @@ export async function POST({ cookies }: RequestEvent): Promise<Response> {
       decoded_token = jwt.verify(jwt_token, JWT_SECRET);
     } catch (err) {
       // verify error means malformed token/wrong secret
-      console.log(1);
       return error(403);
     }
 

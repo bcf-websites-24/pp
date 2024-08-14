@@ -12,11 +12,9 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
   const request_json: any = await request.json();
   const username: string = request_json.username;
   const password: string = request_json.password;
-  const uuid_hash_rpc: PostgrestSingleResponse<any> = await get(supabase_client_store).rpc("get_uuid_hash",
-    {
-      given_username: username
-    }
-  );
+  const uuid_hash_rpc = await get(supabase_client_store).rpc("get_uuid_hash", {
+    given_username: username
+  });
 
   if (uuid_hash_rpc.error) {
     console.error("users/login line 24\n" + uuid_hash_rpc.error);

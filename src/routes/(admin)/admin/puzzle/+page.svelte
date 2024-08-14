@@ -1,5 +1,9 @@
 <script lang="ts">
-  import { admin_logged_in_state } from "$lib/stores";
+  import {
+    admin_logged_in_state,
+    fail_toast_store,
+    success_toast_store,
+  } from "$lib/stores";
   import { onMount } from "svelte";
   import PuzzleItem from "$lib/components/admin/puzzle-item.svelte";
   import { goto } from "$app/navigation";
@@ -30,6 +34,8 @@
       body: form_data,
     }).then(async (response: Response): Promise<void> => {
       if (response.status === 200) {
+        $success_toast_store.show();
+
         const response_json = await response.json();
         const new_puzzle: AdminPuzzleItem = {
           id: response_json.id,
@@ -58,6 +64,8 @@
         add_puzzle_form_elem.reset();
       } else if (response.status === 403) {
         goto("/admin");
+      } else {
+        $fail_toast_store.show();
       }
     });
   }

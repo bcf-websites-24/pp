@@ -5,8 +5,8 @@
     next_level_id_state,
     next_level_url_state,
     wrong_answer_toast_store,
+    correct_answer_toast_store,
   } from "$lib/stores";
-  import { onMount } from "svelte";
   import { fade, slide } from "svelte/transition";
 
   export let show_puzzle: boolean;
@@ -33,7 +33,7 @@
         const response_json = await response.json();
 
         if (response_json.ans.f_is_correct) {
-          // show toast
+          $correct_answer_toast_store.show();
 
           show_puzzle = false;
           $next_level_id_state = response_json.ans.f_next_puzzle_id;

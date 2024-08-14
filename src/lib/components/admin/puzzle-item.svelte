@@ -3,6 +3,7 @@
   import { AdminPuzzleItem } from "$lib/helpers";
   import { fade, slide } from "svelte/transition";
   import { onMount } from "svelte";
+  import { fail_toast_store, success_toast_store } from "$lib/stores";
 
   export let puzzles: Array<AdminPuzzleItem>;
   export let puzzle: AdminPuzzleItem;
@@ -89,6 +90,8 @@
       body: form_data,
     }).then(async (response: Response): Promise<void> => {
       if (response.status === 200) {
+        $success_toast_store.show();
+
         editing = false;
         const new_puzzle: AdminPuzzleItem = {
           id: puzzle.id,
@@ -123,6 +126,8 @@
         edit_submiting = false;
       } else if (response.status === 403) {
         goto("/admin");
+      } else {
+        $fail_toast_store.show();
       }
     });
   }
@@ -150,6 +155,8 @@
       }),
     }).then((response: Response): void => {
       if (response.status === 200) {
+        $success_toast_store.show();
+
         const init_height = item_elem.clientHeight;
         const animation = item_elem.animate(
           [
@@ -171,6 +178,10 @@
         };
 
         animation.play();
+      } else if (response.status === 403) {
+        goto("/admin");
+      } else {
+        $fail_toast_store.show();
       }
     });
   }
