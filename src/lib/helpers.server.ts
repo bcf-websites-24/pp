@@ -69,7 +69,7 @@ export function is_valid_admin(cookies: Cookies): boolean {
 
     expire_date.setTime(Date.now() + 86400 * 1000 * 30);
 
-    cookies.set("pp-jwt", token,
+    cookies.set("pp-admin-jwt", token,
       {
         path: "/",
         secure: true,
