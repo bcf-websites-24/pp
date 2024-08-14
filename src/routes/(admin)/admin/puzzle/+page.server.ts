@@ -1,26 +1,10 @@
-import { ADMIN_JWT_ID, JWT_SECRET } from "$env/static/private";
+import { is_valid_admin } from "$lib/helpers.server";
 import { supabase_client_store } from "$lib/stores.server";
-import type { PostgrestSingleResponse } from "@supabase/supabase-js";
 import { error, type ServerLoadEvent } from "@sveltejs/kit";
-import jwt from "jsonwebtoken";
 import { get } from "svelte/store";
 
 export async function load(load_event: ServerLoadEvent): Promise<any> {
-  const token = load_event.cookies.get("pp-admin-jwt");
-
-  if (token === undefined) {
-    return error(403);
-  }
-
-  let id: any;
-
-  try {
-    id = (jwt.verify(token, JWT_SECRET) as any).id;
-  } catch (err) {
-    return error(403);
-  }
-
-  if (id !== ADMIN_JWT_ID) {
+  if (!is_valid_admin(load_event.cookies)) {
     return error(403);
   }
 

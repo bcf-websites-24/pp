@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { goto } from "$app/navigation";
   import { page } from "$app/stores";
   import Error from "$lib/components/error.svelte";
   import Register from "$lib/components/user/register.svelte";
@@ -43,7 +44,7 @@
       const response_json: any = await response.json();
 
       if (response_json.login === 0) {
-        location.href = "/";
+        goto("/", { invalidateAll: true });
       } else if (response_json.login === -1) {
       } else if (response_json.login === -2) {
       } else {

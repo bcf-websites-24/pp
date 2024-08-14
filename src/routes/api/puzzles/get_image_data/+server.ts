@@ -1,22 +1,10 @@
-import { JWT_SECRET } from "$env/static/private";
+import { get_user_id } from "$lib/helpers.server";
 import { supabase_client_store } from "$lib/stores.server";
 import { error, type RequestEvent } from "@sveltejs/kit";
-import jwt from "jsonwebtoken";
 import { get } from "svelte/store";
 
 export async function POST(request_event: RequestEvent): Promise<Response> {
-  const jwt_token: string | undefined = request_event.cookies.get("pp-jwt");
-
-  // no cookie means user is not logged in
-  if (jwt_token) {
-    try {
-      jwt.verify(jwt_token, JWT_SECRET);
-    } catch (err) {
-      // verify error means malformed token/wrong secret
-      return error(403);
-    }
-  } else {
-    // user not logged in
+  if (get_user_id(request_event.cookies) === null) {
     return error(403);
   }
 
