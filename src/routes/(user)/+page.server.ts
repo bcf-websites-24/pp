@@ -3,20 +3,13 @@ import { supabase_client_store } from "$lib/stores.server";
 import { get } from "svelte/store";
 import jwt from "jsonwebtoken";
 import { error, type ServerLoadEvent } from "@sveltejs/kit";
+import { get_user_id } from "$lib/helpers.server";
 
 export async function load(load_event: ServerLoadEvent): Promise<any> {
-  const token = load_event.cookies.get("pp-jwt");
+  let id = get_user_id(load_event.cookies);
 
-  if (token === undefined) {
+  if (id === null) {
     return error(403);
-  }
-
-  let id: any;
-
-  try {
-    id = (jwt.verify(token, JWT_SECRET) as any).id;
-  } catch (err) {
-    error(403);
   }
 
   const user_detail_rpc = await get(
