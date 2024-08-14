@@ -15,6 +15,9 @@
           <li class="nav-item">
             <a class="nav-link" href="/admin/meme">Meme</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/del_user">Remove User</a>
+          </li>
         </ul>
         <button class="btn btn-primary">Logout</button>
       </div>

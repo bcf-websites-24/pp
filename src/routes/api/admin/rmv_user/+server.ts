@@ -12,14 +12,14 @@ export async function POST({
   }
 
   const request_json: any = await request.json();
-  const user_id: string = request_json.user_id;
+  const username: string = request_json.username;
 
-  if (user_id === undefined || user_id === null) {
+  if (username === undefined || username === null) {
     return error(422);
   }
 
   const del_user_rpc = await get(supabase_client_store).rpc("delete_user", {
-    given_id: user_id,
+    given_name: username,
   });
 
   // VERCEL_LOG_SOURCE, this will be on the vercel api log
