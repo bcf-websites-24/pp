@@ -8,4 +8,7 @@ export const current_level_state = writable(-1);
 export const current_rank_state = writable(-1);
 export const next_level_id_state = writable(-1);
 export const next_level_url_state = writable("");
+export const correct_answer_toast_store = writable(new Toast(""));
 export const wrong_answer_toast_store = writable(new Toast(""));
+export const success_toast_store = writable(new Toast(""));
+export const fail_toast_store = writable(new Toast(""));
