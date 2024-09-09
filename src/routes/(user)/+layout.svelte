@@ -4,10 +4,13 @@
     current_level_state,
     current_rank_state,
     next_level_id_state,
+    next_level_url_state,
     user_logged_in_state,
     username_state,
   } from "$lib/stores";
+  import { onMount } from "svelte";
 
+  export let data: any;
   let rank_text: string = "Unranked";
 
   function logout(): void {
@@ -21,6 +24,19 @@
 
   $: rank_text =
     $current_rank_state === -1 ? "Unranked" : $current_rank_state.toString();
+
+  onMount(() => {
+    if (data.details !== null) {
+      $user_logged_in_state = true;
+      $username_state = data.details.username;
+      $current_level_state = data.details.curr_level + 1;
+      $next_level_id_state = data.details.next_puzzle_id;
+      $next_level_url_state = data.details.next_puzzle_url;
+      $current_rank_state = data.details.user_rank
+        ? data.details.user_rank
+        : -1;
+    }
+  });
 </script>
 
 {#if $user_logged_in_state}
