@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { goto } from "$app/navigation";
   import { page } from "$app/stores";
   import Error from "$lib/components/error.svelte";
   import { admin_logged_in_state } from "$lib/stores";
@@ -14,7 +15,7 @@
       }),
     }).then(async (response: Response): Promise<void> => {
       if (response.status === 200) {
-        location.href = "/admin";
+        goto("/admin", { invalidateAll: true });
       }
     });
   }

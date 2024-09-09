@@ -10,12 +10,13 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
 
   const request = request_event.request;
   const request_json = await request.json();
+
   const image_blob = await get(supabase_client_store)
     .storage.from("puzzles")
     .download(request_json.url);
 
   if (image_blob.error) {
-    console.error("puzzles/get_image_data line 28\n" + image_blob.error);
+    console.error("puzzles/get_image_data line 18\n" + image_blob.error);
 
     return error(500);
   }

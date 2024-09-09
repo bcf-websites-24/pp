@@ -2,11 +2,14 @@
   import {
     current_level_state,
     current_rank_state,
+    next_level_id_state,
     user_logged_in_state,
     username_state,
   } from "$lib/stores";
 
   let rank_text: string = "Unranked";
+
+  function logout(): void {}
 
   $: rank_text =
     $current_rank_state === -1 ? "Unranked" : $current_rank_state.toString();
@@ -43,9 +46,11 @@
           <ul class="dropdown-menu dropdown-menu-end border-0 shadow">
             <li>
               <p class="fs-4 fw-semibold pt-1 px-3 m-0">{$username_state}</p>
-              <p class="text-body-secondary px-3 m-0">
-                Level: {$current_level_state}
-              </p>
+              {#if $next_level_id_state !== null}
+                <p class="text-body-secondary px-3 m-0">
+                  Level: {$current_level_state}
+                </p>
+              {/if}
               <p class="text-body-secondary pb-1 px-3 m-0">Rank: {rank_text}</p>
             </li>
             <li>
@@ -55,7 +60,7 @@
               <a class="dropdown-item" href="/leaderboard">Leaderboard</a>
             </li>
             <li>
-              <button class="dropdown-item">Logout</button>
+              <button on:click={logout} class="dropdown-item">Logout</button>
             </li>
           </ul>
         </div>
