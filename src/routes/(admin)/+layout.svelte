@@ -2,12 +2,14 @@
   import "$lib/style.scss";
   import { admin_logged_in_state } from "$lib/stores";
   import { goto } from "$app/navigation";
+  import { handle_unauthorized_admin } from "$lib/helpers";
 
   function logout(): void {
     fetch("/api/admin/logout").then((response) => {
       if (response.status === 200) {
         goto("/admin", { invalidateAll: true });
-      } else if (response.status === 403) {
+      } else if (response.status === 401) {
+        handle_unauthorized_admin();
       }
     });
   }

@@ -6,8 +6,7 @@
   } from "$lib/stores";
   import { onMount } from "svelte";
   import PuzzleItem from "$lib/components/admin/puzzle-item.svelte";
-  import { goto } from "$app/navigation";
-  import { AdminPuzzleItem } from "$lib/helpers";
+  import { AdminPuzzleItem, handle_unauthorized_admin } from "$lib/helpers";
 
   export let data: any;
   let puzzle_submitting = false;
@@ -62,8 +61,8 @@
         puzzle_submitting = false;
 
         add_puzzle_form_elem.reset();
-      } else if (response.status === 403) {
-        goto("/admin");
+      } else if (response.status === 401) {
+        handle_unauthorized_admin();
       } else {
         $fail_toast_store.show();
       }

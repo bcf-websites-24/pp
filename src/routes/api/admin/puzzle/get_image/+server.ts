@@ -5,7 +5,7 @@ import { get } from "svelte/store";
 
 export async function POST(request_event: RequestEvent): Promise<Response> {
   if (!is_valid_admin(request_event.cookies)) {
-    return error(403);
+    return error(401);
   }
 
   const request = request_event.request;

@@ -6,7 +6,7 @@ import { is_valid_admin } from "$lib/helpers.server";
 
 export async function POST({ cookies }: RequestEvent): Promise<Response> {
   if (!is_valid_admin(cookies)) {
-    return error(403);
+    return error(401);
   }
 
   const get_arena_metadata_rpc = await get(supabase_client_store).rpc(

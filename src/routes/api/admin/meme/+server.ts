@@ -20,7 +20,7 @@ export async function POST({
   cookies,
 }: RequestEvent): Promise<Response> {
   if (!is_valid_admin(cookies)) {
-    return error(403);
+    return error(401);
   }
 
   const request_formdata: any = await request.formData();

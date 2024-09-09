@@ -5,8 +5,7 @@
     success_toast_store,
   } from "$lib/stores";
   import { onMount } from "svelte";
-  import { goto } from "$app/navigation";
-  import type { AdminMemeItem } from "$lib/helpers";
+  import { handle_unauthorized_admin, type AdminMemeItem } from "$lib/helpers";
   import MemeItem from "$lib/components/admin/meme-item.svelte";
 
   export let data: any;
@@ -43,8 +42,8 @@
         meme_submitting = false;
 
         add_meme_form_elem.reset();
-      } else if (response.status === 403) {
-        goto("/admin");
+      } else if (response.status === 401) {
+        handle_unauthorized_admin();
       } else {
         $fail_toast_store.show();
       }

@@ -5,7 +5,7 @@ import { get } from "svelte/store";
 
 export async function load(load_event: ServerLoadEvent): Promise<any> {
   if (!is_valid_admin(load_event.cookies)) {
-    return error(403);
+    return error(401);
   }
 
   const meme_list_rpc = await get(supabase_client_store).rpc("get_all_memes");

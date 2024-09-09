@@ -25,7 +25,7 @@
   });
 </script>
 
-{#if $page.status === 403}
+{#if $page.status === 401}
   <div
     class="position-absolute top-0 bottom-0 start-0 end-0 d-flex justify-content-center align-items-center"
   >
