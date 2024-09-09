@@ -10,13 +10,13 @@ export async function GET({ cookies }: RequestEvent): Promise<Response> {
     return error(403);
   }
 
-  const random_meme_rpc = await get(
-    supabase_client_store
-  ).rpc("get_random_meme");
+  const random_meme_rpc = await get(supabase_client_store).rpc(
+    "get_random_meme"
+  );
 
   // VERCEL_LOG_SOURCE, this will be on the vercel api log
   if (random_meme_rpc.error) {
-    console.error("memes/random line 35\n" + random_meme_rpc.error.message);
+    console.error("memes/random line 19\n" + random_meme_rpc.error.message);
     return error(500);
   }
 
@@ -26,10 +26,8 @@ export async function GET({ cookies }: RequestEvent): Promise<Response> {
     .download(random_meme_rpc.data.img_url);
 
   // VERCEL LOG SOURCE
-  if (
-    meme_image_rpc.error
-  ) {
-    console.error("memes/random line 51\n" + meme_image_rpc.error);
+  if (meme_image_rpc.error) {
+    console.error("memes/random line 30\n" + meme_image_rpc.error);
     return error(500);
   }
 
@@ -42,9 +40,7 @@ export async function GET({ cookies }: RequestEvent): Promise<Response> {
       .download(random_meme_rpc.data.sound_url);
 
     // VERCEL LOG SOURCE
-    if (
-      meme_sound_download_rpc.error
-    ) {
+    if (meme_sound_download_rpc.error) {
       console.error("memes/random line 68\n" + meme_sound_download_rpc.error);
       return error(500);
     }

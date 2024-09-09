@@ -15,7 +15,7 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
     .download(request_json.url);
 
   if (image_blob.error) {
-    console.error("memes/get_image_data line 28\n" + image_blob.error);
+    console.error("memes/get_image_data line 18\n" + image_blob.error);
 
     return error(500);
   }
