@@ -11,7 +11,6 @@
   import { tweened } from "svelte/motion";
 
   let mounted = false;
-  let form_holder_elem: HTMLDivElement;
   let reg_height: number;
   let forms_elem: HTMLDivElement;
   let login_form_height: number;
@@ -32,29 +31,27 @@
 
   async function login(): Promise<void> {
     signing = true;
-    const response: Response = await fetch("/api/users/login", {
+    fetch("/api/users/login", {
       method: "POST",
       body: JSON.stringify({
         username: login_username,
         password: login_password,
       }),
-    });
+    }).then(async (response) => {
+      if (response.status === 200) {
+        const response_json: any = await response.json();
 
-    if (response.status === 200) {
-      const response_json: any = await response.json();
-
-      if (response_json.login === 0) {
-        goto("/", { invalidateAll: true });
-      } else if (response_json.login === -1) {
-      } else if (response_json.login === -2) {
-      } else {
-        console.error("Unknown login value");
+        if (response_json.login === 0) {
+          goto("/", { invalidateAll: true });
+        } else if (response_json.login === -1) {
+        } else if (response_json.login === -2) {
+        }
       }
-    }
 
-    signing = false;
+      signing = false;
 
-    login_form_elem.reset();
+      login_form_elem.reset();
+    });
   }
 
   function login_tab_clicked(): void {
@@ -101,10 +98,7 @@
             data-bs-toggle="tab">Register</button
           >
         </div>
-        <div
-          bind:this={form_holder_elem}
-          class="align-self-stretch overflow-hidden"
-        >
+        <div class="align-self-stretch overflow-hidden">
           <div
             bind:this={forms_elem}
             class="d-flex align-items-start"

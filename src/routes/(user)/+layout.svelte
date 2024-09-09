@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { goto } from "$app/navigation";
   import { handle_unauthorized_user } from "$lib/helpers";
   import {
     current_level_state,
@@ -16,7 +17,7 @@
   function logout(): void {
     fetch("/api/users/logout").then((response) => {
       if (response.status === 200) {
-        $user_logged_in_state = false;
+        goto("/", { invalidateAll: true });
       } else if (response.status === 401) {
         handle_unauthorized_user();
       }
