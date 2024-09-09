@@ -12,7 +12,7 @@
   import { onMount } from "svelte";
 
   export let data: any;
-  let show_puzzle = true;
+  // let show_puzzle = true;
 
   onMount((): void => {
     if (data.details !== null) {
@@ -26,8 +26,9 @@
   });
 </script>
 
-{#if show_puzzle}
+<Puzzle />
+<!-- {#if show_puzzle}
   <Puzzle bind:show_puzzle />
 {:else}
   <Meme bind:show_puzzle />
-{/if}
+{/if} -->
