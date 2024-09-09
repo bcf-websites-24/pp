@@ -1,3 +1,7 @@
+import { get } from "svelte/store";
+import { unauthorized_toast_store } from "./stores";
+import { goto } from "$app/navigation";
+
 export const username_pattern = /^\w{4,32}$/;
 export const student_id_pattern = /^\d{9}$/;
 
@@ -45,4 +49,14 @@ export function make_date(date: Date): string {
   const second = date.getSeconds();
 
   return `${hour}:${minute}:${second} ${ampm} ${month} ${day}, ${year}`;
+}
+
+export function handle_unauthorized_user(): void {
+  get(unauthorized_toast_store).show();
+  goto("/", { invalidateAll: true });
+}
+
+export function handle_unauthorized_admin(): void {
+  get(unauthorized_toast_store).show();
+  goto("/admin", { invalidateAll: true });
 }

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
-  import { AdminPuzzleItem } from "$lib/helpers";
+  import { AdminPuzzleItem, handle_unauthorized_admin } from "$lib/helpers";
   import { fade, slide } from "svelte/transition";
   import { onMount } from "svelte";
   import { fail_toast_store, success_toast_store } from "$lib/stores";
@@ -55,8 +55,8 @@
           const response_blob = await response.blob();
           puzzle.img_data = URL.createObjectURL(response_blob);
           img_loading = false;
-        } else if (response.status === 403) {
-          goto("/admin");
+        } else if (response.status === 401) {
+          handle_unauthorized_admin();
         }
       });
     }
@@ -124,8 +124,8 @@
           .concat([new_puzzle])
           .concat(puzzles.slice(put_in));
         edit_submiting = false;
-      } else if (response.status === 403) {
-        goto("/admin");
+      } else if (response.status === 401) {
+        handle_unauthorized_admin();
       } else {
         $fail_toast_store.show();
       }
@@ -178,8 +178,8 @@
         };
 
         animation.play();
-      } else if (response.status === 403) {
-        goto("/admin");
+      } else if (response.status === 401) {
+        handle_unauthorized_admin();
       } else {
         $fail_toast_store.show();
       }

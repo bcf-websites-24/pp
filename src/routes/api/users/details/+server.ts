@@ -8,7 +8,7 @@ export async function POST({ cookies }: RequestEvent): Promise<Response> {
   let uid = get_user_id(cookies);
 
   if (uid === null) {
-    return error(403);
+    return error(401);
   }
 
   const user_detail_rpc: PostgrestSingleResponse<any> = await get(

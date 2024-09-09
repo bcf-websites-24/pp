@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { goto } from "$app/navigation";
   import { page } from "$app/stores";
+  import { handle_unauthorized_admin } from "$lib/helpers";
   import { onMount } from "svelte";
 
   onMount((): void => {
-    if ($page.status === 403) {
-      goto("/admin");
+    if ($page.status === 401) {
+      handle_unauthorized_admin();
     }
   });
 </script>

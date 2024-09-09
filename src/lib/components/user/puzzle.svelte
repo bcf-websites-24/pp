@@ -1,7 +1,7 @@
 <script lang="ts">
+  import { handle_unauthorized_user } from "$lib/helpers";
   import {
     current_level_state,
-    user_logged_in_state,
     next_level_id_state,
     next_level_url_state,
     wrong_answer_toast_store,
@@ -49,8 +49,8 @@
           }
 
           submitting = false;
-        } else if (response.status === 403) {
-          $user_logged_in_state = false;
+        } else if (response.status === 401) {
+          handle_unauthorized_user();
         }
       })
       .finally(() => {
@@ -80,8 +80,8 @@
         const response_blob = await response.blob();
         image_data = URL.createObjectURL(response_blob);
         image_loaded = true;
-      } else if (response.status === 403) {
-        $user_logged_in_state = false;
+      } else if (response.status === 401) {
+        handle_unauthorized_user();
       }
     });
   }

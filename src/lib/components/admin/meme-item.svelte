@@ -2,7 +2,7 @@
   import { goto } from "$app/navigation";
   import { fade, slide } from "svelte/transition";
   import { onMount } from "svelte";
-  import type { AdminMemeItem } from "$lib/helpers";
+  import { handle_unauthorized_admin, type AdminMemeItem } from "$lib/helpers";
   import { fail_toast_store, success_toast_store } from "$lib/stores";
 
   export let memes: Array<AdminMemeItem>;
@@ -52,8 +52,8 @@
           const response_blob = await response.blob();
           meme.img_data = URL.createObjectURL(response_blob);
           img_loading = false;
-        } else if (response.status === 403) {
-          goto("/admin");
+        } else if (response.status === 401) {
+          handle_unauthorized_admin();
         } else {
           console.log("added", meme);
         }
@@ -104,8 +104,8 @@
 
         meme.img_url = new_meme.img_url;
         edit_submiting = false;
-      } else if (response.status === 403) {
-        goto("/admin");
+      } else if (response.status === 401) {
+        handle_unauthorized_admin();
       } else {
         $fail_toast_store.show();
       }
@@ -155,8 +155,8 @@
         };
 
         animation.play();
-      } else if (response.status === 403) {
-        goto("/admin");
+      } else if (response.status === 401) {
+        handle_unauthorized_admin();
       } else {
         $fail_toast_store.show();
       }

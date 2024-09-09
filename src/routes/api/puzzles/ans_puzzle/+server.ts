@@ -18,7 +18,7 @@ export async function POST({
   let given_user_id = get_user_id(cookies);
 
   if (given_user_id === null) {
-    return error(403);
+    return error(401);
   }
 
   const request_json: any = await request.json();

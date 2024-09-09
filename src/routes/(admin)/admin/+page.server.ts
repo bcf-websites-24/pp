@@ -5,7 +5,7 @@ import { get } from "svelte/store";
 
 export async function load(load_event: ServerLoadEvent): Promise<any> {
   if (!is_valid_admin(load_event.cookies)) {
-    return error(403);
+    return error(401);
   }
 
   const admin_leaderboard_data = await get(supabase_client_store).rpc(
@@ -15,7 +15,7 @@ export async function load(load_event: ServerLoadEvent): Promise<any> {
   if (admin_leaderboard_data.error) {
     console.error(
       "admin leaderboard rpc call error @admin/page.server.ts 14\n" +
-        admin_leaderboard_data.error
+      admin_leaderboard_data.error
     );
 
     return error(500); // internal server error

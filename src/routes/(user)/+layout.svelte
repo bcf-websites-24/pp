@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { goto } from "$app/navigation";
+  import { handle_unauthorized_user } from "$lib/helpers";
   import {
     current_level_state,
     current_rank_state,
@@ -16,8 +16,9 @@
   function logout(): void {
     fetch("/api/users/logout").then((response) => {
       if (response.status === 200) {
-        goto("/", { invalidateAll: true });
-      } else if (response.status === 403) {
+        $user_logged_in_state = false;
+      } else if (response.status === 401) {
+        handle_unauthorized_user();
       }
     });
   }
@@ -26,7 +27,7 @@
     $current_rank_state === -1 ? "Unranked" : $current_rank_state.toString();
 
   onMount(() => {
-    if (data.details !== null) {
+    if (data.details !== null && data.details !== undefined) {
       $user_logged_in_state = true;
       $username_state = data.details.username;
       $current_level_state = data.details.curr_level + 1;

@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { goto } from "$app/navigation";
+  import { handle_unauthorized_user } from "$lib/helpers";
   import { onMount } from "svelte";
 
-  class Stat {
-    public username = "";
-    public current_level = -1;
-    public batch = "";
-  }
+  type Stat = {
+    username: string;
+    current_level: number;
+    batch: string;
+  };
 
   let players = new Array<Stat>();
 
@@ -26,8 +26,8 @@
             batch: (response_json[i].f_student_id as string).substring(0, 4),
           };
         }
-      } else if (response.status === 403) {
-        goto("/");
+      } else if (response.status === 401) {
+        handle_unauthorized_user();
       }
     });
   });

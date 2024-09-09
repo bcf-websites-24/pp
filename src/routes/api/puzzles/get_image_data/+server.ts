@@ -5,7 +5,7 @@ import { get } from "svelte/store";
 
 export async function POST(request_event: RequestEvent): Promise<Response> {
   if (get_user_id(request_event.cookies) === null) {
-    return error(403);
+    return error(401);
   }
 
   const request = request_event.request;

@@ -83,7 +83,7 @@
   });
 </script>
 
-{#if $page.status === 403}
+{#if $page.status === 401}
   <div class="stranger-root">
     <div class="stranger-root-1">
       <p class="fs-5 text-center text-secondary mb-0">Welcome to</p>

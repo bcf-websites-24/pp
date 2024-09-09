@@ -1,5 +1,5 @@
 import { Toast } from "bootstrap";
-import { writable, type Writable } from "svelte/store";
+import { writable } from "svelte/store";
 
 export const admin_logged_in_state = writable(false);
 export const user_logged_in_state = writable(false);
@@ -12,3 +12,4 @@ export const correct_answer_toast_store = writable(new Toast(""));
 export const wrong_answer_toast_store = writable(new Toast(""));
 export const success_toast_store = writable(new Toast(""));
 export const fail_toast_store = writable(new Toast(""));
+export const unauthorized_toast_store = writable(new Toast(""));

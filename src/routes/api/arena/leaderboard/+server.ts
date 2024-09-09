@@ -6,7 +6,7 @@ import { get_user_id } from "$lib/helpers.server";
 
 export async function POST({ cookies }: RequestEvent): Promise<Response> {
   if (get_user_id(cookies) === null) {
-    return error(403);
+    return error(401);
   }
 
   const leaderboard_rpc: PostgrestSingleResponse<any> = await get(
