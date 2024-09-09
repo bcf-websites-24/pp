@@ -8,17 +8,20 @@ export async function load(load_event: ServerLoadEvent): Promise<any> {
     return error(403);
   }
 
-  const user_detail_rpc = await get(supabase_client_store).rpc("get_leaderboard_for_admins");
+  const admin_leaderboard_data = await get(supabase_client_store).rpc(
+    "get_leaderboard_for_admins"
+  );
 
-  if (user_detail_rpc.error) {
-    console.error("layout data 35\n" + user_detail_rpc.error);
+  if (admin_leaderboard_data.error) {
+    console.error(
+      "admin leaderboard rpc call error @admin/page.server.ts 14\n" +
+        admin_leaderboard_data.error
+    );
 
-    return error(500);	// internal server error
+    return error(500); // internal server error
   }
 
-  return (
-    {
-      leaderboard: user_detail_rpc.data
-    }
-  );
+  return {
+    leaderboard: admin_leaderboard_data.data,
+  };
 }

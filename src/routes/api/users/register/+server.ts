@@ -98,7 +98,7 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
   });
 
   if (add_user_rpc.error) {
-    console.error("users/register line 45\n" + add_user_rpc.error);
+    console.error("users/register line 101\n" + add_user_rpc.error);
 
     return error(500);
   }

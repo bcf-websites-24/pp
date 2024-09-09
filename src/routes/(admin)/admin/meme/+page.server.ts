@@ -11,12 +11,14 @@ export async function load(load_event: ServerLoadEvent): Promise<any> {
   const meme_list_rpc = await get(supabase_client_store).rpc("get_all_memes");
 
   if (meme_list_rpc.error) {
-    console.error(meme_list_rpc.error);
+    console.error(
+      "get all meme rpc error @admin/meme:14\n" + meme_list_rpc.error
+    );
 
     return error(500);
   }
 
   return {
-    memes: meme_list_rpc.data
+    memes: meme_list_rpc.data,
   };
 }

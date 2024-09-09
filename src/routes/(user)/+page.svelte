@@ -21,7 +21,9 @@
       $current_level_state = data.details.curr_level + 1;
       $next_level_id_state = data.details.next_puzzle_id;
       $next_level_url_state = data.details.next_puzzle_url;
-      $current_rank_state = -1;
+      $current_rank_state = data.details.user_rank
+        ? data.details.user_rank
+        : -1;
     }
   });
 </script>

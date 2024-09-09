@@ -30,18 +30,16 @@ export async function POST({
     return error(422);
   }
 
-  const given_hashed_ans: string = request_formdata.get(
-    "hashed_ans"
-  ) as string;
-  const given_info: string = '';
+  const given_hashed_ans: string = request_formdata.get("hashed_ans") as string;
+  const given_info: string = "";
   const given_info_link: string = request_formdata.get("info_link") as string;
-  const given_puzzle_level: number = parseInt(request_formdata.get(
-    "puzzle_level"
-  ));
+  const given_puzzle_level: number = parseInt(
+    request_formdata.get("puzzle_level")
+  );
 
-  const given_title: string = '';
+  const given_title: string = "";
   const puzzle_file: File = request_formdata.get("puzzle_file") as File;
-  const editing: boolean = request_formdata.get("editing") === 'true';
+  const editing: boolean = request_formdata.get("editing") === "true";
   const given_puzzle_id: string = request_formdata.get("puzzle_id") as string;
 
   // client side did not give correct request fields
@@ -84,7 +82,7 @@ export async function POST({
 
     // VERCEL_LOG_SOURCE
     if (add_new_puzzle_rpc.error) {
-      console.error("admin/puzzle line 108" + add_new_puzzle_rpc.error);
+      console.error("admin/puzzle line 85\n" + add_new_puzzle_rpc.error);
       return error(500);
     }
 
@@ -94,7 +92,7 @@ export async function POST({
 
     // VERCEL LOG SOURCE
     if (puzzle_file_upload_rpc.error) {
-      console.error("admin/puzzle line 118" + puzzle_file_upload_rpc.error);
+      console.error("admin/puzzle line 95\n" + puzzle_file_upload_rpc.error);
       return error(500);
     }
 
@@ -118,7 +116,7 @@ export async function POST({
 
       // VERCEL_LOG_SOURCE
       if (update_puzzle_rpc.error) {
-        console.error("admin/puzzle line 142" + update_puzzle_rpc.error);
+        console.error("admin/puzzle line 119\n" + update_puzzle_rpc.error);
         return error(500);
       }
 
@@ -142,7 +140,9 @@ export async function POST({
 
       // VERCEL_LOG_SOURCE
       if (update_puzzle_rpc.error) {
-        console.error("admin/puzzle line 166 " + update_puzzle_rpc.error.message);
+        console.error(
+          "admin/puzzle line 166 " + update_puzzle_rpc.error.message
+        );
         return error(500);
       }
 
@@ -153,7 +153,7 @@ export async function POST({
 
       // VERCEL LOG SOURCE
       if (puzzle_file_upload_rpc.error) {
-        console.error("admin/puzzle line 177" + puzzle_file_upload_rpc.error);
+        console.error("admin/puzzle line 156\n" + puzzle_file_upload_rpc.error);
         return error(500);
       }
     }

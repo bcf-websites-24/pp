@@ -19,15 +19,12 @@ export async function POST({ cookies }: RequestEvent): Promise<Response> {
 
   // VERCEL_LOG_SOURCE, this will be on the vercel api log
   if (user_detail_rpc.error) {
-    console.error("users/details 37\n" + user_detail_rpc.error);
+    console.error("users/details 22\n" + user_detail_rpc.error);
     return error(500);
   }
 
   // this may happens if uid does not exist in table
-  if (
-    user_detail_rpc.data.id === "" ||
-    user_detail_rpc.data.username === ""
-  ) {
+  if (user_detail_rpc.data.id === "" || user_detail_rpc.data.username === "") {
     return error(500);
   }
 
@@ -43,7 +40,7 @@ export async function POST({ cookies }: RequestEvent): Promise<Response> {
     puzzle_file_download_rpc.data.signedUrl === null
   ) {
     console.error(
-      "puzles/next_puzzle line 66\n" + puzzle_file_download_rpc.error
+      "puzles/next_puzzle line 43\n" + puzzle_file_download_rpc.error
     );
     return error(500);
   }
