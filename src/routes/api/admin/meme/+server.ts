@@ -30,7 +30,7 @@ export async function POST({
   }
 
   const meme_file: File = request_formdata.get("meme_file") as File;
-  const editing: boolean = request_formdata.get("editing") === 'true';
+  const editing: boolean = request_formdata.get("editing") === "true";
   const given_meme_id: string = request_formdata.get("meme_id") as string;
   let meme_data: string = "";
 
@@ -49,22 +49,23 @@ export async function POST({
       given_img_url,
       given_sound_url: "",
       given_content: "",
-      given_is_audio: false
+      given_is_audio: false,
     });
 
     // VERCEL_LOG_SOURCE
     if (add_new_meme_rpc.error) {
-      console.error("admin/meme line 73" + add_new_meme_rpc.error.message);
+      console.error("admin/meme line 57\n" + add_new_meme_rpc.error.message);
 
       return error(500);
     }
 
-    const meme_file_upload_rpc: any = await get(supabase_client_store).storage.from("memes")
+    const meme_file_upload_rpc: any = await get(supabase_client_store)
+      .storage.from("memes")
       .upload(given_img_url, meme_file);
 
     // VERCEL LOG SOURCE
     if (meme_file_upload_rpc.error) {
-      console.error("admin/meme line 83" + meme_file_upload_rpc.error);
+      console.error("admin/meme line 68\n" + meme_file_upload_rpc.error);
 
       return error(500);
     }
@@ -76,13 +77,16 @@ export async function POST({
     }
 
     if (meme_file === undefined || meme_file === null) {
-      const update_meme_rpc = await get(supabase_client_store).rpc("update_meme_nofile", {
-        given_meme_id,
-      });
+      const update_meme_rpc = await get(supabase_client_store).rpc(
+        "update_meme_nofile",
+        {
+          given_meme_id,
+        }
+      );
 
       // VERCEL_LOG_SOURCE
       if (update_meme_rpc.error) {
-        console.error("admin/meme line 142" + update_meme_rpc.error);
+        console.error("admin/meme line 89\n" + update_meme_rpc.error);
         return error(500);
       }
 
@@ -92,24 +96,28 @@ export async function POST({
         "." +
         meme_file.name?.split(".").pop()) as string;
 
-      const update_meme_rpc = await get(supabase_client_store).rpc("update_meme", {
-        given_id: given_meme_id,
-        given_img_url: given_img_url,
-      });
+      const update_meme_rpc = await get(supabase_client_store).rpc(
+        "update_meme",
+        {
+          given_id: given_meme_id,
+          given_img_url: given_img_url,
+        }
+      );
 
       // VERCEL_LOG_SOURCE
       if (update_meme_rpc.error) {
-        console.error("admin/meme line 166 " + update_meme_rpc.error.message);
+        console.error("admin/meme line 109 " + update_meme_rpc.error.message);
         return error(500);
       }
 
       meme_data = update_meme_rpc.data;
-      const meme_file_upload_rpc = await get(supabase_client_store).storage.from("memes")
+      const meme_file_upload_rpc = await get(supabase_client_store)
+        .storage.from("memes")
         .upload(given_img_url, meme_file);
 
       // VERCEL LOG SOURCE
       if (meme_file_upload_rpc.error) {
-        console.error("admin/meme line 177" + meme_file_upload_rpc.error);
+        console.error("admin/meme line 120\n" + meme_file_upload_rpc.error);
         return error(500);
       }
     }

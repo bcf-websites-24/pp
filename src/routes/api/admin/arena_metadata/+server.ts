@@ -9,14 +9,14 @@ export async function POST({ cookies }: RequestEvent): Promise<Response> {
     return error(403);
   }
 
-  const get_arena_metadata_rpc = await get(
-    supabase_client_store
-  ).rpc("get_arena_metadata");
+  const get_arena_metadata_rpc = await get(supabase_client_store).rpc(
+    "get_arena_metadata"
+  );
 
   // VERCEL_LOG_SOURCE, this will be on the vercel api log
   if (get_arena_metadata_rpc.error) {
     console.error(
-      "admin/arena_metadata line 41\n" + get_arena_metadata_rpc.error
+      "admin/arena_metadata line 19\n" + get_arena_metadata_rpc.error
     );
     return error(500);
   }

@@ -3,7 +3,10 @@ import { error, json, type RequestEvent } from "@sveltejs/kit";
 import { get } from "svelte/store";
 import { is_valid_admin } from "$lib/helpers.server";
 
-export async function POST({ request, cookies, }: RequestEvent): Promise<Response> {
+export async function POST({
+  request,
+  cookies,
+}: RequestEvent): Promise<Response> {
   if (!is_valid_admin(cookies)) {
     return error(403);
   }
@@ -15,14 +18,13 @@ export async function POST({ request, cookies, }: RequestEvent): Promise<Respons
     return error(422);
   }
 
-  const del_meme_rpc = await get(supabase_client_store)
-    .rpc("delete_meme", {
-      given_id: meme_id,
-    });
+  const del_meme_rpc = await get(supabase_client_store).rpc("delete_meme", {
+    given_id: meme_id,
+  });
 
   // VERCEL_LOG_SOURCE, this will be on the vercel api log
   if (del_meme_rpc.error) {
-    console.error("memes/rmv_meme line 52\n" + del_meme_rpc.error.message);
+    console.error("memes/rmv_meme line 25\n" + del_meme_rpc.error.message);
 
     return error(500);
   }

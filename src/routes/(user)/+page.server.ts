@@ -12,21 +12,23 @@ export async function load(load_event: ServerLoadEvent): Promise<any> {
     return error(403);
   }
 
-  const user_detail_rpc = await get(
-    supabase_client_store
-  ).rpc("get_user_details", {
-    given_user_id: id,
-  });
-
-  if (user_detail_rpc.error) {
-    console.error("layout data 35\n" + user_detail_rpc.error);
-
-    return error(500);	// internal server error
-  }
-
-  return (
+  const user_detail_rpc = await get(supabase_client_store).rpc(
+    "get_user_details",
     {
-      details: user_detail_rpc.data
+      given_user_id: id,
     }
   );
+
+  if (user_detail_rpc.error) {
+    console.error(
+      "user detail rpc error @ (user)/page.server.ts:22\n" +
+        user_detail_rpc.error
+    );
+
+    return error(500); // internal server error
+  }
+
+  return {
+    details: user_detail_rpc.data,
+  };
 }
