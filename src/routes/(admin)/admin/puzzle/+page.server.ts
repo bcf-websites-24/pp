@@ -8,15 +8,19 @@ export async function load(load_event: ServerLoadEvent): Promise<any> {
     return error(403);
   }
 
-  const puzzle_list_rpc = await get(supabase_client_store).rpc("get_all_puzzles");
+  const puzzle_list_rpc = await get(supabase_client_store).rpc(
+    "get_all_puzzles"
+  );
 
   if (puzzle_list_rpc.error) {
-    console.error(puzzle_list_rpc.error);
+    console.error(
+      "get all puzzles rpc error @admin/puzzle:14\n" + puzzle_list_rpc.error
+    );
 
     return error(500);
   }
 
   return {
-    puzzles: puzzle_list_rpc.data
+    puzzles: puzzle_list_rpc.data,
   };
 }

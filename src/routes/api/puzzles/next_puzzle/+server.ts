@@ -19,7 +19,7 @@ export async function POST({ cookies }: RequestEvent): Promise<Response> {
 
   // VERCEL_LOG_SOURCE, this will be on the vercel api log
   if (user_next_puzzle_rpc.error) {
-    console.error("puzzles/next_puzzle line 37\n" + user_next_puzzle_rpc.error);
+    console.error("puzzles/next_puzzle line 22\n" + user_next_puzzle_rpc.error);
     return error(500);
   }
 
@@ -48,7 +48,9 @@ export async function POST({ cookies }: RequestEvent): Promise<Response> {
     puzzle_file_download_rpc.data.signedUrl === undefined ||
     puzzle_file_download_rpc.data.signedUrl === null
   ) {
-    console.error("puzles/next_puzzle line 66\n" + puzzle_file_download_rpc.error);
+    console.error(
+      "puzles/next_puzzle line 52\n" + puzzle_file_download_rpc.error
+    );
     return error(500);
   }
 
