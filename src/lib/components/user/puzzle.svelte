@@ -6,6 +6,7 @@
     next_level_url_state,
     wrong_answer_toast_store,
     correct_answer_toast_store,
+    current_rank_state,
   } from "$lib/stores";
   import { fade, slide } from "svelte/transition";
 
@@ -33,12 +34,15 @@
         if (response.status === 200) {
           const response_json = await response.json();
 
+          console.log(response_json);
+
           if (response_json.ans.f_is_correct) {
             $correct_answer_toast_store.show();
 
             $next_level_id_state = response_json.ans.f_next_puzzle_id;
             $next_level_url_state = response_json.ans.f_next_puzzle_img_url;
             $current_level_state = response_json.ans.f_next_puzzle_level;
+            $current_rank_state = response_json.ans.f_rank;
           } else {
             wrong_answer = true;
 

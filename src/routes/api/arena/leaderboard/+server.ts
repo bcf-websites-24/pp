@@ -9,9 +9,7 @@ export async function POST({ cookies }: RequestEvent): Promise<Response> {
     return error(401);
   }
 
-  const leaderboard_rpc: PostgrestSingleResponse<any> = await get(
-    supabase_client_store
-  ).rpc("get_leaderboard");
+  const leaderboard_rpc = await get(supabase_client_store).rpc("get_leaderboard");
 
   // VERCEL_LOG_SOURCE, this will be on the vercel api log
   if (leaderboard_rpc.error) {

@@ -41,13 +41,12 @@ export async function POST({
     return error(422);
   }
 
-  const add_puzzle_attempt_rpc: PostgrestSingleResponse<any> = await get(
-    supabase_client_store
-  ).rpc("add_puzzle_attempt", {
-    given_ans,
-    given_puzzle_id,
-    given_user_id,
-  });
+  const add_puzzle_attempt_rpc = await get(supabase_client_store)
+    .rpc("add_puzzle_attempt", {
+      given_ans,
+      given_puzzle_id,
+      given_user_id,
+    });
 
   // VERCEL_LOG_SOURCE
   if (add_puzzle_attempt_rpc.error) {
