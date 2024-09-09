@@ -83,8 +83,8 @@
 {#if $page.status === 401}
   <div class="stranger-root">
     <div class="stranger-root-1">
-      <p class="fs-5 text-center text-secondary mb-0">Welcome to</p>
-      <p class="fs-1 text-center">Picture Puzzle 2024</p>
+      <div class="fs-5 text-center text-secondary mb-0">Welcome to</div>
+      <div class="fs-1 text-center">Picture Puzzle 2024</div>
       <div class="stranger-card card card-body shadow m-2">
         <div class="nav nav-pills mb-3">
           <button
