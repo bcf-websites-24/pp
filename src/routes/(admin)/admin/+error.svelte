@@ -47,7 +47,9 @@
         />
         <label for="floatingPassword">Password</label>
       </div>
-      <div class="d-flex justify-content-end mt-2">
+      <div class="d-flex align-items-center justify-content-end mt-2">
+        <a href="/" class="link-underline link-underline-opacity-0 me-2">Home</a
+        >
         <button type="submit" class="btn btn-primary">Login</button>
       </div>
     </form>

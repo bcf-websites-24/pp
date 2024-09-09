@@ -1,6 +1,16 @@
 <script lang="ts">
   import "$lib/style.scss";
   import { admin_logged_in_state } from "$lib/stores";
+  import { goto } from "$app/navigation";
+
+  function logout(): void {
+    fetch("/api/admin/logout").then((response) => {
+      if (response.status === 200) {
+        goto("/admin", { invalidateAll: true });
+      } else if (response.status === 403) {
+      }
+    });
+  }
 </script>
 
 {#if $admin_logged_in_state}
@@ -16,7 +26,7 @@
             <a class="nav-link" href="/admin/meme">Meme</a>
           </li>
         </ul>
-        <button class="btn btn-primary">Logout</button>
+        <button on:click={logout} class="btn btn-primary">Logout</button>
       </div>
     </div>
   </nav>

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { goto } from "$app/navigation";
   import {
     current_level_state,
     current_rank_state,
@@ -9,7 +10,14 @@
 
   let rank_text: string = "Unranked";
 
-  function logout(): void {}
+  function logout(): void {
+    fetch("/api/users/logout").then((response) => {
+      if (response.status === 200) {
+        goto("/", { invalidateAll: true });
+      } else if (response.status === 403) {
+      }
+    });
+  }
 
   $: rank_text =
     $current_rank_state === -1 ? "Unranked" : $current_rank_state.toString();
