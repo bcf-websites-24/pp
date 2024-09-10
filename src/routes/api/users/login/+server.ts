@@ -24,16 +24,26 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
 
   const id: string | null = uuid_hash_rpc.data[0].id;
   const hash: string = uuid_hash_rpc.data[0].hash;
+  const is_banned: boolean = uuid_hash_rpc.data[0].is_banned;
 
   if (id === null) {
     return json({
       login: -1, // user not found
+      is_banned: is_banned,
     });
   }
 
   if (!(await argon2.verify(hash, password))) {
     return json({
       login: -2, // password mismatch
+      is_banned: is_banned,
+    });
+  }
+
+  if (is_banned) {
+    return json({
+      login: -3, // banned user
+      is_banned: is_banned,
     });
   }
 
@@ -48,5 +58,6 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
 
   return json({
     login: 0, // success
+    is_banned: is_banned,
   });
 }
