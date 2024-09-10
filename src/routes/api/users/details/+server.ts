@@ -66,5 +66,6 @@ export async function POST({ cookies }: RequestEvent): Promise<Response> {
     next_puzzle_url: puzzle_file_download_rpc.data.signedUrl,
     next_puzzle_id: user_detail_rpc.data.next_puzzle_id,
     next_puzzle_level: user_detail_rpc.data.next_puzzle_level,
+    is_banned: user_detail_rpc.data.f_is_banned,
   });
 }
