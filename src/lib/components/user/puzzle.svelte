@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { handle_unauthorized_user } from "$lib/helpers";
+  import { handle_unauthorized_user, logout_user } from "$lib/helpers";
   import {
     current_level_state,
     next_level_id_state,
@@ -55,6 +55,8 @@
           submitting = false;
         } else if (response.status === 401) {
           handle_unauthorized_user();
+        } else if (response.status === 403) {
+          logout_user(true);
         }
       })
       .finally(() => {
@@ -86,6 +88,8 @@
         image_loaded = true;
       } else if (response.status === 401) {
         handle_unauthorized_user();
+      } else if (response.status === 403) {
+        logout_user(true);
       }
     });
   }

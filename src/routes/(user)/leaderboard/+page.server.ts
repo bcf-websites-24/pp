@@ -1,11 +1,17 @@
-import { get_user_id } from "$lib/helpers.server";
+import { get_user_id, is_user_banned } from "$lib/helpers.server";
 import { supabase_client_store } from "$lib/stores.server";
 import { error, type ServerLoadEvent } from "@sveltejs/kit";
 import { get } from "svelte/store";
 
 export async function load(load_event: ServerLoadEvent): Promise<any> {
-  if (get_user_id(load_event.cookies) === null) {
+  const id = get_user_id(load_event.cookies);
+
+  if (id === null) {
     return error(401);
+  }
+
+  if (await is_user_banned(id)) {
+    return error(403);
   }
 
   let page_param = load_event.url.searchParams.get("page");
