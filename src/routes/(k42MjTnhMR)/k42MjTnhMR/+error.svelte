@@ -15,7 +15,7 @@
       }),
     }).then(async (response: Response): Promise<void> => {
       if (response.status === 200) {
-        goto("/admin", { invalidateAll: true });
+        goto("/k42MjTnhMR", { invalidateAll: true });
       }
     });
   }

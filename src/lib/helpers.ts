@@ -35,7 +35,20 @@ export class AdminUserItem {
   public last_submission = "";
 }
 
-const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+const months = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
 
 export function make_date(date: Date): string {
   const day = date.getDate();
@@ -58,5 +71,5 @@ export function handle_unauthorized_user(): void {
 
 export function handle_unauthorized_admin(): void {
   get(unauthorized_toast_store).show();
-  goto("/admin", { invalidateAll: true });
+  goto("/k42MjTnhMR", { invalidateAll: true });
 }

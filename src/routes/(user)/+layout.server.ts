@@ -19,8 +19,8 @@ export async function load(load_event: ServerLoadEvent): Promise<any> {
 
   if (user_detail_rpc.error) {
     console.error(
-      "user detail rpc error @ (user)/page.server.ts:22\n" +
-      user_detail_rpc.error
+      "user detail rpc error @ (user)/layout.server.ts:22\n" +
+        user_detail_rpc.error
     );
 
     return error(500); // internal server error
