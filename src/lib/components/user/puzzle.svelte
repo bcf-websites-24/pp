@@ -34,7 +34,7 @@
         if (response.status === 200) {
           const response_json = await response.json();
 
-          console.log(response_json);
+          // console.log(response_json);
 
           if (response_json.ans.f_is_correct) {
             $correct_answer_toast_store.show();

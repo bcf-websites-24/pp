@@ -23,25 +23,35 @@ export async function load(load_event: ServerLoadEvent): Promise<any> {
     }
   }
 
-  const paged_leaderboard_rpc = await get(supabase_client_store)
-    .rpc("get_leaderboard_chunk", { given_offset });
+  const paged_leaderboard_rpc = await get(supabase_client_store).rpc(
+    "get_leaderboard_chunk",
+    { given_offset }
+  );
 
   // VERCEL_LOG_SOURCE, this will be on the vercel api log
   if (paged_leaderboard_rpc.error) {
-    console.error("arena/paged_leaderboard line 32", paged_leaderboard_rpc.error);
+    console.error(
+      "(user)/leaderboard/+page.server.ts:34",
+      paged_leaderboard_rpc.error
+    );
     return error(500);
   }
 
-  const leaderboard_metadata_rpc = await get(supabase_client_store).rpc("get_leaderboard_details");
+  const leaderboard_metadata_rpc = await get(supabase_client_store).rpc(
+    "get_leaderboard_details"
+  );
 
   // VERCEL_LOG_SOURCE, this will be on the vercel api log
   if (leaderboard_metadata_rpc.error) {
-    console.error("arena/paged_leaderboard line 42", leaderboard_metadata_rpc.error);
+    console.error(
+      "(user)/leaderboard/+page.server.ts line 42",
+      leaderboard_metadata_rpc.error
+    );
     return error(500);
   }
 
   return {
     players: paged_leaderboard_rpc.data,
-    metadata: leaderboard_metadata_rpc.data
+    metadata: leaderboard_metadata_rpc.data,
   };
 }
