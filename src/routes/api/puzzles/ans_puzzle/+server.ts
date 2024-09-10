@@ -2,7 +2,7 @@ import { supabase_client_store } from "$lib/stores.server";
 import type { PostgrestSingleResponse } from "@supabase/supabase-js";
 import { error, json, type RequestEvent } from "@sveltejs/kit";
 import { get } from "svelte/store";
-import { get_user_id } from "$lib/helpers.server";
+import { get_user_id, is_user_banned } from "$lib/helpers.server";
 
 /**
  * request format:
@@ -16,9 +16,12 @@ export async function POST({
   cookies,
 }: RequestEvent): Promise<Response> {
   let given_user_id = get_user_id(cookies);
-
   if (given_user_id === null) {
     return error(401);
+  }
+
+  if (await is_user_banned(given_user_id)) {
+    return error(403);
   }
 
   const request_json: any = await request.json();
@@ -41,12 +44,14 @@ export async function POST({
     return error(422);
   }
 
-  const add_puzzle_attempt_rpc = await get(supabase_client_store)
-    .rpc("add_puzzle_attempt", {
+  const add_puzzle_attempt_rpc = await get(supabase_client_store).rpc(
+    "add_puzzle_attempt",
+    {
       given_ans,
       given_puzzle_id,
       given_user_id,
-    });
+    }
+  );
 
   // VERCEL_LOG_SOURCE
   if (add_puzzle_attempt_rpc.error) {

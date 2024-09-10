@@ -1,13 +1,16 @@
 import { supabase_client_store } from "$lib/stores.server";
 import { error, type RequestEvent } from "@sveltejs/kit";
 import { get } from "svelte/store";
-import { get_user_id } from "$lib/helpers.server";
+import { get_user_id, is_user_banned } from "$lib/helpers.server";
 
 export async function GET({ cookies }: RequestEvent): Promise<Response> {
-  let uid = get_user_id(cookies);
-
-  if (uid === null) {
+  let given_user_id = get_user_id(cookies);
+  if (given_user_id === null) {
     return error(401);
+  }
+
+  if (await is_user_banned(given_user_id)) {
+    return error(403);
   }
 
   const random_meme_rpc = await get(supabase_client_store).rpc(
