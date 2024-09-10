@@ -16,7 +16,9 @@
 </script>
 
 {#if $admin_logged_in_state}
-  <nav class="navbar navbar-expand-lg bg-body-tertiary">
+  <nav
+    class="navbar navbar-expand-lg bg-body-tertiary shadow-sm position-sticky top-0 z-1"
+  >
     <div class="container-fluid">
       <a class="navbar-brand" href="/k42MjTnhMR">Picture Puzzle 2024 Admin</a>
       <div class="flex-fill d-flex justify-content-between">
