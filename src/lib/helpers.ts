@@ -55,13 +55,24 @@ export function make_date(date: Date): string {
   const month = months[date.getMonth()];
   const year = date.getFullYear();
   let hour = date.getHours();
-  const ampm = hour >= 12 ? "AM" : "PM";
+  const ampm = hour >= 12 ? "PM" : "AM";
   hour = hour % 12;
   hour = hour === 0 ? 12 : hour;
   const minute = date.getMinutes();
   const second = date.getSeconds();
 
-  return `${hour}:${minute}:${second} ${ampm} ${month} ${day}, ${year}`;
+  return `${hour
+    .toString()
+    .padStart(2, "0")}:${minute
+      .toString()
+      .padStart(2, "0")
+    }:${second
+      .toString()
+      .padStart(2, "0")
+    } ${ampm} ${month} ${day
+      .toString()
+      .padStart(2, "0")
+    }, ${year}`;
 }
 
 export function handle_unauthorized_user(): void {
