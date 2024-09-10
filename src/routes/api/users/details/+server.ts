@@ -2,19 +2,22 @@ import { supabase_client_store } from "$lib/stores.server";
 import type { PostgrestSingleResponse } from "@supabase/supabase-js";
 import { error, json, type RequestEvent } from "@sveltejs/kit";
 import { get } from "svelte/store";
-import { get_user_id } from "$lib/helpers.server";
+import { get_user_id, is_user_banned } from "$lib/helpers.server";
 
 export async function POST({ cookies }: RequestEvent): Promise<Response> {
-  let uid = get_user_id(cookies);
-
-  if (uid === null) {
+  let given_user_id = get_user_id(cookies);
+  if (given_user_id === null) {
     return error(401);
+  }
+
+  if (await is_user_banned(given_user_id)) {
+    return error(403);
   }
 
   const user_detail_rpc: PostgrestSingleResponse<any> = await get(
     supabase_client_store
   ).rpc("get_user_details", {
-    given_user_id: uid,
+    given_user_id: given_user_id,
   });
 
   // VERCEL_LOG_SOURCE, this will be on the vercel api log

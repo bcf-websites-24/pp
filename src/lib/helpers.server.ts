@@ -3,6 +3,7 @@ import type { Cookies } from "@sveltejs/kit";
 import jwt from "jsonwebtoken";
 import { supabase_client_store } from "$lib/stores.server";
 import type { PostgrestSingleResponse } from "@supabase/supabase-js";
+import { get } from "svelte/store";
 
 export function make_user_cookie(cookies: Cookies, token: string): void {
   let expire_date: Date = new Date();
@@ -90,8 +91,29 @@ export function delete_admin_cookie(cookies: Cookies) {
   });
 }
 
-export function is_user_banned(user_id: string) {
+export async function is_user_banned(user_id: string) {
   if (user_id === null) {
     return false;
   }
+
+  const is_user_banned_rpc: PostgrestSingleResponse<any> = await get(
+    supabase_client_store
+  ).rpc("is_user_banned", {
+    given_user_id: user_id,
+  });
+
+  // VERCEL_LOG_SOURCE, this will be on the vercel api log
+  if (is_user_banned_rpc.error) {
+    console.error("helpers.ts 108\n" + is_user_banned_rpc.error);
+    return false;
+  }
+
+  if (
+    is_user_banned_rpc.data === null ||
+    is_user_banned_rpc.data === undefined
+  ) {
+    return false;
+  }
+
+  return is_user_banned_rpc.data;
 }
