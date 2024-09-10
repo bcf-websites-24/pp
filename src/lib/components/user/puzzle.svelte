@@ -114,7 +114,7 @@
         alt="puzzle-img"
         in:fade={{ duration: 250 }}
       />
-      <div class="d-flex align-items-center">
+      <div class="d-flex align-items-center mb-4">
         <form
           bind:this={answer_submit_form_elem}
           on:submit={answer_submit}
@@ -140,7 +140,7 @@
         {/if}
       </div>
     {:else}
-      <div class="placeholder-glow">
+      <div class="placeholder-glow mb-4">
         <span class="image-placeholder placeholder bg-secondary rounded"></span>
       </div>
     {/if}
