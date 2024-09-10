@@ -11,7 +11,7 @@
   };
 
   const PAGE_SIZE = 100;
-  let players = new Array<Stat>(100);
+  let players = new Array<Stat>();
   let prev_pages = new Array<number>();
   let next_pages = new Array<number>();
   let page_count = 0;
