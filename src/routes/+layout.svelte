@@ -6,6 +6,7 @@
     password_unmatched_toast_store,
     success_toast_store,
     unauthorized_toast_store,
+    banned_toast_store,
     user_not_found_toast_store,
     wrong_answer_toast_store,
   } from "$lib/stores";
@@ -19,6 +20,7 @@
   let unauthorized_toast_elem: HTMLDivElement;
   let user_unavailable_toast_elem: HTMLDivElement;
   let password_unmatched_toast_elem: HTMLDivElement;
+  let banned_toast_elem: HTMLDivElement;
 
   onMount((): void => {
     $correct_answer_toast_store = new Toast(correct_answer_toast_elem);
@@ -28,6 +30,7 @@
     $unauthorized_toast_store = new Toast(unauthorized_toast_elem);
     $user_not_found_toast_store = new Toast(user_unavailable_toast_elem);
     $password_unmatched_toast_store = new Toast(password_unmatched_toast_elem);
+    $banned_toast_store = new Toast(banned_toast_elem);
   });
 </script>
 
@@ -124,6 +127,20 @@
   >
     <div class="d-flex">
       <div class="toast-body">Password didn't match</div>
+      <button
+        type="button"
+        class="btn-close btn-close-white me-2 m-auto"
+        data-bs-dismiss="toast"
+        aria-label="Close"
+      ></button>
+    </div>
+  </div>
+  <div
+    bind:this={banned_toast_elem}
+    class="toast align-items-center text-bg-danger border-0"
+  >
+    <div class="d-flex">
+      <div class="toast-body">User banned</div>
       <button
         type="button"
         class="btn-close btn-close-white me-2 m-auto"

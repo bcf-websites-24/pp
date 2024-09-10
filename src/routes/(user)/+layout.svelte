@@ -6,6 +6,7 @@
     current_rank_state,
     next_level_id_state,
     next_level_url_state,
+    banned_toast_store,
     user_logged_in_state,
     username_state,
   } from "$lib/stores";
@@ -14,9 +15,13 @@
   export let data: any;
   let rank_text: string = "Unranked";
 
-  function logout(): void {
+  function logout(banned: boolean): void {
     fetch("/api/users/logout").then((response) => {
       if (response.status === 200) {
+        if (banned) {
+          $banned_toast_store.show();
+        }
+
         goto("/", { invalidateAll: true });
       } else if (response.status === 401) {
         handle_unauthorized_user();
@@ -29,14 +34,18 @@
 
   onMount(() => {
     if (data.details !== null && data.details !== undefined) {
-      $user_logged_in_state = true;
-      $username_state = data.details.username;
-      $current_level_state = data.details.curr_level + 1;
-      $next_level_id_state = data.details.next_puzzle_id;
-      $next_level_url_state = data.details.next_puzzle_url;
-      $current_rank_state = data.details.user_rank
-        ? data.details.user_rank
-        : -1;
+      if (data.details.f_is_banned === true) {
+        logout(true);
+      } else {
+        $user_logged_in_state = true;
+        $username_state = data.details.username;
+        $current_level_state = data.details.curr_level + 1;
+        $next_level_id_state = data.details.next_puzzle_id;
+        $next_level_url_state = data.details.next_puzzle_url;
+        $current_rank_state = data.details.user_rank
+          ? data.details.user_rank
+          : -1;
+      }
     }
   });
 </script>
@@ -88,7 +97,9 @@
               <a class="dropdown-item" href="/leaderboard">Leaderboard</a>
             </li>
             <li>
-              <button on:click={logout} class="dropdown-item">Logout</button>
+              <button on:click={() => logout(false)} class="dropdown-item"
+                >Logout</button
+              >
             </li>
           </ul>
         </div>

@@ -5,7 +5,7 @@
   import { onMount } from "svelte";
 
   onMount((): void => {
-    if ($page.status === 403) {
+    if ($page.status === 401) {
       handle_unauthorized_user();
     }
   });
