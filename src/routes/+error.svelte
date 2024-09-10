@@ -4,7 +4,11 @@
   import Error from "$lib/components/error.svelte";
   import Register from "$lib/components/user/register.svelte";
   import { username_pattern } from "$lib/helpers";
-  import { user_logged_in_state } from "$lib/stores";
+  import {
+    password_unmatched_toast_store,
+    user_logged_in_state,
+    user_not_found_toast_store,
+  } from "$lib/stores";
   import { Tab } from "bootstrap";
   import { onMount } from "svelte";
   import { cubicInOut } from "svelte/easing";
@@ -44,7 +48,9 @@
         if (response_json.login === 0) {
           goto("/", { invalidateAll: true });
         } else if (response_json.login === -1) {
+          $user_not_found_toast_store.show();
         } else if (response_json.login === -2) {
+          $password_unmatched_toast_store.show();
         }
       }
 
@@ -131,6 +137,7 @@
                     type="password"
                     class="form-control"
                     id="login-password"
+                    minlength="8"
                     placeholder="Password"
                     required
                   />
