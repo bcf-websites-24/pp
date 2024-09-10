@@ -11,10 +11,6 @@ export async function GET(request_event: RequestEvent): Promise<Response> {
     return error(401);
   }
 
-  if (await is_user_banned(given_user_id)) {
-    return error(403);
-  }
-
   delete_user_cookie(request_event.cookies);
 
   return new Response();

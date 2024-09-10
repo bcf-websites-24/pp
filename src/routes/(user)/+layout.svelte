@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
-  import { handle_unauthorized_user } from "$lib/helpers";
+  import { handle_unauthorized_user, logout_user } from "$lib/helpers";
   import {
     current_level_state,
     current_rank_state,
@@ -15,37 +15,19 @@
   export let data: any;
   let rank_text: string = "Unranked";
 
-  function logout(banned: boolean): void {
-    fetch("/api/users/logout").then((response) => {
-      if (response.status === 200) {
-        if (banned) {
-          $banned_toast_store.show();
-        }
-
-        goto("/", { invalidateAll: true });
-      } else if (response.status === 401) {
-        handle_unauthorized_user();
-      }
-    });
-  }
-
   $: rank_text =
     $current_rank_state === -1 ? "Unranked" : $current_rank_state.toString();
 
   onMount(() => {
     if (data.details !== null && data.details !== undefined) {
-      if (data.details.f_is_banned === true) {
-        logout(true);
-      } else {
-        $user_logged_in_state = true;
-        $username_state = data.details.username;
-        $current_level_state = data.details.curr_level + 1;
-        $next_level_id_state = data.details.next_puzzle_id;
-        $next_level_url_state = data.details.next_puzzle_url;
-        $current_rank_state = data.details.user_rank
-          ? data.details.user_rank
-          : -1;
-      }
+      $user_logged_in_state = true;
+      $username_state = data.details.username;
+      $current_level_state = data.details.curr_level + 1;
+      $next_level_id_state = data.details.next_puzzle_id;
+      $next_level_url_state = data.details.next_puzzle_url;
+      $current_rank_state = data.details.user_rank
+        ? data.details.user_rank
+        : -1;
     }
   });
 </script>
@@ -97,7 +79,7 @@
               <a class="dropdown-item" href="/leaderboard">Leaderboard</a>
             </li>
             <li>
-              <button on:click={() => logout(false)} class="dropdown-item"
+              <button on:click={() => logout_user(false)} class="dropdown-item"
                 >Logout</button
               >
             </li>

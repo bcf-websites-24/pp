@@ -1,5 +1,5 @@
 import { get } from "svelte/store";
-import { unauthorized_toast_store } from "./stores";
+import { banned_toast_store, unauthorized_toast_store } from "./stores";
 import { goto } from "$app/navigation";
 
 export const username_pattern = /^\w{4,32}$/;
@@ -78,6 +78,20 @@ export function make_date(date: Date): string {
 export function handle_unauthorized_user(): void {
   get(unauthorized_toast_store).show();
   goto("/", { invalidateAll: true });
+}
+
+export function logout_user(banned: boolean): void {
+  fetch("/api/users/logout").then((response) => {
+    if (response.status === 200) {
+      if (banned) {
+        get(banned_toast_store).show();
+      }
+
+      goto("/", { invalidateAll: true });
+    } else if (response.status === 401) {
+      handle_unauthorized_user();
+    }
+  });
 }
 
 export function handle_unauthorized_admin(): void {
