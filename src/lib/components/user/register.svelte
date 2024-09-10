@@ -150,7 +150,6 @@
           class="form-control"
           id="register-email"
           placeholder="Email"
-          minlength="8"
           required
         />
         <label for="register-email">Email</label>

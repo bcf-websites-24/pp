@@ -13,3 +13,5 @@ export const wrong_answer_toast_store = writable(new Toast(""));
 export const success_toast_store = writable(new Toast(""));
 export const fail_toast_store = writable(new Toast(""));
 export const unauthorized_toast_store = writable(new Toast(""));
+export const user_not_found_toast_store = writable(new Toast(""));
+export const password_unmatched_toast_store = writable(new Toast(""));

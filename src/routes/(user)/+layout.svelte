@@ -42,7 +42,9 @@
 </script>
 
 {#if $user_logged_in_state}
-  <nav class="navbar navbar-expand-lg bg-body-tertiary">
+  <nav
+    class="navbar navbar-expand-lg bg-body-tertiary shadow-sm position-sticky top-0 z-1"
+  >
     <div class="container-fluid">
       <a class="navbar-brand" href="/">Picture Puzzle 2024</a>
       <div class="d-flex justify-content-end">
