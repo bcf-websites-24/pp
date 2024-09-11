@@ -1,12 +1,10 @@
 import { error, json, type RequestEvent } from "@sveltejs/kit";
-import { type PostgrestSingleResponse } from "@supabase/supabase-js";
 import argon2 from "argon2";
-import { supabase_client_store } from "$lib/stores.server";
-import { get } from "svelte/store";
-import { make_user_cookie } from "$lib/helpers.server";
+import { make_user_cookie, other_error_logger } from "$lib/helpers.server";
 import jwt from "jsonwebtoken";
 import validator from "validator";
 import { JWT_SECRET } from "$env/static/private";
+import { run_query } from "$lib/db/index.server";
 
 /**
  *
@@ -14,10 +12,11 @@ import { JWT_SECRET } from "$env/static/private";
  * @returns  0  successful registration
  *          -1  database error
  *          -2  student id is not numeric
- *          -3  student id has roll out of range [1,183]
+ * UNUSED   -3  student id has roll out of range [1,183]
  *          -4  username has space/non alphanumeric character, not allowing it
  * UNUSED   -5  non cse dept
  *          -6  invalid email address
+ *          -7  username or student id already exists
  */
 export async function POST(request_event: RequestEvent): Promise<Response> {
   const request: Request = request_event.request;
@@ -27,6 +26,14 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
   const email: string = request_json.email;
   const password: string = request_json.password;
   const password_hash: string = await argon2.hash(password);
+
+  let inputs: Array<string> = [username, student_id, email, password];
+
+  inputs.forEach((element) => {
+    if (element === undefined || element === null) {
+      return error(422);
+    }
+  });
 
   // allowing only [a-zA-Z0-9_] in username
   if (!/^\w{4,32}$/.test(username)) {
@@ -86,37 +93,40 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
   //   });
   // }
 
-  const add_user_rpc: PostgrestSingleResponse<any> = await get(
-    supabase_client_store
-  ).rpc("add_user", {
-    given_batch: batch,
-    given_email: email,
-    given_pwd_hash: password_hash,
-    given_student_id: student_id,
-    given_username: username,
-    given_user_type: user_type,
-  });
+  let res = await run_query(
+    "SELECT public.add_user($1, $2, $3, $4, $5, $6);",
+    [username, student_id, batch, password_hash, email, user_type],
+    request_event
+  );
 
-  if (add_user_rpc.error) {
-    console.error("users/register line 101\n" + add_user_rpc.error);
+  if (res) {
+    if (res.rows[0][0] === null) {
+      return json({
+        // username or student_id already exists
+        registered: -7,
+      });
+    }
 
-    return error(500);
-  }
+    if (res.rows[0][0].length != 36) {
+      other_error_logger.error(
+        "Error parsing db function result in api/users/register:114. " + res
+      );
+      return error(500);
+    }
 
-  if (add_user_rpc.data !== null) {
     const token: string = jwt.sign(
       {
-        id: add_user_rpc.data,
+        id: res.rows[0][0],
       },
       JWT_SECRET
     );
+
     make_user_cookie(request_event.cookies, token);
 
     return json({
       registered: 0,
     });
   } else {
-    // Database error
     return error(500);
   }
 }

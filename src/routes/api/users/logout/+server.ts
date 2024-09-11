@@ -1,8 +1,4 @@
-import {
-  delete_user_cookie,
-  get_user_id,
-  is_user_banned,
-} from "$lib/helpers.server";
+import { delete_user_cookie, get_user_id } from "$lib/helpers.server";
 import { error, type RequestEvent } from "@sveltejs/kit";
 
 export async function GET(request_event: RequestEvent): Promise<Response> {

@@ -4,6 +4,47 @@ import jwt from "jsonwebtoken";
 import { supabase_client_store } from "$lib/stores.server";
 import type { PostgrestSingleResponse } from "@supabase/supabase-js";
 import { get } from "svelte/store";
+import * as winston from "winston";
+import DailyRotateFile from "winston-daily-rotate-file";
+import { run_query } from "./db/index.server";
+
+const filesystem_error_transport: DailyRotateFile = new DailyRotateFile({
+  filename: "fs_errors-%DATE%.log",
+  datePattern: "YYYY-MM-DD-HH-mm",
+  zippedArchive: true,
+  maxSize: "25m",
+  maxFiles: "7d",
+  dirname: "./logs",
+});
+
+export const file_system_error_logger = winston.createLogger({
+  level: "info", // lowest allowed logger level
+  format: winston.format.combine(
+    winston.format.errors({ stack: true }),
+    winston.format.timestamp(),
+    winston.format.json()
+  ),
+  transports: [filesystem_error_transport],
+});
+
+const other_error_transport: DailyRotateFile = new DailyRotateFile({
+  filename: "other_errors-%DATE%.log",
+  datePattern: "YYYY-MM-DD-HH-mm",
+  zippedArchive: true,
+  maxSize: "25m",
+  maxFiles: "7d",
+  dirname: "./logs",
+});
+
+export const other_error_logger = winston.createLogger({
+  level: "info", // lowest allowed logger level
+  format: winston.format.combine(
+    winston.format.errors({ stack: true }),
+    winston.format.timestamp(),
+    winston.format.json()
+  ),
+  transports: [other_error_transport],
+});
 
 export function make_user_cookie(cookies: Cookies, token: string): void {
   let expire_date: Date = new Date();
@@ -11,7 +52,7 @@ export function make_user_cookie(cookies: Cookies, token: string): void {
   expire_date.setTime(Date.now() + 86400 * 1000 * 30);
   cookies.set("pp-jwt", token, {
     path: "/",
-    secure: true,
+    secure: false,
     httpOnly: true,
     expires: expire_date,
   });
@@ -23,7 +64,7 @@ export function make_admin_cookie(cookies: Cookies, token: string) {
   expire_date.setTime(Date.now() + 86400 * 1000 * 30);
   cookies.set("pp-admin-jwt", token, {
     path: "/",
-    secure: true,
+    secure: false,
     httpOnly: true,
     expires: expire_date,
   });
@@ -43,7 +84,7 @@ export function get_user_id(cookies: Cookies): string | null {
 
     cookies.set("pp-jwt", token, {
       path: "/",
-      secure: true,
+      secure: false,
       httpOnly: true,
       expires: expire_date,
     });
@@ -68,7 +109,7 @@ export function is_valid_admin(cookies: Cookies): boolean {
 
     cookies.set("pp-admin-jwt", token, {
       path: "/",
-      secure: true,
+      secure: false,
       httpOnly: true,
       expires: expire_date,
     });
@@ -96,24 +137,22 @@ export async function is_user_banned(user_id: string) {
     return false;
   }
 
-  const is_user_banned_rpc: PostgrestSingleResponse<any> = await get(
-    supabase_client_store
-  ).rpc("is_user_banned", {
-    given_user_id: user_id,
-  });
+  let res = await run_query("SELECT public.is_user_banned($1)", [user_id]);
 
-  // VERCEL_LOG_SOURCE, this will be on the vercel api log
-  if (is_user_banned_rpc.error) {
-    console.error("helpers.ts 108\n" + is_user_banned_rpc.error);
+  if (res) {
+    if (
+      res.rows[0][0] === undefined ||
+      res.rows[0][0] === null ||
+      res.rows[0][0].length === 0
+    ) {
+      other_error_logger.error(
+        "Error parsing db function call at is_user_banned()"
+      );
+      return false;
+    }
+
+    return res.rows[0][0] === "t" ? true : false;
+  } else {
     return false;
   }
-
-  if (
-    is_user_banned_rpc.data === null ||
-    is_user_banned_rpc.data === undefined
-  ) {
-    return false;
-  }
-
-  return is_user_banned_rpc.data;
 }

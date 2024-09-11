@@ -1,26 +1,54 @@
-import { supabase_client_store } from "$lib/stores.server";
-import type { PostgrestSingleResponse } from "@supabase/supabase-js";
 import { error, type RequestEvent } from "@sveltejs/kit";
-import { get } from "svelte/store";
-import { is_valid_admin } from "$lib/helpers.server";
+import { is_valid_admin, other_error_logger } from "$lib/helpers.server";
+import { run_query } from "$lib/db/index.server";
 
-export async function POST({ cookies }: RequestEvent): Promise<Response> {
-  if (!is_valid_admin(cookies)) {
+export async function POST(req: RequestEvent): Promise<Response> {
+  if (!is_valid_admin(req.cookies)) {
     return error(401);
   }
 
-  const leaderboard_rpc: PostgrestSingleResponse<any> = await get(
-    supabase_client_store
-  ).rpc("get_leaderboard_for_admins");
+  let res = await run_query(
+    "SELECT public.get_leaderboard_for_admins();",
+    [],
+    req
+  );
+  if (res) {
+    let t: Array<any> = [];
 
-  // VERCEL_LOG_SOURCE, this will be on the vercel api log
-  if (leaderboard_rpc.error) {
-    console.error("admin/leaderboard line 18\n" + leaderboard_rpc.error);
-    return error(500);
-  }
+    res.rows.forEach((element) => {
+      let r: string = element[0];
+      let fields: Array<string> = r.substring(1, r.length - 1).split(",");
 
-  // leaderboard in serial. Array of objects. format:
-  /**
+      if (fields.length != 8) {
+        other_error_logger.error(
+          "Error parsing db function result at api/admin/leaderboard:24"
+        );
+        return error(500);
+      }
+
+      fields.forEach((elem) => {
+        if (elem.length == 0) {
+          other_error_logger.error(
+            "Error parsing db function result at api/admin/leaderboard:32"
+          );
+          return error(500);
+        }
+      });
+
+      t.push({
+        f_username: fields[0],
+        f_curr_level: Number(fields[1]),
+        f_user_type: fields[2],
+        f_student_id: fields[3],
+        f_email: fields[4],
+        f_last_submission_time: fields[5].substring(1, fields[5].length - 1),
+        f_total_submissions: Number(fields[6]),
+        f_shomobay_score: Number(fields[7]),
+      });
+    });
+
+    // leaderboard in serial. Array of objects. format:
+    /**
    *  [
           {
               "f_username": "test56",
@@ -34,9 +62,12 @@ export async function POST({ cookies }: RequestEvent): Promise<Response> {
           }
       ]   
    */
-  return new Response(JSON.stringify(leaderboard_rpc.data), {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+    return new Response(JSON.stringify(t), {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  } else {
+    return error(500);
+  }
 }
