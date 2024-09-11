@@ -9,10 +9,18 @@
     banned_toast_store,
     user_not_found_toast_store,
     wrong_answer_toast_store,
+    server_error_toast_store,
   } from "$lib/stores";
   import { Toast } from "bootstrap";
   import { onMount } from "svelte";
 
+  /**
+   * ensures that all
+   * toasts are loaded
+   * before being used by
+   * any other children
+   */
+  let toasts_loaded = false;
   let correct_answer_toast_elem: HTMLDivElement;
   let wrong_answer_toast_elem: HTMLDivElement;
   let success_toast_elem: HTMLDivElement;
@@ -21,6 +29,7 @@
   let user_unavailable_toast_elem: HTMLDivElement;
   let password_unmatched_toast_elem: HTMLDivElement;
   let banned_toast_elem: HTMLDivElement;
+  let server_error_toast_elem: HTMLDivElement;
 
   onMount((): void => {
     $correct_answer_toast_store = new Toast(correct_answer_toast_elem);
@@ -31,10 +40,14 @@
     $user_not_found_toast_store = new Toast(user_unavailable_toast_elem);
     $password_unmatched_toast_store = new Toast(password_unmatched_toast_elem);
     $banned_toast_store = new Toast(banned_toast_elem);
+    $server_error_toast_store = new Toast(server_error_toast_elem);
+    toasts_loaded = true;
   });
 </script>
 
-<slot></slot>
+{#if toasts_loaded}
+  <slot></slot>
+{/if}
 
 <div class="toast-container position-fixed bottom-0 end-0 p-3">
   <div
@@ -141,6 +154,20 @@
   >
     <div class="d-flex">
       <div class="toast-body">User banned</div>
+      <button
+        type="button"
+        class="btn-close btn-close-white me-2 m-auto"
+        data-bs-dismiss="toast"
+        aria-label="Close"
+      ></button>
+    </div>
+  </div>
+  <div
+    bind:this={server_error_toast_elem}
+    class="toast align-items-center text-bg-danger border-0"
+  >
+    <div class="d-flex">
+      <div class="toast-body">Internal Server Error</div>
       <button
         type="button"
         class="btn-close btn-close-white me-2 m-auto"

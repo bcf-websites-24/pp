@@ -1,5 +1,7 @@
 <script lang="ts">
+  import { goto } from "$app/navigation";
   import { student_id_pattern, username_pattern } from "$lib/helpers";
+  import { server_error_toast_store } from "$lib/stores";
   import { onMount } from "svelte";
   import { cubicInOut } from "svelte/easing";
   import { tweened } from "svelte/motion";
@@ -44,7 +46,7 @@
     }
 
     signing = true;
-    const response: Response = await fetch("/api/users/register", {
+    fetch("/api/users/register", {
       method: "POST",
       body: JSON.stringify({
         username: register_username,
@@ -52,20 +54,20 @@
         email: register_email,
         password: register_password,
       }),
-    });
+    }).then(async (response) => {
+      if (response.status === 200) {
+        const response_json: any = await response.json();
 
-    if (response.status === 200) {
-      const response_json: any = await response.json();
-
-      if (response_json.registered === 0) {
-        location.href = "/";
-      } else if (response_json.registered === -1) {
-      } else {
-        console.error("Unknown registered value");
+        if (response_json.registered === 0) {
+          goto("/", { invalidateAll: true });
+        } else if (response_json.registered === -1) {
+        }
+      } else if (response.status === 500) {
+        $server_error_toast_store.show();
       }
-    }
 
-    signing = false;
+      signing = false;
+    });
   }
 
   function next(): void {

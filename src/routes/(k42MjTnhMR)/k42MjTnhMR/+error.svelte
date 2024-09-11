@@ -2,7 +2,7 @@
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
   import Error from "$lib/components/error.svelte";
-  import { admin_logged_in_state } from "$lib/stores";
+  import { admin_logged_in_state, server_error_toast_store } from "$lib/stores";
   import { onMount } from "svelte";
 
   let login_password: string;
@@ -16,6 +16,8 @@
     }).then(async (response: Response): Promise<void> => {
       if (response.status === 200) {
         goto("/k42MjTnhMR", { invalidateAll: true });
+      } else if (response.status === 500) {
+        $server_error_toast_store.show();
       }
     });
   }
