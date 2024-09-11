@@ -1,6 +1,6 @@
 <script lang="ts">
   import "$lib/style.scss";
-  import { admin_logged_in_state } from "$lib/stores";
+  import { admin_logged_in_state, server_error_toast_store } from "$lib/stores";
   import { goto } from "$app/navigation";
   import { handle_unauthorized_admin } from "$lib/helpers";
 
@@ -10,6 +10,8 @@
         goto("/k42MjTnhMR", { invalidateAll: true });
       } else if (response.status === 401) {
         handle_unauthorized_admin();
+      } else if (response.status === 500) {
+        $server_error_toast_store.show();
       }
     });
   }

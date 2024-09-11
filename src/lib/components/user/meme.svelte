@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { server_error_toast_store } from "$lib/stores";
   import { onMount } from "svelte";
   import { fade } from "svelte/transition";
 
@@ -21,9 +22,9 @@
           if (image_blob_entry) {
             image_data = URL.createObjectURL(image_blob_entry.slice() as Blob);
             image_loaded = true;
-          } else {
           }
-        } else {
+        } else if (response.status === 500) {
+          $server_error_toast_store.show();
         }
       },
     );

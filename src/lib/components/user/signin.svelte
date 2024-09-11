@@ -9,6 +9,7 @@
     banned_toast_store,
     user_logged_in_state,
     user_not_found_toast_store,
+    server_error_toast_store,
   } from "$lib/stores";
   import { Tab } from "bootstrap";
   import { onMount } from "svelte";
@@ -55,6 +56,8 @@
         } else if (response_json.login === -3) {
           $banned_toast_store.show();
         }
+      } else if (response.status === 500) {
+        $server_error_toast_store.show();
       }
 
       signing = false;

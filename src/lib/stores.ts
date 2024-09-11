@@ -16,3 +16,4 @@ export const unauthorized_toast_store = writable(new Toast(""));
 export const user_not_found_toast_store = writable(new Toast(""));
 export const password_unmatched_toast_store = writable(new Toast(""));
 export const banned_toast_store = writable(new Toast(""));
+export const server_error_toast_store = writable(new Toast(""));

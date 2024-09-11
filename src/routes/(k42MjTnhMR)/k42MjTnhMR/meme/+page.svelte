@@ -2,6 +2,7 @@
   import {
     admin_logged_in_state,
     fail_toast_store,
+    server_error_toast_store,
     success_toast_store,
   } from "$lib/stores";
   import { onMount } from "svelte";
@@ -44,6 +45,8 @@
         add_meme_form_elem.reset();
       } else if (response.status === 401) {
         handle_unauthorized_admin();
+      } else if (response.status === 500) {
+        $server_error_toast_store.show();
       } else {
         $fail_toast_store.show();
       }

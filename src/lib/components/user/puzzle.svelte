@@ -7,6 +7,7 @@
     wrong_answer_toast_store,
     correct_answer_toast_store,
     current_rank_state,
+    server_error_toast_store,
   } from "$lib/stores";
   import { fade, slide } from "svelte/transition";
 
@@ -57,6 +58,8 @@
           handle_unauthorized_user();
         } else if (response.status === 403) {
           logout_user(true);
+        } else if (response.status === 500) {
+          $server_error_toast_store.show();
         }
       })
       .finally(() => {
@@ -90,6 +93,8 @@
         handle_unauthorized_user();
       } else if (response.status === 403) {
         logout_user(true);
+      } else if (response.status === 500) {
+        $server_error_toast_store.show();
       }
     });
   }

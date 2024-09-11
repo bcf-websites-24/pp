@@ -1,5 +1,5 @@
 import { get } from "svelte/store";
-import { banned_toast_store, unauthorized_toast_store } from "./stores";
+import { banned_toast_store, server_error_toast_store, unauthorized_toast_store } from "./stores";
 import { goto } from "$app/navigation";
 
 export const username_pattern = /^\w{4,32}$/;
@@ -90,6 +90,8 @@ export function logout_user(banned: boolean): void {
       goto("/", { invalidateAll: true });
     } else if (response.status === 401) {
       handle_unauthorized_user();
+    } else if (response.status === 500) {
+      get(server_error_toast_store).show();
     }
   });
 }
