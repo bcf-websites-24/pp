@@ -22,19 +22,19 @@
   });
 </script>
 
-{#if mounted}
-  <div
-    in:fade={{ delay: 250, duration: 750, easing: cubicOut }}
-    class="position-absolute top-0 left-0 w-100 h-100 z-n1"
-  >
-    <Puzzle_0 />
-    <Puzzle_1 />
-    <Dice_0 />
-    <Dice_1 />
-  </div>
-{/if}
-
 {#if $page.status === 401}
+  {#if mounted}
+    <div
+      in:fade={{ delay: 250, duration: 750, easing: cubicOut }}
+      class="position-absolute top-0 left-0 w-100 h-100 z-n1"
+    >
+      <Puzzle_0 />
+      <Puzzle_1 />
+      <Dice_0 />
+      <Dice_1 />
+    </div>
+  {/if}
+
   <Signin />
 {:else}
   <Error />
