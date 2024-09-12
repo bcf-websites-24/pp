@@ -96,7 +96,7 @@
     <div class="fs-5 text-center text-secondary mb-0">Welcome to</div>
     <div class="fs-1 text-center">Picture Puzzle 2024</div>
     <div class="stranger-card card card-body shadow m-2">
-      <div class="nav nav-pills mb-3">
+      <div class="nav nav-pills gap-2 mb-3">
         <button
           on:click={login_tab_clicked}
           class="nav-link active"

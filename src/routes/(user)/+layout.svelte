@@ -1,12 +1,10 @@
 <script lang="ts">
-  import { goto } from "$app/navigation";
-  import { handle_unauthorized_user, logout_user } from "$lib/helpers";
+  import { logout_user } from "$lib/helpers";
   import {
     current_level_state,
     current_rank_state,
     next_level_id_state,
     next_level_url_state,
-    banned_toast_store,
     user_logged_in_state,
     username_state,
   } from "$lib/stores";
