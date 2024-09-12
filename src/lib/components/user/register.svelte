@@ -1,5 +1,12 @@
 <script lang="ts">
   import { student_id_pattern, username_pattern } from "$lib/helpers";
+  import {
+    duplicate_username_student_id_toast_store,
+    improper_username_toast_store,
+    invalid_email_toast_store,
+    roll_out_of_range_toast_store,
+    student_id_misformation_toast_store,
+  } from "$lib/stores";
   import { onMount } from "svelte";
   import { cubicInOut } from "svelte/easing";
   import { tweened } from "svelte/motion";
@@ -37,7 +44,7 @@
   async function register(): Promise<void> {
     if (register_password !== register_confirm_password) {
       register_confirm_password_elem.setCustomValidity(
-        "Password did not match",
+        "Password did not match"
       );
 
       return;
@@ -59,7 +66,16 @@
 
       if (response_json.registered === 0) {
         location.href = "/";
-      } else if (response_json.registered === -1) {
+      } else if (response_json.registered === -2) {
+        $student_id_misformation_toast_store.show();
+      } else if (response_json.registered === -3) {
+        $roll_out_of_range_toast_store.show();
+      } else if (response_json.registered === -4) {
+        $improper_username_toast_store.show();
+      } else if (response_json.registered === -6) {
+        $invalid_email_toast_store.show();
+      } else if (response_json.registered === -7) {
+        $duplicate_username_student_id_toast_store.show();
       } else {
         console.error("Unknown registered value");
       }
