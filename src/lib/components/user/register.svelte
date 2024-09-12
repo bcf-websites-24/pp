@@ -5,6 +5,7 @@
   import { onMount } from "svelte";
   import { cubicInOut } from "svelte/easing";
   import { tweened } from "svelte/motion";
+  import { slide } from "svelte/transition";
 
   export let signing: boolean;
   export let height: number;
@@ -203,9 +204,18 @@
           on:click={back}
           type="button"
           class="btn btn-link link-underline link-underline-opacity-0 me-2"
-          >Back</button
+          disabled={signing}>Back</button
         >
-        <button type="submit" class="btn btn-primary">Register</button>
+        <button type="submit" class="btn btn-primary" disabled={signing}
+          >Register</button
+        >
+        {#if signing}
+          <div transition:slide={{ duration: 250, axis: "x" }} class="ps-2">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        {/if}
       </div>
     </form>
   </div>

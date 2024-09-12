@@ -107,12 +107,12 @@
       class="d-flex flex-column align-items-center w-100"
     >
       <p class="fs-1 fw-bold mb-0">Wow! You solved all the puzzles</p>
-      <p class="fs-5 text-secondary mb-4">Wait for more...</p>
       <img
         src="/pochita.webp"
         class="puzzle-img rounded mt-4"
         alt="pochita-img"
       />
+      <p class="fs-5 text-secondary my-4">Wait for more...</p>
     </div>
   {:else}
     <p class="fs-3 fw-semibold text-center">Level: {$current_level_state}</p>
