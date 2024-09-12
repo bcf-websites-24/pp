@@ -26,7 +26,7 @@ let other_error_transport;
 //   }
 // );
 // console.log(process.env);
-if (!(process.env.LOCAL_HOSTED_RUNTIME === undefined)) {
+if (false) {
   console.log("LOCAL runtime detected");
   filesystem_error_transport = new DailyRotateFile({
     filename: "fs_errors-%DATE%.log",
