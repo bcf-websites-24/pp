@@ -1,8 +1,4 @@
-import {
-  ADMIN_JWT_ID,
-  JWT_SECRET,
-  LOCAL_HOSTED_RUNTIME,
-} from "$env/static/private";
+import { ADMIN_JWT_ID, JWT_SECRET } from "$env/static/private";
 import type { Cookies } from "@sveltejs/kit";
 import jwt from "jsonwebtoken";
 import * as winston from "winston";
@@ -10,9 +6,9 @@ import DailyRotateFile from "winston-daily-rotate-file";
 import { run_query } from "./db/index.server";
 // import { Env } from "@humanwhocodes/env";
 // import { cleanEnv, str } from "envalid";
-import * as dotenv from "dotenv";
+import { config } from "dotenv";
 
-dotenv.config();
+config();
 
 let filesystem_error_transport;
 
@@ -29,8 +25,8 @@ let other_error_transport;
 //     },
 //   }
 // );
-
-if (LOCAL_HOSTED_RUNTIME) {
+// console.log(process.env);
+if (process.env.LOCAL_HOSTED_RUNTIME) {
   console.log("LOCAL runtime detected");
   filesystem_error_transport = new DailyRotateFile({
     filename: "fs_errors-%DATE%.log",
