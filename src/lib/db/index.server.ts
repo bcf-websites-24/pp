@@ -30,7 +30,11 @@ export async function run_query(
   params: Array<any>,
   req?: RequestEvent
 ) {
-  let query_config = { text: text, values: params, rowMode: "array" };
+  let query_config: pg.QueryArrayConfig<any> = {
+    text: text,
+    values: params,
+    rowMode: "array",
+  };
   let res: pg.QueryResult<any>;
 
   try {

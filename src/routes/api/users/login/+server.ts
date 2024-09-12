@@ -21,7 +21,7 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
   }
 
   let res = await run_query(
-    "SELECT public.get_uuid_hash($1)",
+    "SELECT public.get_uuid_hash($1);",
     [username],
     request_event
   );
@@ -37,15 +37,6 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
       );
       return error(500);
     }
-
-    fields.forEach((element) => {
-      if (element.length == 0) {
-        other_error_logger.error(
-          "Error parsing db function result at api/users/login:45"
-        );
-        return error(500);
-      }
-    });
 
     let id: string = fields[0].substring(0, fields[0].length - 1);
     let hash: string = fields[1];

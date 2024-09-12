@@ -107,7 +107,7 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
       });
     }
 
-    if (res.rows[0][0].length != 36) {
+    if (res.rows[0][0].length < 36) {
       other_error_logger.error(
         "Error parsing db function result in api/users/register:114. " + res
       );

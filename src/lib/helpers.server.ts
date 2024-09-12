@@ -1,9 +1,6 @@
 import { ADMIN_JWT_ID, JWT_SECRET } from "$env/static/private";
 import type { Cookies } from "@sveltejs/kit";
 import jwt from "jsonwebtoken";
-import { supabase_client_store } from "$lib/stores.server";
-import type { PostgrestSingleResponse } from "@supabase/supabase-js";
-import { get } from "svelte/store";
 import * as winston from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
 import { run_query } from "./db/index.server";
@@ -137,7 +134,7 @@ export async function is_user_banned(user_id: string) {
     return false;
   }
 
-  let res = await run_query("SELECT public.is_user_banned($1)", [user_id]);
+  let res = await run_query("SELECT public.is_user_banned($1);", [user_id]);
 
   if (res) {
     if (

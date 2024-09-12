@@ -1,9 +1,12 @@
-import { supabase_client_store } from "$lib/stores.server";
-import type { PostgrestSingleResponse } from "@supabase/supabase-js";
 import { error, json, type RequestEvent } from "@sveltejs/kit";
-import { get } from "svelte/store";
 import { v4 as uuidv4 } from "uuid";
-import { is_valid_admin } from "$lib/helpers.server";
+import {
+  file_system_error_logger,
+  is_valid_admin,
+  other_error_logger,
+} from "$lib/helpers.server";
+import { run_query } from "$lib/db/index.server";
+import { writeFileSync } from "fs";
 
 /**
  * request format, formData with fields,
@@ -16,15 +19,12 @@ import { is_valid_admin } from "$lib/helpers.server";
         "puzzle_id": test
     }
  */
-export async function POST({
-  request,
-  cookies,
-}: RequestEvent): Promise<Response> {
-  if (!is_valid_admin(cookies)) {
+export async function POST(req: RequestEvent): Promise<Response> {
+  if (!is_valid_admin(req.cookies)) {
     return error(401);
   }
 
-  const request_formdata: any = await request.formData();
+  const request_formdata: any = await req.request.formData();
 
   if (request_formdata === undefined) {
     return error(422);
@@ -33,7 +33,7 @@ export async function POST({
   const given_hashed_ans: string = request_formdata.get("hashed_ans") as string;
   const given_info: string = "";
   const given_info_link: string = request_formdata.get("info_link") as string;
-  const given_puzzle_level: number = parseInt(
+  const given_puzzle_level: number = Number(
     request_formdata.get("puzzle_level")
   );
 
@@ -43,22 +43,23 @@ export async function POST({
   const given_puzzle_id: string = request_formdata.get("puzzle_id") as string;
 
   // client side did not give correct request fields
-  if (
-    given_hashed_ans === null ||
-    given_hashed_ans === undefined ||
-    given_info === null ||
-    given_info === undefined ||
-    given_info_link === null ||
-    given_info_link === undefined ||
-    given_puzzle_level === null ||
-    given_puzzle_level === undefined ||
-    given_title === null ||
-    given_title === undefined
-  ) {
-    return error(422);
-  }
+  let inputs: Array<any> = [
+    given_hashed_ans,
+    given_info,
+    given_info_link,
+    given_puzzle_level,
+    given_title,
+    editing,
+  ];
 
-  let puzzle_data: string = "";
+  inputs.forEach((element) => {
+    if (element === undefined || element === null) {
+      return error(422);
+    }
+  });
+
+  let puzzle_data;
+  let res;
 
   if (!editing) {
     if (puzzle_file === undefined || puzzle_file === null) {
@@ -69,95 +70,117 @@ export async function POST({
       "." +
       puzzle_file.name?.split(".").pop()) as string;
 
-    const add_new_puzzle_rpc: PostgrestSingleResponse<any> = await get(
-      supabase_client_store
-    ).rpc("add_new_puzzle", {
-      given_hashed_ans,
-      given_img_url,
-      given_info,
-      given_info_link,
-      given_puzzle_level,
-      given_title,
-    });
-
-    // VERCEL_LOG_SOURCE
-    if (add_new_puzzle_rpc.error) {
-      console.error("admin/puzzle line 85\n" + add_new_puzzle_rpc.error);
+    try {
+      writeFileSync(
+        "./bucket/PicturePuzzle/" + given_img_url,
+        Buffer.from(await puzzle_file.arrayBuffer()),
+        { flag: "w" }
+      );
+    } catch (err) {
+      file_system_error_logger.error(
+        "Error writing file to disk in api/admin/puzzle:99.",
+        err
+      );
       return error(500);
     }
 
-    const puzzle_file_upload_rpc: any = await get(supabase_client_store)
-      .storage.from("puzzles")
-      .upload(given_img_url, puzzle_file);
+    res = await run_query(
+      "SELECT public.add_new_puzzle($1, $2, $3, $4, $5, $6);",
+      [
+        given_img_url,
+        given_hashed_ans,
+        given_puzzle_level,
+        given_title,
+        given_info,
+        given_info_link,
+      ],
+      req
+    );
 
-    // VERCEL LOG SOURCE
-    if (puzzle_file_upload_rpc.error) {
-      console.error("admin/puzzle line 95\n" + puzzle_file_upload_rpc.error);
+    if (!res) {
       return error(500);
     }
-
-    puzzle_data = add_new_puzzle_rpc.data;
   } else {
     if (given_puzzle_id === undefined || given_puzzle_id === null) {
       return error(422);
     }
 
     if (puzzle_file === undefined || puzzle_file === null) {
-      const update_puzzle_rpc: PostgrestSingleResponse<any> = await get(
-        supabase_client_store
-      ).rpc("update_puzzle_nofile", {
-        given_hashed_ans,
-        given_info,
-        given_info_link,
-        given_puzzle_id,
-        given_puzzle_level,
-        given_title,
-      });
+      res = await run_query(
+        "SELECT public.update_puzzle_nofile($1, $2, $3, $4, $5, $6);",
+        [
+          given_puzzle_id,
+          given_hashed_ans,
+          given_puzzle_level,
+          given_title,
+          given_info,
+          given_info_link,
+        ],
+        req
+      );
 
-      // VERCEL_LOG_SOURCE
-      if (update_puzzle_rpc.error) {
-        console.error("admin/puzzle line 119\n" + update_puzzle_rpc.error);
+      if (!res) {
         return error(500);
       }
-
-      puzzle_data = update_puzzle_rpc.data;
     } else {
       let given_img_url: string = (uuidv4() +
         "." +
         puzzle_file.name?.split(".").pop()) as string;
 
-      const update_puzzle_rpc: PostgrestSingleResponse<any> = await get(
-        supabase_client_store
-      ).rpc("update_puzzle", {
-        given_hashed_ans: given_hashed_ans,
-        given_id: given_puzzle_id,
-        given_img_url: given_img_url,
-        given_info: given_info,
-        given_info_link: given_info_link,
-        given_puzzle_level: given_puzzle_level,
-        given_title: given_title,
-      });
-
-      // VERCEL_LOG_SOURCE
-      if (update_puzzle_rpc.error) {
-        console.error(
-          "admin/puzzle line 166 " + update_puzzle_rpc.error.message
+      try {
+        writeFileSync(
+          "./bucket/PicturePuzzle/" + given_img_url,
+          Buffer.from(await puzzle_file.arrayBuffer()),
+          { flag: "w" }
+        );
+      } catch (err) {
+        file_system_error_logger.error(
+          "Error writing file to disk in api/admin/puzzle:156. ",
+          err
         );
         return error(500);
       }
 
-      puzzle_data = update_puzzle_rpc.data;
-      const puzzle_file_upload_rpc: any = await get(supabase_client_store)
-        .storage.from("puzzles")
-        .upload(given_img_url, puzzle_file);
+      res = await run_query(
+        "SELECT public.update_puzzle($1, $2, $3, $4, $5, $6, $7);",
+        [
+          given_puzzle_id,
+          given_img_url,
+          given_hashed_ans,
+          given_puzzle_level,
+          given_title,
+          given_info,
+          given_info_link,
+        ],
+        req
+      );
 
-      // VERCEL LOG SOURCE
-      if (puzzle_file_upload_rpc.error) {
-        console.error("admin/puzzle line 156\n" + puzzle_file_upload_rpc.error);
+      if (!res) {
         return error(500);
       }
     }
   }
 
+  let fields: Array<string> = res?.rows[0][0]
+    .substring(1, res?.rows[0][0].length - 1)
+    .split(",");
+
+  if (fields.length != 8) {
+    other_error_logger.error(
+      "Error parsing db function result in api/admin/puzzle:169."
+    );
+    return error(500);
+  }
+
+  puzzle_data = {
+    id: fields[0],
+    created_at: fields[1].substring(1, fields[1].length - 1),
+    img_url: fields[2],
+    ans: fields[3],
+    puzzle_level: Number(fields[4]),
+    title: fields[5],
+    info: fields[6],
+    info_link: fields[7],
+  };
   return json(puzzle_data);
 }

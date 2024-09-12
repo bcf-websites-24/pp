@@ -23,7 +23,7 @@ export async function POST(req: RequestEvent): Promise<Response> {
   );
   if (res) {
     return json({
-      success: res.rows[0][0],
+      success: Number(res.rows[0][0].substring(1, res.rows[0][0].length - 1)),
     });
   } else {
     return error(500);

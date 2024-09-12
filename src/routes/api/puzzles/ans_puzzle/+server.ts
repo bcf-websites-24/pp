@@ -44,7 +44,7 @@ export async function POST(req: RequestEvent): Promise<Response> {
   }
 
   let res = await run_query(
-    "SELECT public.add_puzzle_attempt($1, $2, $3)",
+    "SELECT public.add_puzzle_attempt($1, $2, $3);",
     [given_user_id, given_puzzle_id, given_ans],
     req
   );
@@ -61,15 +61,6 @@ export async function POST(req: RequestEvent): Promise<Response> {
       return error(500);
     }
 
-    fields.forEach((element) => {
-      if (element.length == 0) {
-        other_error_logger.error(
-          "Error parsing db function result at api/puzzle/ans_puzzle:67"
-        );
-        return error(500);
-      }
-    });
-
     /**
        * {
             "f_is_correct": true,
@@ -84,17 +75,20 @@ export async function POST(req: RequestEvent): Promise<Response> {
             "f_rank": 1
           }
        */
+
     return json({
-      f_is_correct: fields[0] === "t" ? true : false,
-      f_next_puzzle_id: fields[1],
-      f_next_puzzle_img_url: fields[2],
-      f_next_puzzle_level: Number(fields[3]),
-      f_meme_id: fields[4],
-      f_img_url: fields[5],
-      f_sound_url: fields[6],
-      f_content: fields[7],
-      f_is_audio: fields[8] === "t" ? true : false,
-      f_rank: Number(fields[9]),
+      ans: {
+        f_is_correct: fields[0] === "t" ? true : false,
+        f_next_puzzle_id: fields[1] !== "" ? fields[1] : null,
+        f_next_puzzle_img_url: fields[2],
+        f_next_puzzle_level: Number(fields[3]),
+        f_meme_id: fields[4],
+        f_img_url: fields[5],
+        f_sound_url: fields[6],
+        f_content: fields[7],
+        f_is_audio: fields[8] === "t" ? true : false,
+        f_rank: Number(fields[9]),
+      },
     });
   } else {
     return error(500);
