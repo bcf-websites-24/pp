@@ -29,11 +29,13 @@
 	"type": "module",
 	"dependencies": {
 		"@aws-sdk/client-s3": "^3.650.0",
+		"@humanwhocodes/env": "^3.0.5",
 		"@supabase/ssr": "^0.4.0",
 		"@supabase/supabase-js": "^2.43.5",
 		"argon2": "^0.40.3",
 		"bootstrap": "^5.3.3",
 		"dotenv": "^16.4.5",
+		"envalid": "^8.0.0",
 		"jsonwebtoken": "^9.0.2",
 		"mime-types": "^2.1.35",
 		"pg": "^8.12.0",
