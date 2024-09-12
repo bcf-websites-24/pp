@@ -39,7 +39,7 @@ export async function load(load_event: ServerLoadEvent): Promise<any> {
         curr_level: Number(fields[3]),
         email: fields[4],
         user_rank: Number(fields[5]),
-        next_puzzle_id: fields[6],
+        next_puzzle_id: fields[6] === "" ? null : fields[6],
         next_puzzle_url: fields[7],
 
         next_puzzle_level: Number(fields[8]),
