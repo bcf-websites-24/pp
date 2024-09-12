@@ -1,11 +1,13 @@
-import { supabase_client_store } from "$lib/stores.server";
-import type { PostgrestSingleResponse } from "@supabase/supabase-js";
 import { error, json, type RequestEvent } from "@sveltejs/kit";
-import { get } from "svelte/store";
-import { get_user_id, is_user_banned } from "$lib/helpers.server";
+import {
+  get_user_id,
+  is_user_banned,
+  other_error_logger,
+} from "$lib/helpers.server";
+import { run_query } from "$lib/db/index.server";
 
-export async function POST({ cookies }: RequestEvent): Promise<Response> {
-  let given_user_id = get_user_id(cookies);
+export async function POST(req: RequestEvent): Promise<Response> {
+  let given_user_id = get_user_id(req.cookies);
   if (given_user_id === null) {
     return error(401);
   }
@@ -14,61 +16,53 @@ export async function POST({ cookies }: RequestEvent): Promise<Response> {
     return error(403);
   }
 
-  const user_detail_rpc: PostgrestSingleResponse<any> = await get(
-    supabase_client_store
-  ).rpc("get_user_details", {
-    given_user_id: given_user_id,
-  });
+  let res = await run_query(
+    "SELECT public.get_user_details($1);",
+    [given_user_id],
+    req
+  );
 
-  // VERCEL_LOG_SOURCE, this will be on the vercel api log
-  if (user_detail_rpc.error) {
-    console.error("users/details 22\n" + user_detail_rpc.error);
+  if (res) {
+    let fields: Array<any> = res.rows[0][0]
+      .substring(1, res.rows[0][0].length - 1)
+      .split(",");
+
+    if (fields.length !== 10 || fields[0] === "" || fields[1] === "") {
+      other_error_logger.error(
+        "Error at api/users/details:31. Possible wrong user id or db function result parsing error."
+      );
+      return error(500);
+    }
+
+    /**
+       * {
+            "uid": "724a2d08-b10d-4035-85cf-878943ee3fec",
+            "username": "Mobile1",
+            "student_id": "201905400",
+            "current_level": 16,
+            "email": "mobile@gmail.com",
+            "user_rank": 1,
+            "next_puzzle_id": "",
+            "next_puzzle_url": "",
+            "next_puzzle_level": 0,
+            "is_banned": false
+          }
+       */
+
+    return json({
+      uid: fields[0],
+      username: fields[1],
+      student_id: fields[2],
+      current_level: Number(fields[3]),
+      email: fields[4],
+      user_rank: Number(fields[5]),
+      next_puzzle_id: fields[6],
+      next_puzzle_url: fields[7],
+
+      next_puzzle_level: Number(fields[8]),
+      is_banned: fields[9] === "t" ? true : false,
+    });
+  } else {
     return error(500);
   }
-
-  // this may happens if uid does not exist in table
-  if (user_detail_rpc.data.id === "" || user_detail_rpc.data.username === "") {
-    return error(500);
-  }
-
-  // create limited time signed url of file
-  const puzzle_file_download_rpc: any = await get(supabase_client_store)
-    .storage.from("puzzles")
-    .createSignedUrl(user_detail_rpc.data.next_puzzle_url, 12 * 60 * 60);
-
-  // VERCEL LOG SOURCE
-  if (
-    puzzle_file_download_rpc.error ||
-    puzzle_file_download_rpc.data.signedUrl === undefined ||
-    puzzle_file_download_rpc.data.signedUrl === null
-  ) {
-    console.error(
-      "puzles/next_puzzle line 43\n" + puzzle_file_download_rpc.error
-    );
-    return error(500);
-  }
-
-  /**
-   * format:
-   *  {
-        "uid": "5ad4d6eb-e96a-4765-8193-f60579817bd7",
-        "username": "test56",
-        "student_id": "1580257",
-        "email": "test@gmail.com",
-        "current_level": 0,
-        "current_position": 1
-      }
-   */
-  return json({
-    uid: user_detail_rpc.data.id,
-    username: user_detail_rpc.data.username,
-    student_id: user_detail_rpc.data.student_id,
-    email: user_detail_rpc.data.email,
-    current_level: user_detail_rpc.data.curr_level,
-    current_position: user_detail_rpc.data.current_position,
-    next_puzzle_url: puzzle_file_download_rpc.data.signedUrl,
-    next_puzzle_id: user_detail_rpc.data.next_puzzle_id,
-    next_puzzle_level: user_detail_rpc.data.next_puzzle_level,
-    is_banned: user_detail_rpc.data.f_is_banned,
-  });
 }

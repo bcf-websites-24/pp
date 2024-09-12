@@ -1,7 +1,6 @@
-import { is_valid_admin } from "$lib/helpers.server";
-import { supabase_client_store } from "$lib/stores.server";
+import { file_system_error_logger, is_valid_admin } from "$lib/helpers.server";
 import { error, type RequestEvent } from "@sveltejs/kit";
-import { get } from "svelte/store";
+import { readFileSync } from "fs";
 
 export async function POST(request_event: RequestEvent): Promise<Response> {
   if (!is_valid_admin(request_event.cookies)) {
@@ -10,15 +9,21 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
 
   const request = request_event.request;
   const request_json = await request.json();
-  const image_blob = await get(supabase_client_store)
-    .storage.from("memes")
-    .download(request_json.url);
 
-  if (image_blob.error) {
-    console.error("memes/get_image_data line 18\n" + image_blob.error);
-
-    return error(500);
+  if (request_json.url === undefined || request_json.url === null) {
+    return error(422);
   }
 
-  return new Response(image_blob.data);
+  try {
+    const image_blob = new Blob([
+      readFileSync("./bucket/Memes/" + request_json.url),
+    ]);
+    return new Response(image_blob);
+  } catch (err) {
+    file_system_error_logger.error(
+      "Error reading file from disk at api/admin/meme/get_image:22.",
+      err
+    );
+    return error(500);
+  }
 }

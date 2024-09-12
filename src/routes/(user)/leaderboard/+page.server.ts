@@ -1,7 +1,10 @@
-import { get_user_id, is_user_banned } from "$lib/helpers.server";
-import { supabase_client_store } from "$lib/stores.server";
+import { run_query } from "$lib/db/index.server";
+import {
+  get_user_id,
+  is_user_banned,
+  other_error_logger,
+} from "$lib/helpers.server";
 import { error, type ServerLoadEvent } from "@sveltejs/kit";
-import { get } from "svelte/store";
 
 export async function load(load_event: ServerLoadEvent): Promise<any> {
   const id = get_user_id(load_event.cookies);
@@ -29,35 +32,66 @@ export async function load(load_event: ServerLoadEvent): Promise<any> {
     }
   }
 
-  const paged_leaderboard_rpc = await get(supabase_client_store).rpc(
-    "get_leaderboard_chunk",
-    { given_offset }
-  );
+  let t: Array<any> = [];
 
-  // VERCEL_LOG_SOURCE, this will be on the vercel api log
-  if (paged_leaderboard_rpc.error) {
-    console.error(
-      "(user)/leaderboard/+page.server.ts:34",
-      paged_leaderboard_rpc.error
-    );
+  let res = await run_query("SELECT public.get_leaderboard_chunk($1);", [
+    given_offset,
+  ]);
+
+  if (res) {
+    res.rows.forEach((element) => {
+      let fields: Array<string> = element[0]
+        .substring(1, element[0].length - 1)
+        .split(",");
+
+      if (fields.length != 6) {
+        other_error_logger.error(
+          "Error parsing db function result at routes/(user)/leaderboard:51"
+        );
+        return error(500);
+      }
+
+      fields.forEach((elem) => {
+        if (elem.length == 0) {
+          other_error_logger.error(
+            "Error parsing db function result at routes/(user)/leaderboard:59"
+          );
+          return error(500);
+        }
+      });
+
+      t.push({
+        f_username: fields[0],
+        f_curr_level: Number(fields[1]),
+        f_student_id: fields[2],
+        f_last_submission_time: fields[3].substring(1, fields[3].length - 1),
+        f_shomobay_score: Number(fields[4]),
+        f_rank: Number(fields[5]),
+      });
+    });
+  } else {
     return error(500);
   }
 
-  const leaderboard_metadata_rpc = await get(supabase_client_store).rpc(
-    "get_leaderboard_details"
-  );
+  let res2 = await run_query("SELECT public.get_leaderboard_details();", []);
+  let s;
+  if (res2) {
+    let r: string = res2.rows[0][0];
 
-  // VERCEL_LOG_SOURCE, this will be on the vercel api log
-  if (leaderboard_metadata_rpc.error) {
-    console.error(
-      "(user)/leaderboard/+page.server.ts line 42",
-      leaderboard_metadata_rpc.error
-    );
+    if (r === undefined || r === null || r.length === 0) {
+      other_error_logger.error(
+        "Error parsing db function result at routes/(user)/user/leaderbaord:85"
+      );
+      return error(500);
+    }
+
+    s = Number(r.substring(1, r.length - 1));
+  } else {
     return error(500);
   }
 
   return {
-    players: paged_leaderboard_rpc.data,
-    metadata: leaderboard_metadata_rpc.data,
+    players: t,
+    metadata: s,
   };
 }
