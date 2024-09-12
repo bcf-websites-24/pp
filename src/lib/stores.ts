@@ -16,3 +16,10 @@ export const unauthorized_toast_store = writable(new Toast(""));
 export const user_not_found_toast_store = writable(new Toast(""));
 export const password_unmatched_toast_store = writable(new Toast(""));
 export const banned_toast_store = writable(new Toast(""));
+export const student_id_misformation_toast_store = writable(new Toast(""));
+export const roll_out_of_range_toast_store = writable(new Toast(""));
+export const improper_username_toast_store = writable(new Toast(""));
+export const invalid_email_toast_store = writable(new Toast(""));
+export const duplicate_username_student_id_toast_store = writable(
+  new Toast("")
+);
