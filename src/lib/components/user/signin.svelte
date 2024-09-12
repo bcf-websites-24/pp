@@ -1,7 +1,5 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
-  import { page } from "$app/stores";
-  import Error from "$lib/components/error.svelte";
   import Register from "$lib/components/user/register.svelte";
   import { username_pattern } from "$lib/helpers";
   import {
@@ -15,6 +13,7 @@
   import { onMount } from "svelte";
   import { cubicInOut } from "svelte/easing";
   import { tweened } from "svelte/motion";
+  import { slide } from "svelte/transition";
 
   let mounted = false;
   let reg_height: number;
@@ -152,6 +151,16 @@
                 <button type="submit" class="btn btn-primary" disabled={signing}
                   >Login</button
                 >
+                {#if signing}
+                  <div
+                    transition:slide={{ duration: 250, axis: "x" }}
+                    class="ps-2"
+                  >
+                    <div class="spinner-border text-primary" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                  </div>
+                {/if}
               </div>
             </form>
           </div>
