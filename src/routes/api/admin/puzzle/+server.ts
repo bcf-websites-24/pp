@@ -1,16 +1,15 @@
 import { error, json, type RequestEvent } from "@sveltejs/kit";
 import { v4 as uuidv4 } from "uuid";
 import {
-  file_system_error_logger,
   is_valid_admin,
   other_error_logger,
 } from "$lib/helpers.server";
 import { run_query } from "$lib/db/index.server";
-import { writeFileSync } from "fs";
 import { get } from "svelte/store";
 import { s3_store } from "$lib/stores.server";
 import { STORAGE_BUCKET_NAME } from "$env/static/private";
-import { PutObjectCommand, type Bucket } from "@aws-sdk/client-s3";
+import { PutObjectCommand } from "@aws-sdk/client-s3";
+import mime from "mime-types";
 
 /**
  * request format, formData with fields,
@@ -70,16 +69,15 @@ export async function POST(req: RequestEvent): Promise<Response> {
       return error(422);
     }
 
-    let given_img_url: string = (uuidv4() +
-      "." +
-      puzzle_file.name?.split(".").pop()) as string;
+    let given_img_url: string = `${uuidv4()}.${puzzle_file.name?.split(".").pop()}`;
 
     try {
       await get(s3_store).send(new PutObjectCommand({
         Bucket: STORAGE_BUCKET_NAME,
         Key: `puzzle/${given_img_url}`,
         Body: new Uint8Array(await puzzle_file.arrayBuffer()),
-        ACL: "public-read"
+        ACL: "public-read",
+        ContentType: mime.lookup(given_img_url).toString()
       }));
     } catch (err) {
       console.log(err);
@@ -126,16 +124,15 @@ export async function POST(req: RequestEvent): Promise<Response> {
         return error(500);
       }
     } else {
-      let given_img_url: string = (uuidv4() +
-        "." +
-        puzzle_file.name?.split(".").pop()) as string;
+      let given_img_url: string = `${uuidv4()}.${puzzle_file.name?.split(".").pop()}`;
 
       try {
         await get(s3_store).send(new PutObjectCommand({
           Bucket: STORAGE_BUCKET_NAME,
           Key: `puzzle/${given_img_url}`,
           Body: new Uint8Array(await puzzle_file.arrayBuffer()),
-          ACL: "public-read"
+          ACL: "public-read",
+          ContentType: mime.lookup(given_img_url).toString()
         }));
       } catch (err) {
         console.log(err);
