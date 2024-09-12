@@ -22,8 +22,9 @@ export async function POST(req: RequestEvent): Promise<Response> {
     req
   );
   if (res) {
+    console.log(res);
     return json({
-      success: Number(res.rows[0][0].substring(1, res.rows[0][0].length - 1)),
+      success: Number(res.rows[0][0]),
     });
   } else {
     return error(500);
