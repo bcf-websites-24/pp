@@ -76,10 +76,10 @@
     $admin_logged_in_state = true;
 
     if (data.puzzles) {
-      puzzles = new Array<AdminPuzzleItem>(data.puzzles.length);
+      const temp_puzzles = new Array<AdminPuzzleItem>(data.puzzles.length);
 
-      for (let i = 0; i < puzzles.length; ++i) {
-        puzzles[i] = {
+      for (let i = 0; i < temp_puzzles.length; ++i) {
+        temp_puzzles[i] = {
           id: data.puzzles[i].f_id,
           loaded: true,
           level: data.puzzles[i].f_puzzle_level,
@@ -88,6 +88,8 @@
           img_data: "",
         };
       }
+
+      puzzles = temp_puzzles;
     }
   });
 </script>
