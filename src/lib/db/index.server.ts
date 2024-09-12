@@ -1,10 +1,9 @@
-import { DB_CONN_STRING } from "$env/static/private";
 import * as winston from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
 import { type RequestEvent } from "@sveltejs/kit";
-import pg from "pg";
-
-const pool = new pg.Pool({ connectionString: DB_CONN_STRING });
+import { pg_pool_store } from "$lib/stores.server";
+import type { QueryArrayConfig, QueryResult } from "pg";
+import { get } from "svelte/store";
 
 const transport: DailyRotateFile = new DailyRotateFile({
   filename: "db_errors-%DATE%.log",
@@ -30,24 +29,24 @@ export async function run_query(
   params: Array<any>,
   req?: RequestEvent
 ) {
-  let query_config: pg.QueryArrayConfig<any> = {
+  let query_config: QueryArrayConfig<any> = {
     text: text,
     values: params,
     rowMode: "array",
   };
-  let res: pg.QueryResult<any>;
+  let res: QueryResult<any>;
 
   try {
-    res = await pool.query(query_config);
+    res = await get(pg_pool_store).query(query_config);
   } catch (error) {
     db_error_logger.error(
       "Req ip: " +
-        req?.getClientAddress() +
-        ", Req query: " +
-        text +
-        ", Req params: " +
-        params +
-        ". ERROR: ",
+      req?.getClientAddress() +
+      ", Req query: " +
+      text +
+      ", Req params: " +
+      params +
+      ". ERROR: ",
       error
     );
     return null;

@@ -1,5 +1,10 @@
-import { readable, type Readable } from "svelte/store";
-import supabase, { type SupabaseClient } from "@supabase/supabase-js";
-import { SUPABASE_ANON_KEY, SUPABASE_URL } from "$env/static/private";
+import { DB_CONN_STRING } from "$env/static/private";
+import { readable } from "svelte/store";
+import pg from "pg";
 
-export const supabase_client_store: Readable<SupabaseClient<any, "public", any>> = readable(supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY));
+export const pg_pool_store = readable(new pg.Pool({
+  connectionString: DB_CONN_STRING,
+  ssl: {
+    rejectUnauthorized: false
+  }
+}));
