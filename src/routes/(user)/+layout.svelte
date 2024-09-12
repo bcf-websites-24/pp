@@ -35,7 +35,9 @@
     class="navbar navbar-expand-lg bg-body-tertiary shadow-sm position-sticky top-0 z-1"
   >
     <div class="container-fluid">
-      <a class="navbar-brand" href="/">Picture Puzzle 2024</a>
+      <a class="navbar-brand" href="/"
+        >Picture Puzzle <span class="text-primary">2024</span></a
+      >
       <div class="d-flex justify-content-end">
         <div class="dropdown">
           <button
