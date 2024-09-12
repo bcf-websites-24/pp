@@ -13,6 +13,12 @@
   } from "$lib/stores";
   import { Toast } from "bootstrap";
   import { onMount } from "svelte";
+  import { fade } from "svelte/transition";
+  import { cubicOut } from "svelte/easing";
+  import Puzzle_0 from "$lib/components/decorations/puzzle-0.svelte";
+  import Puzzle_1 from "$lib/components/decorations/puzzle-1.svelte";
+  import Dice_1 from "$lib/components/decorations/dice-1.svelte";
+  import Dice_0 from "$lib/components/decorations/dice-0.svelte";
 
   /**
    * ensures that all
@@ -20,7 +26,7 @@
    * before being used by
    * any other children
    */
-  let toasts_loaded = false;
+  let mounted = false;
   let correct_answer_toast_elem: HTMLDivElement;
   let wrong_answer_toast_elem: HTMLDivElement;
   let success_toast_elem: HTMLDivElement;
@@ -41,11 +47,11 @@
     $password_unmatched_toast_store = new Toast(password_unmatched_toast_elem);
     $banned_toast_store = new Toast(banned_toast_elem);
     $server_error_toast_store = new Toast(server_error_toast_elem);
-    toasts_loaded = true;
+    mounted = true;
   });
 </script>
 
-{#if toasts_loaded}
+{#if mounted}
   <slot></slot>
 {/if}
 
