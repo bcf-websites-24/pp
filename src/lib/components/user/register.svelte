@@ -1,7 +1,13 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { student_id_pattern, username_pattern } from "$lib/helpers";
-  import { server_error_toast_store } from "$lib/stores";
+  import {
+    duplicate_username_student_id_toast_store,
+    improper_username_toast_store,
+    invalid_email_toast_store,
+    roll_out_of_range_toast_store,
+    student_id_misformation_toast_store,
+  } from "$lib/stores";
   import { onMount } from "svelte";
   import { cubicInOut } from "svelte/easing";
   import { tweened } from "svelte/motion";
@@ -60,11 +66,20 @@
         const response_json: any = await response.json();
 
         if (response_json.registered === 0) {
-          goto("/", { invalidateAll: true });
-        } else if (response_json.registered === -1) {
+          location.href = "/";
+        } else if (response_json.registered === -2) {
+          $student_id_misformation_toast_store.show();
+        } else if (response_json.registered === -3) {
+          $roll_out_of_range_toast_store.show();
+        } else if (response_json.registered === -4) {
+          $improper_username_toast_store.show();
+        } else if (response_json.registered === -6) {
+          $invalid_email_toast_store.show();
+        } else if (response_json.registered === -7) {
+          $duplicate_username_student_id_toast_store.show();
+        } else {
+          console.error("Unknown registered value");
         }
-      } else if (response.status === 500) {
-        $server_error_toast_store.show();
       }
 
       signing = false;

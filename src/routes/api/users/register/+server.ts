@@ -10,9 +10,8 @@ import { run_query } from "$lib/db/index.server";
  *
  * @param request_event
  * @returns  0  successful registration
- *          -1  database error
  *          -2  student id is not numeric
- * UNUSED   -3  student id has roll out of range [1,183]
+ *          -3  student id has roll out of range [1,183]
  *          -4  username has space/non alphanumeric character, not allowing it
  * UNUSED   -5  non cse dept
  *          -6  invalid email address
@@ -67,15 +66,15 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
 
   let batch: number = Number(student_id.substring(0, 4));
   // let dept: number = Number(student_id.substring(5, 7));
-  // let roll: number = Number(student_id.substring(7, 9));
+  let roll: number = Number(student_id.substring(6));
   let user_type: string = "";
 
-  // if (roll < 1 || roll > 183) {
-  //   // Error code: -3 means wrong roll, we include 183 to allow for 21-23 batch + 3 foreign students (there is one in 22 batch I know)
-  //   return json({
-  //     registered: -3,
-  //   });
-  // }
+  if (roll < 1 || roll > 190) {
+    // Error code: -3 means wrong roll, we include upto 189 to allow for 21-23 batch + 9 foreign students (there is one in 22 batch I know)
+    return json({
+      registered: -3,
+    });
+  }
 
   // 19,20,21,22,23
   if (batch > 2018 && batch < 2024) {
