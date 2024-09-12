@@ -17,7 +17,7 @@ export async function POST(req: RequestEvent): Promise<Response> {
   }
 
   let res = await run_query(
-    "SELECT public.get_user_details($1)",
+    "SELECT public.get_user_details($1);",
     [given_user_id],
     req
   );
@@ -48,6 +48,7 @@ export async function POST(req: RequestEvent): Promise<Response> {
             "is_banned": false
           }
        */
+
     return json({
       uid: fields[0],
       username: fields[1],

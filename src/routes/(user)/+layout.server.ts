@@ -1,7 +1,10 @@
-import { supabase_client_store } from "$lib/stores.server";
-import { get } from "svelte/store";
 import { error, type ServerLoadEvent } from "@sveltejs/kit";
-import { get_user_id, is_user_banned } from "$lib/helpers.server";
+import {
+  get_user_id,
+  is_user_banned,
+  other_error_logger,
+} from "$lib/helpers.server";
+import { run_query } from "$lib/db/index.server";
 
 export async function load(load_event: ServerLoadEvent): Promise<any> {
   let id = get_user_id(load_event.cookies);
@@ -14,21 +17,36 @@ export async function load(load_event: ServerLoadEvent): Promise<any> {
     return error(403);
   }
 
-  const user_detail_rpc = await get(supabase_client_store)
-    .rpc("get_user_details", {
-      given_user_id: id,
-    });
+  let res = await run_query("SELECT public.get_user_details($1);", [id]);
 
-  if (user_detail_rpc.error) {
-    console.error(
-      "user detail rpc error @ (user)/layout.server.ts:22\n" +
-      user_detail_rpc.error
-    );
+  if (res) {
+    let fields: Array<any> = res.rows[0][0]
+      .substring(1, res.rows[0][0].length - 1)
+      .split(",");
 
-    return error(500); // internal server error
+    if (fields.length !== 10 || fields[0] === "" || fields[1] === "") {
+      other_error_logger.error(
+        "Error at routes/(user)/layout.server.ts:31. Possible wrong user id or db function result parsing error."
+      );
+      return error(500);
+    }
+
+    return {
+      details: {
+        uid: fields[0],
+        username: fields[1],
+        student_id: fields[2],
+        curr_level: Number(fields[3]),
+        email: fields[4],
+        user_rank: Number(fields[5]),
+        next_puzzle_id: fields[6],
+        next_puzzle_url: fields[7],
+
+        next_puzzle_level: Number(fields[8]),
+        is_banned: fields[9] === "t" ? true : false,
+      },
+    };
+  } else {
+    return error(500);
   }
-
-  return {
-    details: user_detail_rpc.data,
-  };
 }

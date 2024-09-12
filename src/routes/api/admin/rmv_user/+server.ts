@@ -1,36 +1,32 @@
-import { supabase_client_store } from "$lib/stores.server";
 import { error, json, type RequestEvent } from "@sveltejs/kit";
-import { get } from "svelte/store";
-import { is_valid_admin } from "$lib/helpers.server";
+import { is_valid_admin, other_error_logger } from "$lib/helpers.server";
+import { run_query } from "$lib/db/index.server";
 
-export async function POST({
-  request,
-  cookies,
-}: RequestEvent): Promise<Response> {
-  if (!is_valid_admin(cookies)) {
+export async function POST(req: RequestEvent): Promise<Response> {
+  if (!is_valid_admin(req.cookies)) {
     return error(401);
   }
 
-  const request_json: any = await request.json();
+  const request_json: any = await req.request.json();
   const user_id: string = request_json.user_id;
 
   if (user_id === undefined || user_id === null) {
     return error(422);
   }
 
-  const del_user_rpc = await get(supabase_client_store).rpc("delete_user", {
-    given_id: user_id,
-  });
+  let res = await run_query("SELECT public.delete_user($1);", [user_id], req);
+  if (res) {
+    if (res.rows[0][0].length === 0) {
+      other_error_logger.error(
+        "Error parsing db function result in api/admin/rmv_user"
+      );
+      return error(500);
+    }
 
-  // VERCEL_LOG_SOURCE, this will be on the vercel api log
-  if (del_user_rpc.error) {
-    console.error("users/rmv_user line 27\n" + del_user_rpc.error.message);
-
+    return json({
+      success: Number(res.rows[0][0].substring(1, res.rows[0][0].length - 1)),
+    });
+  } else {
     return error(500);
   }
-
-  return json({
-    success: del_user_rpc.data,
-    // file_blob: ret_text,
-  });
 }
