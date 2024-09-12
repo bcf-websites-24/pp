@@ -1,11 +1,13 @@
-import { supabase_client_store } from "$lib/stores.server";
-import type { PostgrestSingleResponse } from "@supabase/supabase-js";
 import { error, json, type RequestEvent } from "@sveltejs/kit";
-import { get } from "svelte/store";
-import { get_user_id, is_user_banned } from "$lib/helpers.server";
+import {
+  get_user_id,
+  is_user_banned,
+  other_error_logger,
+} from "$lib/helpers.server";
+import { run_query } from "$lib/db/index.server";
 
-export async function POST({ cookies }: RequestEvent): Promise<Response> {
-  let given_user_id = get_user_id(cookies);
+export async function POST(req: RequestEvent): Promise<Response> {
+  let given_user_id = get_user_id(req.cookies);
   if (given_user_id === null) {
     return error(401);
   }
@@ -14,18 +16,42 @@ export async function POST({ cookies }: RequestEvent): Promise<Response> {
     return error(403);
   }
 
-  const leaderboard_rpc = await get(supabase_client_store).rpc(
-    "get_leaderboard"
-  );
+  let res = await run_query("SELECT public.get_leaderboard();", [], req);
 
-  // VERCEL_LOG_SOURCE, this will be on the vercel api log
-  if (leaderboard_rpc.error) {
-    console.error("arena/leaderboard line 18\n" + leaderboard_rpc.error);
-    return error(500);
-  }
+  if (res) {
+    let t: Array<any> = [];
 
-  // leaderboard in serial. Array of objects. format:
-  /**
+    res.rows.forEach((element) => {
+      let fields: Array<string> = element[0]
+        .substring(1, element[0].length - 1)
+        .split(",");
+
+      if (fields.length != 4) {
+        other_error_logger.error(
+          "Error parsing db function result at api/arena/leaderboard:30"
+        );
+        return error(500);
+      }
+
+      fields.forEach((elem) => {
+        if (elem.length == 0) {
+          other_error_logger.error(
+            "Error parsing db function result at api/arena/leaderboard:38"
+          );
+          return error(500);
+        }
+      });
+
+      t.push({
+        f_username: fields[0],
+        f_curr_level: Number(fields[1]),
+        f_student_id: fields[2],
+        f_last_submission_time: fields[3].substring(1, fields[3].length - 1),
+      });
+    });
+
+    // leaderboard in serial. Array of objects. format:
+    /**
    *  [
           {
               "f_username": "test56",
@@ -35,5 +61,8 @@ export async function POST({ cookies }: RequestEvent): Promise<Response> {
           }
       ]   
    */
-  return json(leaderboard_rpc.data);
+    return json(t);
+  } else {
+    return error(500);
+  }
 }
