@@ -22,7 +22,7 @@ export async function POST(req: RequestEvent): Promise<Response> {
     req
   );
   if (res) {
-    console.log(res);
+    // console.log(res);
     return json({
       success: Number(res.rows[0][0]),
     });
