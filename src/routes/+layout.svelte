@@ -17,12 +17,6 @@
   } from "$lib/stores";
   import { Toast } from "bootstrap";
   import { onMount } from "svelte";
-  import { fade } from "svelte/transition";
-  import { cubicOut } from "svelte/easing";
-  import Puzzle_0 from "$lib/components/decorations/puzzle-0.svelte";
-  import Puzzle_1 from "$lib/components/decorations/puzzle-1.svelte";
-  import Dice_1 from "$lib/components/decorations/dice-1.svelte";
-  import Dice_0 from "$lib/components/decorations/dice-0.svelte";
 
   /**
    * ensures that all
@@ -63,6 +57,7 @@
     $duplicate_username_student_id_toast_store = new Toast(
       duplicate_username_student_id_toast_elem,
     );
+    mounted = true;
   });
 </script>
 
