@@ -9,7 +9,11 @@
     banned_toast_store,
     user_not_found_toast_store,
     wrong_answer_toast_store,
-    server_error_toast_store,
+    student_id_misformation_toast_store,
+    roll_out_of_range_toast_store,
+    improper_username_toast_store,
+    invalid_email_toast_store,
+    duplicate_username_student_id_toast_store,
   } from "$lib/stores";
   import { Toast } from "bootstrap";
   import { onMount } from "svelte";
@@ -35,7 +39,11 @@
   let user_unavailable_toast_elem: HTMLDivElement;
   let password_unmatched_toast_elem: HTMLDivElement;
   let banned_toast_elem: HTMLDivElement;
-  let server_error_toast_elem: HTMLDivElement;
+  let student_id_misformation_toast_elem: HTMLDivElement;
+  let roll_out_of_range_toast_elem: HTMLDivElement;
+  let improper_username_toast_elem: HTMLDivElement;
+  let invalid_email_toast_elem: HTMLDivElement;
+  let duplicate_username_student_id_toast_elem: HTMLDivElement;
 
   onMount((): void => {
     $correct_answer_toast_store = new Toast(correct_answer_toast_elem);
@@ -46,8 +54,15 @@
     $user_not_found_toast_store = new Toast(user_unavailable_toast_elem);
     $password_unmatched_toast_store = new Toast(password_unmatched_toast_elem);
     $banned_toast_store = new Toast(banned_toast_elem);
-    $server_error_toast_store = new Toast(server_error_toast_elem);
-    mounted = true;
+    $student_id_misformation_toast_store = new Toast(
+      student_id_misformation_toast_elem,
+    );
+    $roll_out_of_range_toast_store = new Toast(roll_out_of_range_toast_elem);
+    $improper_username_toast_store = new Toast(improper_username_toast_elem);
+    $invalid_email_toast_store = new Toast(invalid_email_toast_elem);
+    $duplicate_username_student_id_toast_store = new Toast(
+      duplicate_username_student_id_toast_elem,
+    );
   });
 </script>
 
@@ -169,11 +184,69 @@
     </div>
   </div>
   <div
-    bind:this={server_error_toast_elem}
+    bind:this={student_id_misformation_toast_elem}
     class="toast align-items-center text-bg-danger border-0"
   >
     <div class="d-flex">
-      <div class="toast-body">Internal Server Error</div>
+      <div class="toast-body">Student ID is of improper format.</div>
+      <button
+        type="button"
+        class="btn-close btn-close-white me-2 m-auto"
+        data-bs-dismiss="toast"
+        aria-label="Close"
+      ></button>
+    </div>
+  </div>
+  <div
+    bind:this={roll_out_of_range_toast_elem}
+    class="toast align-items-center text-bg-danger border-0"
+  >
+    <div class="d-flex">
+      <div class="toast-body">Student roll is out of valid range.</div>
+      <button
+        type="button"
+        class="btn-close btn-close-white me-2 m-auto"
+        data-bs-dismiss="toast"
+        aria-label="Close"
+      ></button>
+    </div>
+  </div>
+  <div
+    bind:this={improper_username_toast_elem}
+    class="toast align-items-center text-bg-danger border-0"
+  >
+    <div class="d-flex">
+      <div class="toast-body">
+        Username must be alphanumeric with no spaces.
+      </div>
+      <button
+        type="button"
+        class="btn-close btn-close-white me-2 m-auto"
+        data-bs-dismiss="toast"
+        aria-label="Close"
+      ></button>
+    </div>
+  </div>
+  <div
+    bind:this={invalid_email_toast_elem}
+    class="toast align-items-center text-bg-danger border-0"
+  >
+    <div class="d-flex">
+      <div class="toast-body">Invalid Email address given.</div>
+      <button
+        type="button"
+        class="btn-close btn-close-white me-2 m-auto"
+        data-bs-dismiss="toast"
+        aria-label="Close"
+      ></button>
+    </div>
+  </div>
+  <div
+    bind:this={duplicate_username_student_id_toast_elem}
+    class="toast align-items-center text-bg-danger border-0"
+  >
+    <div class="d-flex">
+      <div class="toast-body">Username or student id already in use.</div>
       <button
         type="button"
         class="btn-close btn-close-white me-2 m-auto"
