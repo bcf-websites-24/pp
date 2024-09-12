@@ -5,14 +5,32 @@ import * as winston from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
 import { run_query } from "./db/index.server";
 
-const filesystem_error_transport: DailyRotateFile = new DailyRotateFile({
-  filename: "fs_errors-%DATE%.log",
-  datePattern: "YYYY-MM-DD-HH-mm",
-  zippedArchive: true,
-  maxSize: "25m",
-  maxFiles: "7d",
-  dirname: "./logs",
-});
+let filesystem_error_transport;
+
+let other_error_transport;
+
+if ("HOSTED_RUNTIME" in process.env) {
+  filesystem_error_transport = new DailyRotateFile({
+    filename: "fs_errors-%DATE%.log",
+    datePattern: "YYYY-MM-DD-HH-mm",
+    zippedArchive: true,
+    maxSize: "25m",
+    maxFiles: "7d",
+    dirname: "./logs",
+  });
+
+  other_error_transport = new DailyRotateFile({
+    filename: "other_errors-%DATE%.log",
+    datePattern: "YYYY-MM-DD-HH-mm",
+    zippedArchive: true,
+    maxSize: "25m",
+    maxFiles: "7d",
+    dirname: "./logs",
+  });
+} else {
+  filesystem_error_transport = new winston.transports.Console();
+  other_error_transport = new winston.transports.Console();
+}
 
 export const file_system_error_logger = winston.createLogger({
   level: "info", // lowest allowed logger level
@@ -22,15 +40,6 @@ export const file_system_error_logger = winston.createLogger({
     winston.format.json()
   ),
   transports: [filesystem_error_transport],
-});
-
-const other_error_transport: DailyRotateFile = new DailyRotateFile({
-  filename: "other_errors-%DATE%.log",
-  datePattern: "YYYY-MM-DD-HH-mm",
-  zippedArchive: true,
-  maxSize: "25m",
-  maxFiles: "7d",
-  dirname: "./logs",
 });
 
 export const other_error_logger = winston.createLogger({
