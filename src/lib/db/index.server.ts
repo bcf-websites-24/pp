@@ -7,7 +7,7 @@ import { get } from "svelte/store";
 
 let transport;
 
-if (process.env.LOCAL_HOSTED_RUNTIME) {
+if (!process.env.LOCAL_HOSTED_RUNTIME) {
   transport = new winston.transports.Console();
 } else {
   transport = new DailyRotateFile({
