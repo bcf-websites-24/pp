@@ -94,7 +94,9 @@
 <div class="stranger-root">
   <div class="stranger-root-1">
     <div class="fs-5 text-center text-secondary mb-0">Welcome to</div>
-    <div class="fs-1 text-center">Picture Puzzle 2024</div>
+    <div class="fs-1 text-center">
+      Picture Puzzle <span class="text-primary">2024</span>
+    </div>
     <div class="stranger-card card card-body shadow m-2">
       <div class="nav nav-pills gap-2 mb-3">
         <button
