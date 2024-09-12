@@ -1,4 +1,8 @@
-import { ADMIN_JWT_ID, JWT_SECRET } from "$env/static/private";
+import {
+  ADMIN_JWT_ID,
+  JWT_SECRET,
+  LOCAL_HOSTED_RUNTIME,
+} from "$env/static/private";
 import type { Cookies } from "@sveltejs/kit";
 import jwt from "jsonwebtoken";
 import * as winston from "winston";
@@ -26,7 +30,7 @@ let other_error_transport;
 //   }
 // );
 // console.log(process.env);
-if (false) {
+if ("LOCAL_HOSTED_RUNTIME" in process.env) {
   console.log("LOCAL runtime detected");
   filesystem_error_transport = new DailyRotateFile({
     filename: "fs_errors-%DATE%.log",
