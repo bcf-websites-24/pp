@@ -7,6 +7,10 @@ import {
 } from "$lib/helpers.server";
 import { run_query } from "$lib/db/index.server";
 import { writeFileSync } from "fs";
+import { get } from "svelte/store";
+import { s3_store } from "$lib/stores.server";
+import { STORAGE_BUCKET_NAME } from "$env/static/private";
+import { PutObjectCommand, type Bucket } from "@aws-sdk/client-s3";
 
 /**
  * request format, formData with fields,
@@ -71,16 +75,15 @@ export async function POST(req: RequestEvent): Promise<Response> {
       puzzle_file.name?.split(".").pop()) as string;
 
     try {
-      writeFileSync(
-        "./bucket/PicturePuzzle/" + given_img_url,
-        Buffer.from(await puzzle_file.arrayBuffer()),
-        { flag: "w" }
-      );
+      await get(s3_store).send(new PutObjectCommand({
+        Bucket: STORAGE_BUCKET_NAME,
+        Key: `puzzle/${given_img_url}`,
+        Body: new Uint8Array(await puzzle_file.arrayBuffer()),
+        ACL: "public-read"
+      }));
     } catch (err) {
-      file_system_error_logger.error(
-        "Error writing file to disk in api/admin/puzzle:99.",
-        err
-      );
+      console.log(err);
+
       return error(500);
     }
 
@@ -128,16 +131,15 @@ export async function POST(req: RequestEvent): Promise<Response> {
         puzzle_file.name?.split(".").pop()) as string;
 
       try {
-        writeFileSync(
-          "./bucket/PicturePuzzle/" + given_img_url,
-          Buffer.from(await puzzle_file.arrayBuffer()),
-          { flag: "w" }
-        );
+        await get(s3_store).send(new PutObjectCommand({
+          Bucket: STORAGE_BUCKET_NAME,
+          Key: `puzzle/${given_img_url}`,
+          Body: new Uint8Array(await puzzle_file.arrayBuffer()),
+          ACL: "public-read"
+        }));
       } catch (err) {
-        file_system_error_logger.error(
-          "Error writing file to disk in api/admin/puzzle:156. ",
-          err
-        );
+        console.log(err);
+
         return error(500);
       }
 
