@@ -4,12 +4,27 @@ import jwt from "jsonwebtoken";
 import * as winston from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
 import { run_query } from "./db/index.server";
+// import { Env } from "@humanwhocodes/env";
+// import { cleanEnv, str } from "envalid";
 
 let filesystem_error_transport;
 
 let other_error_transport;
 
-if ("HOSTED_RUNTIME" in process.env) {
+// let is_serverless: boolean = true;
+
+// const env = cleanEnv(
+//   process.env,
+//   { LOCAL_HOSTED_RUNTIME: str() },
+//   {
+//     reporter: ({ errors, env }) => {
+//       is_serverless = false;
+//     },
+//   }
+// );
+
+if (!process.env.VERCEL) {
+  console.log("LOCAL runtime detected");
   filesystem_error_transport = new DailyRotateFile({
     filename: "fs_errors-%DATE%.log",
     datePattern: "YYYY-MM-DD-HH-mm",
@@ -28,6 +43,7 @@ if ("HOSTED_RUNTIME" in process.env) {
     dirname: "./logs",
   });
 } else {
+  console.log("SERVERLESS runtime detected");
   filesystem_error_transport = new winston.transports.Console();
   other_error_transport = new winston.transports.Console();
 }
