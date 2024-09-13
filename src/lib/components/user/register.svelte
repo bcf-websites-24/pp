@@ -148,7 +148,9 @@
           required
         />
         <label for="register-student-id">Student ID</label>
-        <p class="fs-6 text-secondary mb-0">*9 digits student ID</p>
+        <p class="fs-6 text-secondary mb-0">
+          *9 digits student ID (e. g. 201905039)
+        </p>
       </div>
       <div class="d-flex align-items-center justify-content-end">
         <button type="submit" class="btn btn-primary">Next</button>
@@ -214,7 +216,7 @@
         />
         <label for="register-confirm-password">Confirm Password</label>
       </div>
-      <div class="d-flex justify-content-end">
+      <div class="d-flex justify-content-end align-items-center">
         <button
           on:click={back}
           type="button"
@@ -225,7 +227,10 @@
           >Register</button
         >
         {#if signing}
-          <div transition:slide={{ duration: 250, axis: "x" }} class="ps-2">
+          <div
+            transition:slide={{ duration: 250, axis: "x" }}
+            class="d-flex align-items-center ps-2"
+          >
             <div class="spinner-border text-primary" role="status">
               <span class="visually-hidden">Loading...</span>
             </div>

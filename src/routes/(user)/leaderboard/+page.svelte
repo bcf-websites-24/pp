@@ -36,9 +36,7 @@
       };
     }
 
-    page_count = Math.ceil(
-      parseInt(page.data.metadata.leaderboard_length) / PAGE_SIZE,
-    );
+    page_count = Math.ceil(parseInt(page.data.metadata) / PAGE_SIZE);
 
     const page_param = page.url.searchParams.get("page");
 
