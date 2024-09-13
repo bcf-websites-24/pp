@@ -5,14 +5,20 @@ import { pg_pool_store } from "$lib/stores.server";
 import type { QueryArrayConfig, QueryResult } from "pg";
 import { get } from "svelte/store";
 
-const transport: DailyRotateFile = new DailyRotateFile({
-  filename: "db_errors-%DATE%.log",
-  datePattern: "YYYY-MM-DD-HH-mm",
-  zippedArchive: true,
-  maxSize: "25m",
-  maxFiles: "7d",
-  dirname: "./logs",
-});
+let transport;
+
+if (!process.env.LOCAL_HOSTED_RUNTIME) {
+  transport = new winston.transports.Console();
+} else {
+  transport = new DailyRotateFile({
+    filename: "db_errors-%DATE%.log",
+    datePattern: "YYYY-MM-DD-HH-mm",
+    zippedArchive: true,
+    maxSize: "25m",
+    maxFiles: "7d",
+    dirname: "./logs",
+  });
+}
 
 const db_error_logger = winston.createLogger({
   level: "info", // lowest allowed logger level
@@ -23,6 +29,10 @@ const db_error_logger = winston.createLogger({
   ),
   transports: [transport],
 });
+
+if (process.env.LOCAL_HOSTED_RUNTIME) {
+  db_error_logger.transports.push(new winston.transports.Console());
+}
 
 export async function run_query(
   text: string,
@@ -41,12 +51,12 @@ export async function run_query(
   } catch (error) {
     db_error_logger.error(
       "Req ip: " +
-      req?.getClientAddress() +
-      ", Req query: " +
-      text +
-      ", Req params: " +
-      params +
-      ". ERROR: ",
+        req?.getClientAddress() +
+        ", Req query: " +
+        text +
+        ", Req params: " +
+        params +
+        ". ERROR: ",
       error
     );
     return null;

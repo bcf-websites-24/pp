@@ -69,6 +69,10 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
   let roll: number = Number(student_id.substring(6));
   let user_type: string = "";
 
+  if (Number.isNaN(batch) || Number.isNaN(roll)) {
+    return error(422);
+  }
+
   if (roll < 1 || roll > 190) {
     // Error code: -3 means wrong roll, we include upto 189 to allow for 21-23 batch + 9 foreign students (there is one in 22 batch I know)
     return json({
@@ -81,6 +85,12 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
     user_type = "student";
   } else {
     user_type = "alum";
+  }
+
+  if (batch < 1980 || batch > 2024) {
+    return json({
+      registered: -3, // wrong student id
+    });
   }
 
   // if (dept !== 5) {

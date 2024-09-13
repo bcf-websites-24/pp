@@ -1,9 +1,6 @@
 import { error, json, type RequestEvent } from "@sveltejs/kit";
 import { v4 as uuidv4 } from "uuid";
-import {
-  is_valid_admin,
-  other_error_logger,
-} from "$lib/helpers.server";
+import { is_valid_admin, other_error_logger } from "$lib/helpers.server";
 import { run_query } from "$lib/db/index.server";
 import { get } from "svelte/store";
 import { s3_store } from "$lib/stores.server";
@@ -34,8 +31,8 @@ export async function POST(req: RequestEvent): Promise<Response> {
   }
 
   const given_hashed_ans: string = request_formdata.get("hashed_ans") as string;
-  const given_info: string = "";
-  const given_info_link: string = request_formdata.get("info_link") as string;
+  const given_info: string = request_formdata.get("info_link") as string;
+  const given_info_link: string = "";
   const given_puzzle_level: number = Number(
     request_formdata.get("puzzle_level")
   );
@@ -61,6 +58,10 @@ export async function POST(req: RequestEvent): Promise<Response> {
     }
   });
 
+  if (Number.isNaN(given_puzzle_level)) {
+    return error(422);
+  }
+
   let puzzle_data;
   let res;
 
@@ -69,16 +70,20 @@ export async function POST(req: RequestEvent): Promise<Response> {
       return error(422);
     }
 
-    let given_img_url: string = `${uuidv4()}.${puzzle_file.name?.split(".").pop()}`;
+    let given_img_url: string = `${uuidv4()}.${puzzle_file.name
+      ?.split(".")
+      .pop()}`;
 
     try {
-      await get(s3_store).send(new PutObjectCommand({
-        Bucket: STORAGE_BUCKET_NAME,
-        Key: `puzzle/${given_img_url}`,
-        Body: new Uint8Array(await puzzle_file.arrayBuffer()),
-        ACL: "public-read",
-        ContentType: mime.lookup(given_img_url).toString()
-      }));
+      await get(s3_store).send(
+        new PutObjectCommand({
+          Bucket: STORAGE_BUCKET_NAME,
+          Key: `puzzle/${given_img_url}`,
+          Body: new Uint8Array(await puzzle_file.arrayBuffer()),
+          ACL: "public-read",
+          ContentType: mime.lookup(given_img_url).toString(),
+        })
+      );
     } catch (err) {
       console.log(err);
 
@@ -124,16 +129,20 @@ export async function POST(req: RequestEvent): Promise<Response> {
         return error(500);
       }
     } else {
-      let given_img_url: string = `${uuidv4()}.${puzzle_file.name?.split(".").pop()}`;
+      let given_img_url: string = `${uuidv4()}.${puzzle_file.name
+        ?.split(".")
+        .pop()}`;
 
       try {
-        await get(s3_store).send(new PutObjectCommand({
-          Bucket: STORAGE_BUCKET_NAME,
-          Key: `puzzle/${given_img_url}`,
-          Body: new Uint8Array(await puzzle_file.arrayBuffer()),
-          ACL: "public-read",
-          ContentType: mime.lookup(given_img_url).toString()
-        }));
+        await get(s3_store).send(
+          new PutObjectCommand({
+            Bucket: STORAGE_BUCKET_NAME,
+            Key: `puzzle/${given_img_url}`,
+            Body: new Uint8Array(await puzzle_file.arrayBuffer()),
+            ACL: "public-read",
+            ContentType: mime.lookup(given_img_url).toString(),
+          })
+        );
       } catch (err) {
         console.log(err);
 

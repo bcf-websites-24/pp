@@ -16,9 +16,16 @@ export async function POST(req: RequestEvent): Promise<Response> {
     return error(403);
   }
 
-  let given_offset: number = req.url.searchParams.has("offset")
-    ? Number(req.url.searchParams.get("offset") as string)
-    : 0;
+  let given_offset: number;
+
+  if (
+    req.url.searchParams.has("offset") &&
+    !Number.isNaN(Number(req.url.searchParams.get("offset") as string))
+  ) {
+    given_offset = Number(req.url.searchParams.get("offset") as string);
+  } else {
+    given_offset = 0;
+  }
 
   let res = await run_query(
     "SELECT public.get_leaderboard_chunk($1);",
