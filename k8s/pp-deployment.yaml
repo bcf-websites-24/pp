@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: pp
-          image: registry.digitalocean.com/csefest2024-registry/csefest2024-pp:latest
+          image: <IMAGE>
           ports:
             - name: http
               containerPort: 3000
