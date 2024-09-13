@@ -4,12 +4,15 @@ metadata:
   name: pp
   namespace: website
 spec:
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       app: pp
   strategy:
     type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
   template:
     metadata:
       labels:
