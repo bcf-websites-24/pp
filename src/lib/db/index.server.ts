@@ -27,7 +27,7 @@ const db_error_logger = winston.createLogger({
     winston.format.timestamp(),
     winston.format.json()
   ),
-  transports: [transport],
+  transports: [transport, new winston.transports.Console()],
 });
 
 export async function run_query(
