@@ -27,8 +27,12 @@ const db_error_logger = winston.createLogger({
     winston.format.timestamp(),
     winston.format.json()
   ),
-  transports: [transport, new winston.transports.Console()],
+  transports: [transport],
 });
+
+if (process.env.LOCAL_HOSTED_RUNTIME) {
+  db_error_logger.transports.push(new winston.transports.Console());
+}
 
 export async function run_query(
   text: string,

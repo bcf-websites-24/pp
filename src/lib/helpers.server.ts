@@ -1,8 +1,4 @@
-import {
-  ADMIN_JWT_ID,
-  JWT_SECRET,
-  LOCAL_HOSTED_RUNTIME,
-} from "$env/static/private";
+import { ADMIN_JWT_ID, JWT_SECRET } from "$env/static/private";
 import type { Cookies } from "@sveltejs/kit";
 import jwt from "jsonwebtoken";
 import * as winston from "winston";
@@ -18,18 +14,6 @@ let filesystem_error_transport;
 
 let other_error_transport;
 
-// let is_serverless: boolean = true;
-
-// const env = cleanEnv(
-//   process.env,
-//   { LOCAL_HOSTED_RUNTIME: str() },
-//   {
-//     reporter: ({ errors, env }) => {
-//       is_serverless = false;
-//     },
-//   }
-// );
-// console.log(process.env);
 if (process.env.LOCAL_HOSTED_RUNTIME) {
   console.log("LOCAL runtime detected");
   filesystem_error_transport = new DailyRotateFile({
@@ -72,8 +56,13 @@ export const other_error_logger = winston.createLogger({
     winston.format.timestamp(),
     winston.format.json()
   ),
-  transports: [other_error_transport, new winston.transports.Console()],
+  transports: [other_error_transport],
 });
+
+if (process.env.LOCAL_HOSTED_RUNTIME) {
+  file_system_error_logger.transports.push(new winston.transports.Console());
+  other_error_logger.transports.push(new winston.transports.Console());
+}
 
 export function make_user_cookie(cookies: Cookies, token: string): void {
   let expire_date: Date = new Date();
