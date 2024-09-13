@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pp
+  namespace: website
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pp
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: pp
+    spec:
+      containers:
+        - name: pp
+          image: registry.digitalocean.com/csefest2024-registry/csefest2024-pp:latest
+          ports:
+            - name: http
+              containerPort: 3000
+          resources:
+            requests:
+              cpu: 250m
+              memory: 256Mi
+            limits:
+              cpu: 1150m
+              memory: 1024Mi
