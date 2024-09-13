@@ -87,6 +87,12 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
     user_type = "alum";
   }
 
+  if (batch < 1980 || batch > 2024) {
+    return json({
+      registered: -3, // wrong student id
+    });
+  }
+
   // if (dept !== 5) {
   //   delete_jwt_cookie(request_event.cookies);
 
