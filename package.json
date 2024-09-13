@@ -32,6 +32,7 @@
 		"@humanwhocodes/env": "^3.0.5",
 		"@supabase/ssr": "^0.4.0",
 		"@supabase/supabase-js": "^2.43.5",
+		"@sveltejs/adapter-node": "^5.2.2",
 		"argon2": "^0.40.3",
 		"bootstrap": "^5.3.3",
 		"dotenv": "^16.4.5",
