@@ -58,6 +58,10 @@ export async function POST(req: RequestEvent): Promise<Response> {
     }
   });
 
+  if (Number.isNaN(given_puzzle_level)) {
+    return error(422);
+  }
+
   let puzzle_data;
   let res;
 
