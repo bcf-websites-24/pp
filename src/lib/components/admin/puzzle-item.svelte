@@ -39,7 +39,7 @@
               height: target_height + "px",
             },
           ],
-          250,
+          250
         )
         .play();
     }
@@ -176,7 +176,7 @@
               height: "0",
             },
           ],
-          250,
+          250
         );
 
         animation.onfinish = () => {
@@ -264,7 +264,7 @@
               />
             </div>
             <div class="input-group p-1">
-              <span class="edit-puzzle-field input-group-text">Link</span>
+              <span class="edit-puzzle-field input-group-text">Hints</span>
               <input
                 bind:value={edit_puzzle_link}
                 type="text"

@@ -17,6 +17,7 @@
   } from "$lib/stores";
   import { Toast } from "bootstrap";
   import { onMount } from "svelte";
+  import Loader from "$lib/components/loader.svelte";
 
   /**
    * ensures that all
@@ -60,6 +61,12 @@
     mounted = true;
   });
 </script>
+
+<svelte:head>
+  <title>Picture Puzzle 2024</title>
+</svelte:head>
+
+<Loader />
 
 {#if mounted}
   <slot></slot>

@@ -8,6 +8,7 @@
     user_logged_in_state,
     username_state,
   } from "$lib/stores";
+  import { Dropdown } from "bootstrap";
   import { onMount } from "svelte";
 
   export let data: any;
@@ -39,13 +40,12 @@
         >Picture Puzzle <span class="text-primary">2024</span></a
       >
       <div class="d-flex justify-content-end">
-        <div class="dropdown">
+        <div class="dropdown dropdown-toggle pp-dropdown-toggle">
           <button
             class="btn btn-link link-secondary px-0"
             type="button"
             data-bs-toggle="dropdown"
-            aria-expanded="false"
-            data-bs-auto-close="outside"
+            data-bs-auto-close="true"
           >
             <svg
               aria-hidden="true"
@@ -91,3 +91,9 @@
 {/if}
 
 <slot></slot>
+
+<style lang="scss">
+  .pp-dropdown-toggle::after {
+    content: none;
+  }
+</style>

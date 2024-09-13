@@ -138,13 +138,13 @@
         />
       </div>
       <div class="add-puzzle-input p-1">
-        <label for="link-input" class="form-label">Link</label>
+        <label for="link-input" class="form-label">Hints/Explanation</label>
         <input
           bind:value={add_puzzle_link}
           id="link-input"
           class="form-control mb-2"
           autocomplete="off"
-          type="url"
+          type="text"
         />
       </div>
     </div>

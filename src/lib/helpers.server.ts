@@ -1,8 +1,4 @@
-import {
-  ADMIN_JWT_ID,
-  JWT_SECRET,
-  LOCAL_HOSTED_RUNTIME,
-} from "$env/static/private";
+import { ADMIN_JWT_ID, JWT_SECRET } from "$env/static/private";
 import type { Cookies } from "@sveltejs/kit";
 import jwt from "jsonwebtoken";
 import * as winston from "winston";
@@ -18,18 +14,6 @@ let filesystem_error_transport;
 
 let other_error_transport;
 
-// let is_serverless: boolean = true;
-
-// const env = cleanEnv(
-//   process.env,
-//   { LOCAL_HOSTED_RUNTIME: str() },
-//   {
-//     reporter: ({ errors, env }) => {
-//       is_serverless = false;
-//     },
-//   }
-// );
-// console.log(process.env);
 if (process.env.LOCAL_HOSTED_RUNTIME) {
   console.log("LOCAL runtime detected");
   filesystem_error_transport = new DailyRotateFile({
@@ -62,7 +46,7 @@ export const file_system_error_logger = winston.createLogger({
     winston.format.timestamp(),
     winston.format.json()
   ),
-  transports: [filesystem_error_transport],
+  transports: [filesystem_error_transport, new winston.transports.Console()],
 });
 
 export const other_error_logger = winston.createLogger({
@@ -75,13 +59,18 @@ export const other_error_logger = winston.createLogger({
   transports: [other_error_transport],
 });
 
+if (process.env.LOCAL_HOSTED_RUNTIME) {
+  file_system_error_logger.transports.push(new winston.transports.Console());
+  other_error_logger.transports.push(new winston.transports.Console());
+}
+
 export function make_user_cookie(cookies: Cookies, token: string): void {
   let expire_date: Date = new Date();
 
   expire_date.setTime(Date.now() + 86400 * 1000 * 30);
   cookies.set("pp-jwt", token, {
     path: "/",
-    secure: false,
+    secure: true,
     httpOnly: true,
     expires: expire_date,
   });
@@ -93,7 +82,7 @@ export function make_admin_cookie(cookies: Cookies, token: string) {
   expire_date.setTime(Date.now() + 86400 * 1000 * 30);
   cookies.set("pp-admin-jwt", token, {
     path: "/",
-    secure: false,
+    secure: true,
     httpOnly: true,
     expires: expire_date,
   });
@@ -113,7 +102,7 @@ export function get_user_id(cookies: Cookies): string | null {
 
     cookies.set("pp-jwt", token, {
       path: "/",
-      secure: false,
+      secure: true,
       httpOnly: true,
       expires: expire_date,
     });
@@ -138,7 +127,7 @@ export function is_valid_admin(cookies: Cookies): boolean {
 
     cookies.set("pp-admin-jwt", token, {
       path: "/",
-      secure: false,
+      secure: true,
       httpOnly: true,
       expires: expire_date,
     });
@@ -169,18 +158,14 @@ export async function is_user_banned(user_id: string) {
   let res = await run_query("SELECT public.is_user_banned($1);", [user_id]);
 
   if (res) {
-    if (
-      res.rows[0][0] === undefined ||
-      res.rows[0][0] === null ||
-      res.rows[0][0].length === 0
-    ) {
+    if (res.rows[0][0] === undefined || res.rows[0][0] === null) {
       other_error_logger.error(
         "Error parsing db function call at is_user_banned()"
       );
       return false;
     }
 
-    return res.rows[0][0] === "t" ? true : false;
+    return res.rows[0][0] === true;
   } else {
     return false;
   }
