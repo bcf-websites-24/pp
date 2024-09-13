@@ -148,7 +148,7 @@ export async function is_user_banned(user_id: string) {
       return false;
     }
 
-    return res.rows[0][0] === "t" ? true : false;
+    return res.rows[0][0] === true;
   } else {
     return false;
   }
