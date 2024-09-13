@@ -1,5 +1,9 @@
 import { get } from "svelte/store";
-import { banned_toast_store, server_error_toast_store, unauthorized_toast_store } from "./stores";
+import {
+  banned_toast_store,
+  server_error_toast_store,
+  unauthorized_toast_store,
+} from "./stores";
 import { goto } from "$app/navigation";
 
 export const username_pattern = /^\w{4,32}$/;
@@ -35,6 +39,14 @@ export class AdminUserItem {
   public last_submission = "";
 }
 
+export class SubmissionDetails {
+  public submission_time = "";
+  public submitted_ans = "";
+  public is_correct = true;
+  public username = "";
+  public student_id = "";
+}
+
 const months = [
   "January",
   "February",
@@ -61,18 +73,13 @@ export function make_date(date: Date): string {
   const minute = date.getMinutes();
   const second = date.getSeconds();
 
-  return `${hour
+  return `${hour.toString().padStart(2, "0")}:${minute
     .toString()
-    .padStart(2, "0")}:${minute
-      .toString()
-      .padStart(2, "0")
-    }:${second
-      .toString()
-      .padStart(2, "0")
-    } ${ampm} ${month} ${day
-      .toString()
-      .padStart(2, "0")
-    }, ${year}`;
+    .padStart(2, "0")}:${second
+    .toString()
+    .padStart(2, "0")} ${ampm} ${month} ${day
+    .toString()
+    .padStart(2, "0")}, ${year}`;
 }
 
 export function handle_unauthorized_user(): void {
