@@ -43,7 +43,7 @@
 
 {#if loading}
   <div
-    transition:fade={{ duration: 250, easing: cubicInOut }}
+    out:fade={{ duration: 250, easing: cubicInOut }}
     class="progress position-absolute top-0 start-0 end-0 rounded-0 z-2"
     style="height: 0.25rem;"
   >
