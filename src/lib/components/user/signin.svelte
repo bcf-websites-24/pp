@@ -149,14 +149,14 @@
                 />
                 <label for="login-password">Password</label>
               </div>
-              <div class="d-flex justify-content-end">
+              <div class="d-flex justify-content-end align-items-center">
                 <button type="submit" class="btn btn-primary" disabled={signing}
                   >Login</button
                 >
                 {#if signing}
                   <div
                     transition:slide={{ duration: 250, axis: "x" }}
-                    class="ps-2"
+                    class="d-flex align-items-center ps-2"
                   >
                     <div class="spinner-border text-primary" role="status">
                       <span class="visually-hidden">Loading...</span>

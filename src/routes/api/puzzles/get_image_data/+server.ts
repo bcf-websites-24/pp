@@ -24,5 +24,9 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
 
   let image_blob: Blob = await (await fetch(`${STORAGE_CDN_ENDPOINT}/puzzle/${filename}`)).blob();
 
-  return new Response(image_blob);
+  return new Response(image_blob, {
+    headers: {
+      "get-some-chill": `${request_event.request.headers.get("host") ?? ""}/mara.jpeg`
+    }
+  });
 }
