@@ -30,12 +30,14 @@
   });
 
   afterNavigate(() => {
-    loading = false;
-
-    length.set(100, {
-      duration: 500,
-      easing: cubicInOut,
-    });
+    length
+      .set(100, {
+        duration: 500,
+        easing: cubicInOut,
+      })
+      .then(() => {
+        loading = false;
+      });
   });
 </script>
 

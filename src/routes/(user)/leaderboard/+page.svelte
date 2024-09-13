@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
+  import Leaderboard from "$lib/components/decorations/leaderboard.svelte";
   import type { Page } from "@sveltejs/kit";
 
   type Stat = {
@@ -8,6 +9,7 @@
     username: string;
     current_level: number;
     batch: string;
+    somiti_score: number;
   };
 
   const PAGE_SIZE = 100;
@@ -30,6 +32,7 @@
         username: page.data.players[i].f_username,
         current_level: parseInt(page.data.players[i].f_curr_level),
         batch: page.data.players[i].f_student_id.toString().substring(0, 4),
+        somiti_score: parseFloat(page.data.players[i].f_shomobay_score),
       };
     }
 
@@ -119,29 +122,44 @@
   }
 </script>
 
-<div class="page-root mx-auto mt-4 p-2">
+<div class="page-root position-relative mx-auto mt-4 p-2">
+  <Leaderboard />
   <p class="fs-3 fw-semibold text-center">Leaderboard</p>
   <div class="card card-body border-0 shadow-sm mb-4">
-    <table class="table p-2 m-0">
-      <thead>
-        <tr>
-          <th scope="col">#</th>
-          <th scope="col">Username</th>
-          <th scope="col">Batch</th>
-          <th scope="col">Level</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each players as player}
+    <div class="table-responsive">
+      <table class="table p-2 m-0">
+        <thead class="text-nowrap">
           <tr>
-            <th scope="row">{player.rank}</th>
-            <td>{player.username}</td>
-            <td>{player.batch}</td>
-            <td>{player.current_level}</td>
+            <th scope="col">#</th>
+            <th scope="col">Username</th>
+            <th scope="col">Batch</th>
+            <th scope="col">Level</th>
           </tr>
-        {/each}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {#each players as player}
+            <tr>
+              <th
+                style={`background-color: rgb(255, ${255.0 - player.somiti_score * 127.5}, ${255.0 - player.somiti_score * 127.5}); !important`}
+                scope="row">{player.rank}</th
+              >
+              <td
+                style={`background-color: rgb(255, ${255.0 - player.somiti_score * 127.5}, ${255.0 - player.somiti_score * 127.5}); !important`}
+                >{player.username}</td
+              >
+              <td
+                style={`background-color: rgb(255, ${255.0 - player.somiti_score * 127.5}, ${255.0 - player.somiti_score * 127.5}); !important`}
+                >{player.batch}</td
+              >
+              <td
+                style={`background-color: rgb(255, ${255.0 - player.somiti_score * 127.5}, ${255.0 - player.somiti_score * 127.5}); !important`}
+                >{player.current_level}</td
+              >
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    </div>
   </div>
   {#if page_count > 1}
     <div class="d-flex justify-content-center">

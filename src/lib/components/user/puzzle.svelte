@@ -10,6 +10,7 @@
     server_error_toast_store,
   } from "$lib/stores";
   import { fade, slide } from "svelte/transition";
+  import Japanese from "../decorations/japanese.svelte";
 
   // export let show_puzzle: boolean;
   let image_data: string;
@@ -122,6 +123,7 @@
         in:fade={{ duration: 250 }}
       />
       <div class="d-flex align-items-center mb-4">
+        <Japanese />
         <form
           bind:this={answer_submit_form_elem}
           on:submit={answer_submit}
@@ -152,6 +154,7 @@
       </div>
     {/if}
   {/if}
+  <img loading="lazy" src="/much-heck.jpeg" alt="much-heck" hidden />
 </div>
 
 <style>
