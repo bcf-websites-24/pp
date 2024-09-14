@@ -121,7 +121,7 @@ export function get_otp_id(cookies: Cookies): string | null {
   const token = cookies.get("pp-otp-jwt");
 
   if (token === undefined) {
-    return "";
+    return null;
   }
 
   try {

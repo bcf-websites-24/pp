@@ -48,7 +48,9 @@
       if (response.status === 200) {
         const response_json: any = await response.json();
 
-        if (response_json.login === -1) {
+        if (response_json.login === 0) {
+          goto("/", { invalidateAll: true });
+        } else if (response_json.login === -1) {
           $user_not_found_toast_store.show();
         } else if (response_json.login === -2) {
           $password_unmatched_toast_store.show();

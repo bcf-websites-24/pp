@@ -45,34 +45,32 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
     if (id.length < 36) {
       return json({
         login: -1, // user not found
-        is_banned: is_banned,
       });
     }
 
     if (!(await argon2.verify(hash, password))) {
       return json({
         login: -2, // password mismatch
-        is_banned: is_banned,
       });
     }
 
     if (is_banned) {
       return json({
         login: -3, // banned user
-        is_banned: is_banned,
       });
     }
 
-    const token: string = jwt.sign(
-      {
-        id: id,
-      },
+    const token: string = jwt.sign({
+      id: id,
+    },
       JWT_SECRET
     );
 
     make_user_cookie(request_event.cookies, token);
 
-    return redirect(303, "/");
+    return json({
+      login: 0,
+    });
   } else {
     return error(500);
   }

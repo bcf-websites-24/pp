@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { goto } from "$app/navigation";
   import { student_id_pattern, username_pattern } from "$lib/helpers";
   import {
     duplicate_username_student_id_toast_store,
@@ -103,6 +104,9 @@
       }).then(async (response) => {
         if (response.status === 200) {
           const response_json: any = await response.json();
+
+          console.log(response_json);
+
           if (response_json.registered === 0) {
             inc_state();
           } else {
@@ -136,7 +140,13 @@
       }).then(async (response) => {
         signing = false;
 
-        console.log(response);
+        if (response.status === 200) {
+          const response_json = await response.json();
+
+          if (response_json.registered === 0) {
+            goto("/", { invalidateAll: true });
+          }
+        }
       });
     } else {
       inc_state();
@@ -195,7 +205,7 @@
         />
         <label for="register-student-id">Student ID</label>
         <p class="fs-6 text-secondary mb-0">
-          *9 digits student ID (e. g. 201905039)
+          *7 digits student ID (e. g. 1905039)
         </p>
       </div>
       <div class="d-flex align-items-center justify-content-end">

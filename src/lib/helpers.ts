@@ -8,7 +8,7 @@ import {
 import { goto } from "$app/navigation";
 
 export const username_pattern = /^\w{4,32}$/;
-export const student_id_pattern = /^\d{9}$/;
+export const student_id_pattern = /^\d{7}$/;
 
 export class AdminPuzzleItem {
   public id: string = "";
