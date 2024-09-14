@@ -74,7 +74,7 @@ export function make_user_cookie(cookies: Cookies, token: string): void {
 
 export function make_otp_cookie(cookies: Cookies, token: string): void {
   cookies.set("pp-otp-jwt", token, {
-    path: "/login",
+    path: "/",
     secure: false,
     httpOnly: true,
   });
@@ -164,7 +164,7 @@ export function delete_user_cookie(cookies: Cookies) {
 
 export function delete_otp_cookie(cookies: Cookies) {
   cookies.delete("pp-otp-jwt", {
-    path: "/login",
+    path: "/",
   });
 }
 

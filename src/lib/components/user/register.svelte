@@ -55,6 +55,7 @@
   let register_student_id: string;
   let register_password: string;
   let register_confirm_password: string;
+  let register_otp: string;
   let translate = tweened(0, {
     duration: 250,
     easing: cubicInOut,
@@ -68,6 +69,7 @@
     onformupdate();
 
     reset = true;
+    register_otp = "";
   }
 
   function inc_state() {
@@ -126,7 +128,12 @@
     } else if (state === 3) {
       signing = true;
 
-      fetch("/api/users/otp").then(async (response) => {
+      fetch("/api/users/otp", {
+        method: "POST",
+        body: JSON.stringify({
+          otp: register_otp,
+        }),
+      }).then(async (response) => {
         signing = false;
 
         console.log(response);
@@ -289,6 +296,7 @@
     >
       <div class="form-floating mb-3">
         <input
+          bind:value={register_otp}
           type="text"
           class="form-control"
           id="register-otp"
