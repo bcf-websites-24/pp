@@ -46,9 +46,7 @@
       if (response.status === 200) {
         const response_json: any = await response.json();
 
-        if (response_json.login === 0) {
-          goto("/", { invalidateAll: true });
-        } else if (response_json.login === -1) {
+        if (response_json.login === -1) {
           $user_not_found_toast_store.show();
         } else if (response_json.login === -2) {
           $password_unmatched_toast_store.show();
@@ -91,13 +89,17 @@
   });
 </script>
 
-<div class="stranger-root">
-  <div class="stranger-root-1">
+<div
+  class="position-absolute top-0 bottom-0 start-0 end-0 d-flex align-items-center justify-content-center"
+>
+  <div class="mw-100">
     <div class="fs-5 text-center text-secondary mb-0">Welcome to</div>
     <div class="fs-1 text-center">
       Picture Puzzle <span class="text-primary">2024</span>
     </div>
-    <div class="stranger-card card card-body shadow m-2">
+    <div
+      class="stranger-card card card-body shadow d-flex flex-column align-items-center border-0 m-2"
+    >
       <div class="nav nav-pills gap-2 mb-3">
         <button
           on:click={login_tab_clicked}
@@ -132,6 +134,7 @@
                   class="form-control"
                   id="login-username"
                   placeholder="Username"
+                  name="username"
                   pattern={username_pattern.source}
                   required
                 />
@@ -143,6 +146,7 @@
                   type="password"
                   class="form-control"
                   id="login-password"
+                  name="password"
                   minlength="8"
                   placeholder="Password"
                   required
@@ -179,24 +183,7 @@
 </div>
 
 <style>
-  .stranger-root {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .stranger-root-1 {
-    max-width: 100%;
-  }
   .stranger-card {
     max-width: 30rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    border: 0;
   }
 </style>
