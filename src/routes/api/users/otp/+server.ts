@@ -57,7 +57,12 @@ export async function GET(request_event: RequestEvent): Promise<Response> {
       return error(500);
     }
 
-    if (status === -4) {
+    if (status === -5) {
+      return json({
+        registered: -5,
+        message: "Username/email/student id already used",
+      });
+    } else if (status === -4) {
       return json({
         registered: -4,
         message: "User already verified",
