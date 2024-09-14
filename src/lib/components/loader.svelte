@@ -48,7 +48,7 @@
 </script>
 
 <div
-  class="progress position-absolute top-0 start-0 end-0 rounded-0 bg-transparent z-2"
+  class="progress position-fixed top-0 start-0 end-0 rounded-0 bg-transparent z-2"
   style="height: 0.25rem;"
 >
   <div

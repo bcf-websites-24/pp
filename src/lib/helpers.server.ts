@@ -4,8 +4,6 @@ import jwt from "jsonwebtoken";
 import * as winston from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
 import { run_query } from "./db/index.server";
-// import { Env } from "@humanwhocodes/env";
-// import { cleanEnv, str } from "envalid";
 import { config } from "dotenv";
 
 config();
@@ -15,7 +13,6 @@ let filesystem_error_transport;
 let other_error_transport;
 
 if (process.env.LOCAL_HOSTED_RUNTIME) {
-  console.log("LOCAL runtime detected");
   filesystem_error_transport = new DailyRotateFile({
     filename: "fs_errors-%DATE%.log",
     datePattern: "YYYY-MM-DD-HH-mm",
@@ -34,7 +31,6 @@ if (process.env.LOCAL_HOSTED_RUNTIME) {
     dirname: "./logs",
   });
 } else {
-  console.log("SERVERLESS runtime detected");
   filesystem_error_transport = new winston.transports.Console();
   other_error_transport = new winston.transports.Console();
 }
@@ -169,4 +165,27 @@ export async function is_user_banned(user_id: string) {
   } else {
     return false;
   }
+}
+
+export async function is_user_unverified(user_id: string) {
+  return false; // for now...
+
+  // if (user_id === null) {
+  //   return false;
+  // }
+
+  // let res = await run_query("SELECT public.is_user_unverified($1);", [user_id]);
+
+  // if (res) {
+  //   if (res.rows[0][0] === undefined || res.rows[0][0] === null) {
+  //     other_error_logger.error(
+  //       "Error parsing db function call at is_user_banned()"
+  //     );
+  //     return false;
+  //   }
+
+  //   return res.rows[0][0] === true;
+  // } else {
+  //   return false;
+  // }
 }
