@@ -49,26 +49,27 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
     });
   }
 
-  // we need to ensure student id is a string that converts to a positive integer > 0
-  // otherwise we cannot get batch from student id.
-  // since we could not get a hold of BUET roll formats over time
-  // we are setting rolls as 9 digit: ie.201905000 or 199805000
-  // regex explanation: ^   : start of string
-  //                    \d{9} : 9 digit number, leading 0s fine
-  //                    $   : end of string
-  // stackOverflow sauce 🤡: https://stackoverflow.com/questions/10834796/validate-that-a-string-is-a-positive-integer#:~:text=function%20isInDesiredForm(str)%20%7B%0A%20%20%20%20return%20/%5E%5C%2B%3F%5Cd%2B%24/.test(str)%3B%0A%7D
-  if (!/^\d{9}$/.test(student_id)) {
+  if (!/^\d{7}$/.test(student_id)) {
     // Error code -2 means roll is not numeric
     return json({
       registered: -2,
     });
   }
 
-  let batch = parseInt(student_id.substring(0, 4));
-  let roll: number = Number(student_id.substring(6));
+  const year = parseInt(student_id.substring(0, 2));
+  let batch: number;
+
+  if (year > 2023) {
+    batch = 1900 + year;
+  }
+  else {
+    batch = 2000 + year;
+  }
+
+  let roll: number = parseInt(student_id.substring(4));
   let user_type: string = "";
 
-  if (Number.isNaN(batch) || Number.isNaN(roll)) {
+  if (isNaN(batch) || isNaN(roll)) {
     return error(422);
   }
 

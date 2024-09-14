@@ -93,7 +93,9 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
       make_user_cookie(request_event.cookies, token);
       delete_otp_cookie(request_event.cookies);
 
-      return redirect(303, "/");
+      return json({
+        registered: 0
+      });
     } else {
       other_error_logger.error(
         "Error parsing db function result at api/users/otp:99."
