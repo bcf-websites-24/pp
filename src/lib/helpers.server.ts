@@ -66,7 +66,7 @@ export function make_user_cookie(cookies: Cookies, token: string): void {
   expire_date.setTime(Date.now() + 86400 * 1000 * 30);
   cookies.set("pp-jwt", token, {
     path: "/",
-    secure: true,
+    secure: false,
     httpOnly: true,
     expires: expire_date,
   });
@@ -74,8 +74,8 @@ export function make_user_cookie(cookies: Cookies, token: string): void {
 
 export function make_otp_cookie(cookies: Cookies, token: string): void {
   cookies.set("pp-otp-jwt", token, {
-    path: "/login",
-    secure: true,
+    path: "/",
+    secure: false,
     httpOnly: true,
   });
 }
@@ -86,7 +86,7 @@ export function make_admin_cookie(cookies: Cookies, token: string) {
   expire_date.setTime(Date.now() + 86400 * 1000 * 30);
   cookies.set("pp-admin-jwt", token, {
     path: "/",
-    secure: true,
+    secure: false,
     httpOnly: true,
     expires: expire_date,
   });
@@ -106,7 +106,7 @@ export function get_user_id(cookies: Cookies): string | null {
 
     cookies.set("pp-jwt", token, {
       path: "/",
-      secure: true,
+      secure: false,
       httpOnly: true,
       expires: expire_date,
     });
@@ -121,6 +121,7 @@ export function get_otp_id(cookies: Cookies): string | null {
   const token = cookies.get("pp-otp-jwt");
 
   if (token === undefined) {
+    console.log("NO COOKIE");
     return "";
   }
 
@@ -145,7 +146,7 @@ export function is_valid_admin(cookies: Cookies): boolean {
 
     cookies.set("pp-admin-jwt", token, {
       path: "/",
-      secure: true,
+      secure: false,
       httpOnly: true,
       expires: expire_date,
     });
