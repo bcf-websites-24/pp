@@ -1,4 +1,4 @@
-import { error, json, type RequestEvent } from "@sveltejs/kit";
+import { error, json, redirect, type RequestEvent } from "@sveltejs/kit";
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import { make_user_cookie, other_error_logger } from "$lib/helpers.server";
@@ -72,10 +72,7 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
 
     make_user_cookie(request_event.cookies, token);
 
-    return json({
-      login: 0, // success
-      is_banned: is_banned,
-    });
+    return redirect(303, "/");
   } else {
     return error(500);
   }

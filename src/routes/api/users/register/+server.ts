@@ -1,6 +1,6 @@
 import { error, json, type RequestEvent } from "@sveltejs/kit";
 import argon2 from "argon2";
-import { make_user_cookie, other_error_logger } from "$lib/helpers.server";
+import { make_otp_cookie, make_user_cookie, other_error_logger } from "$lib/helpers.server";
 import jwt from "jsonwebtoken";
 import validator from "validator";
 import { JWT_SECRET } from "$env/static/private";
@@ -93,35 +93,26 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
     });
   }
 
-  // if (dept !== 5) {
-  //   delete_jwt_cookie(request_event.cookies);
+  // let res = await run_query(
+  //   "SELECT public.add_user($1, $2, $3, $4, $5, $6);",
+  //   [username, student_id, batch, password_hash, email, user_type],
+  //   request_event
+  // );
 
-  //   // Error code: -5 means non cse dept
-  //   return json({
-  //     registered: -5,
-  //   });
-  // }
+  let otp = "";
+
+  for (let i = 0; i < 4; ++i) {
+    otp += Math.floor(Math.random() * 10).toString();
+  }
 
   let res = await run_query(
-    "SELECT public.add_user($1, $2, $3, $4, $5, $6);",
-    [username, student_id, batch, password_hash, email, user_type],
+    "SELECT public.add_otp($1, $2, $3, $4, $5, $6, $7);",
+    [username, student_id, batch, password_hash, email, user_type, otp],  // make otp code in js to make life easier
     request_event
   );
 
   if (res) {
-    if (res.rows[0][0] === null) {
-      return json({
-        // username or student_id already exists
-        registered: -7,
-      });
-    }
-
-    if (res.rows[0][0].length < 36) {
-      other_error_logger.error(
-        "Error parsing db function result in api/users/register:114. " + res
-      );
-      return error(500);
-    }
+    // write check if we get an user uuid
 
     const token: string = jwt.sign(
       {
@@ -130,10 +121,10 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
       JWT_SECRET
     );
 
-    make_user_cookie(request_event.cookies, token);
+    make_otp_cookie(request_event.cookies, token);
 
     return json({
-      registered: 0,
+      time: res.rows[0][1]
     });
   } else {
     return error(500);

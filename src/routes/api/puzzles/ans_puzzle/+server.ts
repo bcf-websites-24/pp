@@ -20,10 +20,6 @@ export async function POST(req: RequestEvent): Promise<Response> {
     return error(403);
   }
 
-  if (await is_user_unverified(given_user_id)) {
-    return error(406);
-  }
-
   const request_json: any = await req.request.json();
   const given_puzzle_id: string = request_json.puzzle_id;
   let given_ans: string = request_json.ans;

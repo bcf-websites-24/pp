@@ -3,6 +3,7 @@ import {
   banned_toast_store,
   server_error_toast_store,
   unauthorized_toast_store,
+  unverified_toast_store,
 } from "./stores";
 import { goto } from "$app/navigation";
 
@@ -76,14 +77,19 @@ export function make_date(date: Date): string {
   return `${hour.toString().padStart(2, "0")}:${minute
     .toString()
     .padStart(2, "0")}:${second
-    .toString()
-    .padStart(2, "0")} ${ampm} ${month} ${day
-    .toString()
-    .padStart(2, "0")}, ${year}`;
+      .toString()
+      .padStart(2, "0")} ${ampm} ${month} ${day
+        .toString()
+        .padStart(2, "0")}, ${year}`;
 }
 
 export function handle_unauthorized_user(): void {
   get(unauthorized_toast_store).show();
+  goto("/", { invalidateAll: true });
+}
+
+export function handle_unverified_user(): void {
+  get(unverified_toast_store).show();
   goto("/", { invalidateAll: true });
 }
 

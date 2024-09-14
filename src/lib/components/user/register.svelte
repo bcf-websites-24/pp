@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { goto } from "$app/navigation";
   import { student_id_pattern, username_pattern } from "$lib/helpers";
   import {
     duplicate_username_student_id_toast_store,
@@ -65,9 +64,7 @@
       if (response.status === 200) {
         const response_json: any = await response.json();
 
-        if (response_json.registered === 0) {
-          location.href = "/";
-        } else if (response_json.registered === -2) {
+        if (response_json.registered === -2) {
           $student_id_misformation_toast_store.show();
         } else if (response_json.registered === -3) {
           $roll_out_of_range_toast_store.show();
@@ -131,6 +128,7 @@
           class="form-control"
           id="register-username"
           placeholder="Username"
+          name="username"
           pattern={username_pattern.source}
           required
         />
@@ -144,6 +142,7 @@
           class="form-control"
           id="register-student-id"
           placeholder="Stuent ID"
+          name="studentid"
           pattern={student_id_pattern.source}
           required
         />
@@ -169,6 +168,7 @@
           type="email"
           class="form-control"
           id="register-email"
+          name="email"
           placeholder="Email"
           required
         />
@@ -198,6 +198,7 @@
           class="form-control"
           id="register-password"
           placeholder="Password"
+          name="password"
           minlength="8"
           required
         />
@@ -211,6 +212,7 @@
           class="form-control"
           id="register-confirm-password"
           placeholder="Confirm Password"
+          name="confirmpassword"
           minlength="8"
           required
         />

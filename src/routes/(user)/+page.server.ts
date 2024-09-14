@@ -1,8 +1,7 @@
-import { error, type ServerLoadEvent } from "@sveltejs/kit";
+import { error, redirect, type ServerLoadEvent } from "@sveltejs/kit";
 import {
   get_user_id,
   is_user_banned,
-  is_user_unverified,
   other_error_logger,
 } from "$lib/helpers.server";
 import { run_query } from "$lib/db/index.server";
@@ -12,14 +11,12 @@ export async function load(load_event: ServerLoadEvent): Promise<any> {
 
   if (id === null) {
     return error(401);
+  } else if (id.length === 0) {
+    return redirect(303, "/login");
   }
 
   if (await is_user_banned(id)) {
     return error(403);
-  }
-
-  if (await is_user_unverified(id)) {
-    return error(406);
   }
 
   let res = await run_query("SELECT public.get_user_details($1);", [id]);

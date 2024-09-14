@@ -72,6 +72,14 @@ export function make_user_cookie(cookies: Cookies, token: string): void {
   });
 }
 
+export function make_otp_cookie(cookies: Cookies, token: string): void {
+  cookies.set("pp-otp-jwt", token, {
+    path: "/login",
+    secure: true,
+    httpOnly: true,
+  });
+}
+
 export function make_admin_cookie(cookies: Cookies, token: string) {
   let expire_date: Date = new Date();
 
@@ -88,7 +96,7 @@ export function get_user_id(cookies: Cookies): string | null {
   const token = cookies.get("pp-jwt");
 
   if (token === undefined) {
-    return null;
+    return "";
   }
 
   try {
@@ -103,6 +111,20 @@ export function get_user_id(cookies: Cookies): string | null {
       expires: expire_date,
     });
 
+    return (jwt.verify(token, JWT_SECRET) as any).id;
+  } catch (err) {
+    return null;
+  }
+}
+
+export function get_otp_id(cookies: Cookies): string | null {
+  const token = cookies.get("pp-otp-jwt");
+
+  if (token === undefined) {
+    return "";
+  }
+
+  try {
     return (jwt.verify(token, JWT_SECRET) as any).id;
   } catch (err) {
     return null;
@@ -140,6 +162,12 @@ export function delete_user_cookie(cookies: Cookies) {
   });
 }
 
+export function delete_otp_cookie(cookies: Cookies) {
+  cookies.delete("pp-otp-jwt", {
+    path: "/login",
+  });
+}
+
 export function delete_admin_cookie(cookies: Cookies) {
   cookies.delete("pp-admin-jwt", {
     path: "/",
@@ -168,7 +196,7 @@ export async function is_user_banned(user_id: string) {
 }
 
 export async function is_user_unverified(user_id: string) {
-  return false; // for now...
+  return true; // for now...
 
   // if (user_id === null) {
   //   return false;
