@@ -74,7 +74,7 @@ export function make_user_cookie(cookies: Cookies, token: string): void {
 
 export function make_otp_cookie(cookies: Cookies, token: string): void {
   cookies.set("pp-otp-jwt", token, {
-    path: "/",
+    path: "/login",
     secure: false,
     httpOnly: true,
   });
@@ -121,7 +121,6 @@ export function get_otp_id(cookies: Cookies): string | null {
   const token = cookies.get("pp-otp-jwt");
 
   if (token === undefined) {
-    console.log("NO COOKIE");
     return "";
   }
 

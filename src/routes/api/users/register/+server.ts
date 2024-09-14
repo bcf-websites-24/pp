@@ -64,8 +64,7 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
     });
   }
 
-  let batch: number = Number(student_id.substring(0, 4));
-  // let dept: number = Number(student_id.substring(5, 7));
+  let batch = parseInt(student_id.substring(0, 4));
   let roll: number = Number(student_id.substring(6));
   let user_type: string = "";
 
@@ -93,12 +92,6 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
     });
   }
 
-  // let res = await run_query(
-  //   "SELECT public.add_user($1, $2, $3, $4, $5, $6);",
-  //   [username, student_id, batch, password_hash, email, user_type],
-  //   request_event
-  // );
-
   let otp = "";
 
   for (let i = 0; i < 4; ++i) {
@@ -123,16 +116,16 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
       );
     }
 
-    const token: string = jwt.sign(
-      {
-        id: fields[0],
-      },
+    const token: string = jwt.sign({
+      id: fields[0],
+    },
       JWT_SECRET
     );
 
     make_otp_cookie(request_event.cookies, token);
 
     return json({
+      registered: 0,
       time: fields[1].substring(1, fields[1].length - 1),
     });
   } else {

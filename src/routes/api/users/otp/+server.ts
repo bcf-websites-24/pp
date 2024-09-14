@@ -10,7 +10,7 @@ import {
 import { error, json, redirect, type RequestEvent } from "@sveltejs/kit";
 import jwt from "jsonwebtoken";
 
-export async function POST(request_event: RequestEvent): Promise<Response> {
+export async function GET(request_event: RequestEvent): Promise<Response> {
   let id = get_user_id(request_event.cookies);
 
   if (id !== null && id.length > 0) {

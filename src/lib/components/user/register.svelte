@@ -70,36 +70,6 @@
     reset = true;
   }
 
-  async function register() {
-    // fetch("/api/users/register", {
-    //   method: "POST",
-    //   body: JSON.stringify({
-    //     username: register_username,
-    //     student_id: register_student_id,
-    //     email: register_email,
-    //     password: register_password,
-    //   }),
-    // }).then(async (response) => {
-    //   if (response.status === 200) {
-    //     const response_json: any = await response.json();
-    //     if (response_json.registered === -2) {
-    //       $student_id_misformation_toast_store.show();
-    //     } else if (response_json.registered === -3) {
-    //       $roll_out_of_range_toast_store.show();
-    //     } else if (response_json.registered === -4) {
-    //       $improper_username_toast_store.show();
-    //     } else if (response_json.registered === -6) {
-    //       $invalid_email_toast_store.show();
-    //     } else if (response_json.registered === -7) {
-    //       $duplicate_username_student_id_toast_store.show();
-    //     } else {
-    //       console.error("Unknown registered value");
-    //     }
-    //   }
-    //   signing = false;
-    // });
-  }
-
   function inc_state() {
     ++state;
     $translate = -(width / sections) * state;
@@ -120,19 +90,47 @@
 
       signing = true;
 
-      setTimeout(() => {
-        signing = false;
+      fetch("/api/users/register", {
+        method: "POST",
+        body: JSON.stringify({
+          username: register_username,
+          student_id: register_student_id,
+          email: register_email,
+          password: register_password,
+        }),
+      }).then(async (response) => {
+        if (response.status === 200) {
+          const response_json: any = await response.json();
+          if (response_json.registered === 0) {
+            inc_state();
+          } else {
+            if (response_json.registered === -2) {
+              $student_id_misformation_toast_store.show();
+            } else if (response_json.registered === -3) {
+              $roll_out_of_range_toast_store.show();
+            } else if (response_json.registered === -4) {
+              $improper_username_toast_store.show();
+            } else if (response_json.registered === -6) {
+              $invalid_email_toast_store.show();
+            } else if (response_json.registered === -7) {
+              $duplicate_username_student_id_toast_store.show();
+            } else {
+              console.error("Unknown registered value");
+            }
 
-        inc_state();
-      }, 2000);
+            restart();
+          }
+        }
+        signing = false;
+      });
     } else if (state === 3) {
       signing = true;
 
-      setTimeout(() => {
+      fetch("/api/users/otp").then(async (response) => {
         signing = false;
 
-        inc_state();
-      }, 2000);
+        console.log(response);
+      });
     } else {
       inc_state();
     }
