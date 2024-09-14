@@ -28,4 +28,4 @@
   </div>
 {/if}
 
-<Signin reset={false} />
+<Signin reset={!$page.data.has_otp} />
