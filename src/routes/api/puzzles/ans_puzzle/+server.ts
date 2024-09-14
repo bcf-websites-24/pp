@@ -1,5 +1,5 @@
 import { error, json, type RequestEvent } from "@sveltejs/kit";
-import { get_user_id, is_user_banned } from "$lib/helpers.server";
+import { get_user_id, is_user_banned, is_user_unverified } from "$lib/helpers.server";
 import { run_query } from "$lib/db/index.server";
 import { other_error_logger } from "$lib/helpers.server";
 
@@ -18,6 +18,10 @@ export async function POST(req: RequestEvent): Promise<Response> {
 
   if (await is_user_banned(given_user_id)) {
     return error(403);
+  }
+
+  if (await is_user_unverified(given_user_id)) {
+    return error(406);
   }
 
   const request_json: any = await req.request.json();
