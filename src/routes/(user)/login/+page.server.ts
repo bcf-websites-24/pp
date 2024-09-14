@@ -12,11 +12,11 @@ export async function load(load_event: ServerLoadEvent): Promise<any> {
 
   if (id === null) {
     return {
-      reset: true
+      has_otp: true
     }
   } else {
     return {
-      reset: false
+      has_otp: false
     }
   }
 }

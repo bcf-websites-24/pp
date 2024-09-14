@@ -12,25 +12,43 @@
   import { tweened } from "svelte/motion";
   import { slide } from "svelte/transition";
 
+  const sections = 4;
+  export let login_mode: boolean;
+  export let reset: boolean;
   export let signing: boolean;
   export let height: number;
   export let onformupdate: () => void;
 
-  export function reset(): void {
+  $: on_set_login_mode(login_mode);
+
+  function on_set_login_mode(login_mode: boolean) {
+    if (!login_mode) {
+      if (!reset) {
+        state = 3;
+        height = heights[state];
+        $translate = -(width / sections) * state;
+
+        onformupdate();
+      }
+    }
+  }
+
+  export function reg_reset(): void {
     state = 0;
     height = heights[state];
-    $translate = -(width / 3) * state;
+    $translate = -(width / sections) * state;
 
     form_elems.forEach((elem: HTMLFormElement): void => {
       elem.reset();
     });
+
+    reset = true;
   }
 
   let state = 0;
   let width: number;
-  let form_elems = new Array<HTMLFormElement>(3);
-  let heights = new Array<number>(3);
-  let register_student_id_elem: HTMLInputElement;
+  let form_elems = new Array<HTMLFormElement>(sections);
+  let heights = new Array<number>(sections);
   let register_confirm_password_elem: HTMLInputElement;
   let register_username: string;
   let register_email: string;
@@ -42,62 +60,87 @@
     easing: cubicInOut,
   });
 
-  async function register(): Promise<void> {
-    if (register_password !== register_confirm_password) {
-      register_confirm_password_elem.setCustomValidity(
-        "Password did not match",
-      );
-
-      return;
-    }
-
-    signing = true;
-    fetch("/api/users/register", {
-      method: "POST",
-      body: JSON.stringify({
-        username: register_username,
-        student_id: register_student_id,
-        email: register_email,
-        password: register_password,
-      }),
-    }).then(async (response) => {
-      if (response.status === 200) {
-        const response_json: any = await response.json();
-
-        if (response_json.registered === -2) {
-          $student_id_misformation_toast_store.show();
-        } else if (response_json.registered === -3) {
-          $roll_out_of_range_toast_store.show();
-        } else if (response_json.registered === -4) {
-          $improper_username_toast_store.show();
-        } else if (response_json.registered === -6) {
-          $invalid_email_toast_store.show();
-        } else if (response_json.registered === -7) {
-          $duplicate_username_student_id_toast_store.show();
-        } else {
-          console.error("Unknown registered value");
-        }
-      }
-
-      signing = false;
-    });
-  }
-
-  function next(): void {
-    ++state;
-    $translate = -(width / 3) * state;
+  function restart() {
+    state = 0;
+    $translate = -(width / sections) * state;
     height = heights[state];
 
-    if (state === 3) {
-      register();
-    }
+    onformupdate();
+
+    reset = true;
+  }
+
+  async function register() {
+    // fetch("/api/users/register", {
+    //   method: "POST",
+    //   body: JSON.stringify({
+    //     username: register_username,
+    //     student_id: register_student_id,
+    //     email: register_email,
+    //     password: register_password,
+    //   }),
+    // }).then(async (response) => {
+    //   if (response.status === 200) {
+    //     const response_json: any = await response.json();
+    //     if (response_json.registered === -2) {
+    //       $student_id_misformation_toast_store.show();
+    //     } else if (response_json.registered === -3) {
+    //       $roll_out_of_range_toast_store.show();
+    //     } else if (response_json.registered === -4) {
+    //       $improper_username_toast_store.show();
+    //     } else if (response_json.registered === -6) {
+    //       $invalid_email_toast_store.show();
+    //     } else if (response_json.registered === -7) {
+    //       $duplicate_username_student_id_toast_store.show();
+    //     } else {
+    //       console.error("Unknown registered value");
+    //     }
+    //   }
+    //   signing = false;
+    // });
+  }
+
+  function inc_state() {
+    ++state;
+    $translate = -(width / sections) * state;
+    height = heights[state];
 
     onformupdate();
   }
 
+  function next(): void {
+    if (state === 2) {
+      if (register_password !== register_confirm_password) {
+        register_confirm_password_elem.setCustomValidity(
+          "Password did not match",
+        );
+
+        return;
+      }
+
+      signing = true;
+
+      setTimeout(() => {
+        signing = false;
+
+        inc_state();
+      }, 2000);
+    } else if (state === 3) {
+      signing = true;
+
+      setTimeout(() => {
+        signing = false;
+
+        inc_state();
+      }, 2000);
+    } else {
+      inc_state();
+    }
+  }
+
   function back(): void {
     --state;
-    $translate = -(width / 3) * state;
+    $translate = -(width / sections) * state;
     height = heights[state];
 
     onformupdate();
@@ -112,7 +155,7 @@
   <div
     bind:clientWidth={width}
     class="d-flex align-items-start h-100"
-    style="width: 300%; transform: translate({$translate}px, 0);"
+    style={`width: ${sections}00%; transform: translate(${$translate}px, 0);`}
   >
     <form
       bind:this={form_elems[0]}
@@ -137,7 +180,6 @@
       <div class="form-floating mb-3">
         <input
           bind:value={register_student_id}
-          bind:this={register_student_id_elem}
           type="text"
           class="form-control"
           id="register-student-id"
@@ -186,7 +228,7 @@
     </form>
     <form
       bind:this={form_elems[2]}
-      on:submit={register}
+      on:submit={next}
       bind:clientHeight={heights[2]}
       class="w-100 p-1"
       action="javascript:"
@@ -227,6 +269,48 @@
         >
         <button type="submit" class="btn btn-primary" disabled={signing}
           >Register</button
+        >
+        {#if signing}
+          <div
+            transition:slide={{ duration: 250, axis: "x" }}
+            class="d-flex align-items-center ps-2"
+          >
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        {/if}
+      </div>
+    </form>
+    <form
+      bind:this={form_elems[3]}
+      on:submit={next}
+      bind:clientHeight={heights[3]}
+      class="w-100 p-1"
+      action="javascript:"
+    >
+      <div class="form-floating mb-3">
+        <input
+          type="text"
+          class="form-control"
+          id="register-otp"
+          placeholder="OTP"
+          name="otp"
+          minlength="4"
+          maxlength="4"
+          required
+        />
+        <label for="register-password">OTP</label>
+      </div>
+      <div class="d-flex justify-content-end align-items-center">
+        <button
+          on:click={restart}
+          type="button"
+          class="btn btn-link link-underline link-underline-opacity-0 me-2"
+          disabled={signing}>Reset</button
+        >
+        <button type="submit" class="btn btn-primary" disabled={signing}
+          >Verify</button
         >
         {#if signing}
           <div

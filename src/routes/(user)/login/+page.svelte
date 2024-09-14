@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from "$app/stores";
   import Dice_0 from "$lib/components/decorations/dice-0.svelte";
   import Dice_1 from "$lib/components/decorations/dice-1.svelte";
   import Puzzle_0 from "$lib/components/decorations/puzzle-0.svelte";
@@ -27,4 +28,4 @@
   </div>
 {/if}
 
-<Signin />
+<Signin reset={false} />

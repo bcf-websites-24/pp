@@ -15,6 +15,8 @@
   import { tweened } from "svelte/motion";
   import { slide } from "svelte/transition";
 
+  export let reset: boolean;
+  let login_mode = true;
   let mounted = false;
   let reg_height: number;
   let forms_elem: HTMLDivElement;
@@ -68,6 +70,7 @@
 
     $form_translate = 0;
     $form_height = login_form_height;
+    login_mode = true;
   }
 
   function register_tab_clicked(): void {
@@ -75,6 +78,7 @@
 
     $form_translate = -forms_elem.clientWidth / 2;
     $form_height = reg_height;
+    login_mode = false;
   }
 
   function reg_next(): void {
@@ -174,7 +178,9 @@
             bind:signing
             bind:height={reg_height}
             onformupdate={reg_next}
-            bind:reset={reg_reset}
+            bind:reg_reset
+            bind:reset
+            {login_mode}
           />
         </div>
       </div>
