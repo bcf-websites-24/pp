@@ -105,8 +105,6 @@
         if (response.status === 200) {
           const response_json: any = await response.json();
 
-          console.log(response_json);
-
           if (response_json.registered === 0) {
             inc_state();
           } else {

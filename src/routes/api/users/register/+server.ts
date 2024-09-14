@@ -123,7 +123,10 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
       JWT_SECRET
     );
 
-    make_otp_cookie(request_event.cookies, token);
+    let expire = new Date(fields[1]);
+    expire = new Date(expire.getTime() + 30 * 60 * 1000);
+
+    make_otp_cookie(request_event.cookies, token, expire);
 
     return json({
       registered: 0,
