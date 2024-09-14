@@ -66,17 +66,18 @@ export function make_user_cookie(cookies: Cookies, token: string): void {
   expire_date.setTime(Date.now() + 86400 * 1000 * 30);
   cookies.set("pp-jwt", token, {
     path: "/",
-    secure: false,
+    secure: true,
     httpOnly: true,
     expires: expire_date,
   });
 }
 
-export function make_otp_cookie(cookies: Cookies, token: string): void {
+export function make_otp_cookie(cookies: Cookies, token: string, expire: Date): void {
   cookies.set("pp-otp-jwt", token, {
     path: "/",
-    secure: false,
+    secure: true,
     httpOnly: true,
+    expires: expire
   });
 }
 
@@ -86,7 +87,7 @@ export function make_admin_cookie(cookies: Cookies, token: string) {
   expire_date.setTime(Date.now() + 86400 * 1000 * 30);
   cookies.set("pp-admin-jwt", token, {
     path: "/",
-    secure: false,
+    secure: true,
     httpOnly: true,
     expires: expire_date,
   });
