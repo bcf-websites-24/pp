@@ -41,14 +41,14 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
     let r: string = res.rows[0][0];
     let fields: Array<string> = r.substring(1, r.length - 1).split(",");
 
-    if (fields.length !== 8) {
+    if (fields.length !== 2) {
       other_error_logger.error(
         "Error parsing db function result at api/users/otp:46."
       );
       return error(500);
     }
 
-    let status: number = Number(fields[7]);
+    let status: number = Number(fields[1]);
 
     if (Number.isNaN(status)) {
       other_error_logger.error(
@@ -96,7 +96,7 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
       return redirect(303, "/");
     } else {
       other_error_logger.error(
-        "Error parsing db function result at api/users/otp:71."
+        "Error parsing db function result at api/users/otp:99."
       );
       return error(500);
     }
