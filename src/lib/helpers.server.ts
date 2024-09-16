@@ -4,8 +4,7 @@ import jwt from "jsonwebtoken";
 import * as winston from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
 import { run_query } from "./db/index.server";
-// import { Env } from "@humanwhocodes/env";
-// import { cleanEnv, str } from "envalid";
+
 import { config } from "dotenv";
 
 config();
@@ -155,18 +154,31 @@ export async function is_user_banned(user_id: string) {
     return false;
   }
 
-  let res = await run_query("SELECT public.is_user_banned($1);", [user_id]);
+  let res = await run_query(
+    "SELECT * from public.is_user_banned($1) as (is_user_banned boolean);",
+    [user_id]
+  );
 
   if (res) {
-    if (res.rows[0][0] === undefined || res.rows[0][0] === null) {
+    if (
+      res.rowCount === 0 ||
+      (res.rowCount !== 0 && is_object_empty(res.rows[0]) !== false)
+    ) {
       other_error_logger.error(
-        "Error parsing db function call at is_user_banned()"
+        "\nError parsing db function result at is_user_banned() with user id: " +
+          user_id +
+          ".\n" +
+          res
       );
       return false;
     }
 
-    return res.rows[0][0] === true;
+    return res.rows[0].is_user_banned;
   } else {
     return false;
   }
+}
+
+export function is_object_empty(obj: any) {
+  return obj && Object.keys(obj).length === 0 && obj.constructor === Object;
 }

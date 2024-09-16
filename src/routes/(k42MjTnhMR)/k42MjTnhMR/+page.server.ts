@@ -1,5 +1,9 @@
 import { run_query } from "$lib/db/index.server";
-import { is_valid_admin, other_error_logger } from "$lib/helpers.server";
+import {
+  is_object_empty,
+  is_valid_admin,
+  other_error_logger,
+} from "$lib/helpers.server";
 import { error, type ServerLoadEvent } from "@sveltejs/kit";
 
 export async function load(load_event: ServerLoadEvent): Promise<any> {
@@ -7,35 +11,37 @@ export async function load(load_event: ServerLoadEvent): Promise<any> {
     return error(401);
   }
 
-  let res = await run_query("SELECT public.get_leaderboard_for_admins();", []);
+  let res = await run_query(
+    "SELECT * from public.get_leaderboard_for_admins();",
+    []
+  );
 
   if (res) {
-    let t: Array<any> = [];
+    if (res.rowCount !== 0 && is_object_empty(res.rows[0]) !== false) {
+      other_error_logger.error(
+        "\nError parsing db function result at api/admin/leaderboard:22.\n" +
+          res
+      );
+      return error(500);
+    }
 
-    res.rows.forEach((element) => {
-      let r: string = element[0];
-      let fields: Array<string> = r.substring(1, r.length - 1).split(",");
-
-      if (fields.length != 8) {
-        other_error_logger.error(
-          "Error parsing db function result at routes/(admin)/admin/server.ts:24"
-        );
-        return error(500);
-      }
-
-      t.push({
-        f_username: fields[0],
-        f_curr_level: Number(fields[1]),
-        f_user_type: fields[2],
-        f_student_id: fields[3],
-        f_email: fields[4],
-        f_last_submission_time: fields[5].substring(1, fields[5].length - 1),
-        f_total_submissions: Number(fields[6]),
-        f_shomobay_score: Number(fields[7]),
-      });
-    });
+    // leaderboard in serial. Array of objects. format:
+    /**
+   *  [
+          {
+              "f_username": "test56",
+              "f_curr_level": 1,
+              "f_user_type": "staff",
+              "f_student_id": "1580257",
+              "f_email": "test@gmail.com",
+              "f_last_submission_time": "2024-06-26T04:00:56.940797+00:00",
+              "f_total_submissions": 4,
+              "f_shomobay_score": 0
+          }
+      ]   
+   */
     return {
-      leaderboard: t,
+      leaderboard: res.rows,
     };
   } else {
     return error(500);

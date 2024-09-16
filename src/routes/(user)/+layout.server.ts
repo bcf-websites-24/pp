@@ -1,6 +1,7 @@
 import { error, type ServerLoadEvent } from "@sveltejs/kit";
 import {
   get_user_id,
+  is_object_empty,
   is_user_banned,
   other_error_logger,
 } from "$lib/helpers.server";
@@ -17,34 +18,41 @@ export async function load(load_event: ServerLoadEvent): Promise<any> {
     return error(403);
   }
 
-  let res = await run_query("SELECT public.get_user_details($1);", [id]);
+  let res = await run_query(
+    `select
+      *
+    from
+      public.get_user_details
+      ($1) as 
+      (
+        uid uuid,
+        username text,
+        student_id text,
+        curr_level bigint,
+        email text,
+        user_rank bigint,
+        next_puzzle_id uuid,
+        next_puzzle_url text,
+        next_puzzle_level bigint,
+        is_banned boolean
+      );`,
+    [id]
+  );
 
   if (res) {
-    let fields: Array<any> = res.rows[0][0]
-      .substring(1, res.rows[0][0].length - 1)
-      .split(",");
-
-    if (fields.length !== 10 || fields[0] === "" || fields[1] === "") {
+    if (
+      res.rowCount === 0 ||
+      (res.rowCount !== 0 && is_object_empty(res.rows[0]) !== false)
+    ) {
       other_error_logger.error(
-        "Error at routes/(user)/layout.server.ts:31. Possible wrong user id or db function result parsing error."
+        "\nError parsing db function result at (user)/+layout.server.ts:48.\n" +
+          res
       );
       return error(500);
     }
 
     return {
-      details: {
-        uid: fields[0],
-        username: fields[1],
-        student_id: fields[2],
-        curr_level: Number(fields[3]),
-        email: fields[4],
-        user_rank: Number(fields[5]),
-        next_puzzle_id: fields[6] === "" ? null : fields[6],
-        next_puzzle_url: fields[7],
-
-        next_puzzle_level: Number(fields[8]),
-        is_banned: fields[9] === "t" ? true : false,
-      },
+      details: res.rows[0],
     };
   } else {
     return error(500);

@@ -2,8 +2,11 @@ import * as winston from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
 import { type RequestEvent } from "@sveltejs/kit";
 import { pg_pool_store } from "$lib/stores.server";
-import type { QueryArrayConfig, QueryResult } from "pg";
+import type { QueryResult } from "pg";
 import { get } from "svelte/store";
+import { config } from "dotenv";
+
+config();
 
 let transport;
 
@@ -39,15 +42,10 @@ export async function run_query(
   params: Array<any>,
   req?: RequestEvent
 ) {
-  let query_config: QueryArrayConfig<any> = {
-    text: text,
-    values: params,
-    rowMode: "array",
-  };
   let res: QueryResult<any>;
 
   try {
-    res = await get(pg_pool_store).query(query_config);
+    res = await get(pg_pool_store).query(text, params);
   } catch (error) {
     db_error_logger.error(
       "Req ip: " +

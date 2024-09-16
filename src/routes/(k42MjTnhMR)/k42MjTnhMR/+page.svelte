@@ -31,7 +31,7 @@
           level: leaderboard[i].f_curr_level,
           attemps: leaderboard[i].f_total_submissions,
           last_submission: make_date(
-            new Date(leaderboard[i].f_last_submission_time),
+            new Date(leaderboard[i].f_last_submission_time)
           ),
         };
       }
@@ -48,7 +48,7 @@
           <th scope="col">#</th>
           <th scope="col">Username</th>
           <th scope="col">Status</th>
-          <th scope="col">Level</th>
+          <th scope="col">Solved</th>
           <th scope="col">Attempts</th>
           <th scope="col">Last Submission</th>
         </tr>

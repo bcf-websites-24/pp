@@ -1,6 +1,10 @@
 import { error, json, type RequestEvent } from "@sveltejs/kit";
 import argon2 from "argon2";
-import { make_user_cookie, other_error_logger } from "$lib/helpers.server";
+import {
+  is_object_empty,
+  make_user_cookie,
+  other_error_logger,
+} from "$lib/helpers.server";
 import jwt from "jsonwebtoken";
 import validator from "validator";
 import { JWT_SECRET } from "$env/static/private";
@@ -103,29 +107,32 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
   // }
 
   let res = await run_query(
-    "SELECT public.add_user($1, $2, $3, $4, $5, $6);",
+    "SELECT * from public.add_user($1, $2, $3, $4, $5, $6) as (id uuid);",
     [username, student_id, batch, password_hash, email, user_type],
     request_event
   );
 
   if (res) {
-    if (res.rows[0][0] === null) {
+    if (
+      res.rowCount === 0 ||
+      (res.rowCount !== 0 && is_object_empty(res.rows[0]) !== false)
+    ) {
+      other_error_logger.error(
+        "\nError parsing db function result at api/users/register:121.\n" + res
+      );
+      return error(500);
+    }
+
+    if (res.rows[0].id === null) {
       return json({
         // username or student_id already exists
         registered: -7,
       });
     }
 
-    if (res.rows[0][0].length < 36) {
-      other_error_logger.error(
-        "Error parsing db function result in api/users/register:114. " + res
-      );
-      return error(500);
-    }
-
     const token: string = jwt.sign(
       {
-        id: res.rows[0][0],
+        id: res.rows[0].id,
       },
       JWT_SECRET
     );

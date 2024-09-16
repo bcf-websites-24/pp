@@ -1,5 +1,9 @@
-import { error, type RequestEvent } from "@sveltejs/kit";
-import { is_valid_admin, other_error_logger } from "$lib/helpers.server";
+import { error, json, type RequestEvent } from "@sveltejs/kit";
+import {
+  is_object_empty,
+  is_valid_admin,
+  other_error_logger,
+} from "$lib/helpers.server";
 import { run_query } from "$lib/db/index.server";
 
 export async function POST(req: RequestEvent): Promise<Response> {
@@ -19,45 +23,19 @@ export async function POST(req: RequestEvent): Promise<Response> {
   }
 
   let res = await run_query(
-    "SELECT public.get_submissions_puzzle($1);",
+    "SELECT * from public.get_submissions_puzzle($1);",
     [given_puzzle_level],
     req
   );
 
   if (res) {
-    let t: Array<any> = [];
-
-    res.rows.forEach((element) => {
-      let r: string = element[0];
-      let fields: Array<string> = r.substring(1, r.length - 1).split(",");
-
-      if (fields.length != 8) {
-        other_error_logger.error(
-          "Error parsing db function result at api/admin/submissions:32"
-        );
-        return error(500);
-      }
-
-      fields.forEach((elem) => {
-        if (elem.length == 0) {
-          other_error_logger.error(
-            "Error parsing db function result at api/admin/leaderboard:32"
-          );
-          return error(500);
-        }
-      });
-
-      t.push({
-        f_submitted_at: fields[0].substring(1, fields[0].length - 1),
-        f_user_id: fields[1],
-        f_is_correct: fields[2] === "t" ? true : false,
-        f_submitted_ans: fields[3],
-        f_puzzle_id: fields[4],
-        f_puzzle_level: Number(fields[5]),
-        f_username: fields[6],
-        f_student_id: fields[7],
-      });
-    });
+    if (res.rowCount !== 0 && is_object_empty(res.rows[0]) !== false) {
+      other_error_logger.error(
+        "\nError parsing db function result at api/admin/submissions:30.\n" +
+          res
+      );
+      return error(500);
+    }
 
     // submissions in descending submission time order. Array of objects. format:
     /**
@@ -74,11 +52,7 @@ export async function POST(req: RequestEvent): Promise<Response> {
         }
       ]   
    */
-    return new Response(JSON.stringify(t), {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    return json(res.rows);
   } else {
     return error(500);
   }
