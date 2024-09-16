@@ -1,6 +1,10 @@
 import { error, json, type RequestEvent } from "@sveltejs/kit";
 import { v4 as uuidv4 } from "uuid";
-import { is_valid_admin, other_error_logger } from "$lib/helpers.server";
+import {
+  is_object_empty,
+  is_valid_admin,
+  other_error_logger,
+} from "$lib/helpers.server";
 import { run_query } from "$lib/db/index.server";
 import { get } from "svelte/store";
 import { s3_store } from "$lib/stores.server";
@@ -91,7 +95,26 @@ export async function POST(req: RequestEvent): Promise<Response> {
     }
 
     res = await run_query(
-      "SELECT public.add_new_puzzle($1, $2, $3, $4, $5, $6);",
+      `select
+        *
+      from
+        public.add_new_puzzle(
+          $1,
+          $2,
+          $3,
+          $4,
+          $5,
+          $6
+        ) as (
+          id uuid,
+          created_at timestamptz,
+          img_url text,
+          ans text,
+          puzzle_level bigint,
+          title text,
+          info text ,
+          info_link text
+        );`,
       [
         given_img_url,
         given_hashed_ans,
@@ -113,7 +136,26 @@ export async function POST(req: RequestEvent): Promise<Response> {
 
     if (puzzle_file === undefined || puzzle_file === null) {
       res = await run_query(
-        "SELECT public.update_puzzle_nofile($1, $2, $3, $4, $5, $6);",
+        `select
+          *
+        from
+          public.update_puzzle_nofile(
+            $1,
+            $2,
+            $3,
+            $4,
+            $5,
+            $6
+          ) as (
+            id uuid,
+            created_at timestamptz,
+            img_url text,
+            ans text,
+            puzzle_level bigint,
+            title text,
+            info text ,
+            info_link text
+          );`,
         [
           given_puzzle_id,
           given_hashed_ans,
@@ -150,7 +192,27 @@ export async function POST(req: RequestEvent): Promise<Response> {
       }
 
       res = await run_query(
-        "SELECT public.update_puzzle($1, $2, $3, $4, $5, $6, $7);",
+        `select
+          *
+        from
+          public.update_puzzle(
+            $1,
+            $2,
+            $3,
+            $4,
+            $5,
+            $6,
+            $7
+          ) as (
+            id uuid,
+            created_at timestamptz,
+            img_url text,
+            ans text,
+            puzzle_level bigint,
+            title text,
+            info text ,
+            info_link text
+          );`,
         [
           given_puzzle_id,
           given_img_url,
@@ -169,26 +231,15 @@ export async function POST(req: RequestEvent): Promise<Response> {
     }
   }
 
-  let fields: Array<string> = res?.rows[0][0]
-    .substring(1, res?.rows[0][0].length - 1)
-    .split(",");
-
-  if (fields.length != 8) {
+  if (
+    res.rowCount === 0 ||
+    (res.rowCount !== 0 && is_object_empty(res.rows[0]))
+  ) {
     other_error_logger.error(
-      "Error parsing db function result in api/admin/puzzle:169."
+      "\nError parsing db function result in api/admin/puzzle:239.\n" + res
     );
     return error(500);
   }
 
-  puzzle_data = {
-    id: fields[0],
-    created_at: fields[1].substring(1, fields[1].length - 1),
-    img_url: fields[2],
-    ans: fields[3],
-    puzzle_level: Number(fields[4]),
-    title: fields[5],
-    info: fields[6],
-    info_link: fields[7],
-  };
-  return json(puzzle_data);
+  return json(res.rows[0]);
 }

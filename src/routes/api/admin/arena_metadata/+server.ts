@@ -1,5 +1,9 @@
 import { error, json, type RequestEvent } from "@sveltejs/kit";
-import { is_valid_admin, other_error_logger } from "$lib/helpers.server";
+import {
+  is_object_empty,
+  is_valid_admin,
+  other_error_logger,
+} from "$lib/helpers.server";
 import { run_query } from "$lib/db/index.server";
 
 export async function POST(req: RequestEvent): Promise<Response> {
@@ -7,39 +11,35 @@ export async function POST(req: RequestEvent): Promise<Response> {
     return error(401);
   }
 
-  let res = await run_query("SELECT public.get_arena_metadata();", [], req);
+  let res = await run_query(
+    `select
+    *
+    from
+    public.get_arena_metadata() as (
+    total_users bigint,
+    total_staff bigint,
+    total_alums bigint,
+    total_students bigint,
+    total_submissions bigint,
+    total_puzzles bigint,
+    max_user_level bigint,
+    total_memes bigint
+    );`,
+    [],
+    req
+  );
 
   if (res) {
     if (
-      res.rows[0][0] === null ||
-      res.rows[0][0] === undefined ||
-      res.rows[0][0].length === 0
+      res.rowCount === 0 ||
+      (res.rowCount !== 0 && is_object_empty(res.rows[0]) !== false)
     ) {
       other_error_logger.error(
-        "Error parsing db function result at api/admin/arena_metadata:18"
+        "\nError parsing db function result at api/admin/arena_metadata:38.\n" +
+          res
       );
       return error(500);
     }
-
-    let fields: Array<string> = res.rows[0][0]
-      .substring(1, res.rows[0][0].length - 1)
-      .split(",");
-
-    if (fields.length != 8) {
-      other_error_logger.error(
-        "Error parsing db function result at api/admin/arena_metadata:30"
-      );
-      return error(500);
-    }
-
-    fields.forEach((element) => {
-      if (element.length == 0) {
-        other_error_logger.error(
-          "Error parsing db function result at api/admin/arena_metadata:38"
-        );
-        return error(500);
-      }
-    });
 
     /**
      *{
@@ -53,16 +53,7 @@ export async function POST(req: RequestEvent): Promise<Response> {
         "total_memes": 3
       }
      */
-    return json({
-      total_users: Number(fields[0]),
-      total_staff: Number(fields[1]),
-      total_alums: Number(fields[2]),
-      total_students: Number(fields[3]),
-      total_submissions: Number(fields[4]),
-      total_puzzles: Number(fields[5]),
-      max_user_level: Number(fields[6]),
-      total_memes: Number(fields[7]),
-    });
+    return json(res.rows[0]);
   } else {
     return error(500);
   }

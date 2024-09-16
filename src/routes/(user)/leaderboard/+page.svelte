@@ -131,7 +131,7 @@
             <th scope="col">#</th>
             <th scope="col">Username</th>
             <th scope="col">Batch</th>
-            <th scope="col">Level</th>
+            <th scope="col">Solved</th>
           </tr>
         </thead>
         <tbody>

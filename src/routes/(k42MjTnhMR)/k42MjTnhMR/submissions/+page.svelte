@@ -100,7 +100,11 @@
             <td>{single_submission.username}</td>
             <td>{single_submission.student_id}</td>
             <td>{single_submission.submitted_ans}</td>
-            <td>{single_submission.is_correct}</td>
+            <td
+              >{single_submission.is_correct === true
+                ? "Correct"
+                : "Incorrect"}</td
+            >
             <td>{single_submission.submission_time}</td>
           </tr>
         {/each}

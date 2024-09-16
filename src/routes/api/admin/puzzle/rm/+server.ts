@@ -1,5 +1,9 @@
 import { error, json, type RequestEvent } from "@sveltejs/kit";
-import { is_valid_admin } from "$lib/helpers.server";
+import {
+  is_object_empty,
+  is_valid_admin,
+  other_error_logger,
+} from "$lib/helpers.server";
 import { run_query } from "$lib/db/index.server";
 
 /**
@@ -17,14 +21,23 @@ export async function POST(req: RequestEvent): Promise<Response> {
     return error(422);
   }
   let res = await run_query(
-    "SELECT public.delete_puzzle($1);",
+    "SELECT * from public.delete_puzzle($1) as (success integer);",
     [puzzle_id],
     req
   );
   if (res) {
-    // console.log(res);
+    if (
+      res.rowCount === 0 ||
+      (res.rowCount !== 0 && is_object_empty(res.rows[0]) !== false)
+    ) {
+      other_error_logger.error(
+        "\nError parsing db function result at api/admin/puzzles/rm:31.\n" + res
+      );
+      return error(500);
+    }
+
     return json({
-      success: parseInt(res.rows[0][0]),
+      success: res.rows[0].success,
     });
   } else {
     return error(500);
