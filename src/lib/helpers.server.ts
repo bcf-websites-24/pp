@@ -1,67 +1,10 @@
 import { ADMIN_JWT_ID, JWT_SECRET } from "$env/static/private";
 import type { Cookies } from "@sveltejs/kit";
 import jwt from "jsonwebtoken";
-import * as winston from "winston";
-import DailyRotateFile from "winston-daily-rotate-file";
 import { run_query } from "./db/index.server";
 
-import { config } from "dotenv";
-
-config();
-
-let filesystem_error_transport;
-
-let other_error_transport;
-
-if (process.env.LOCAL_HOSTED_RUNTIME) {
-  console.log("LOCAL runtime detected");
-  filesystem_error_transport = new DailyRotateFile({
-    filename: "fs_errors-%DATE%.log",
-    datePattern: "YYYY-MM-DD-HH-mm",
-    zippedArchive: true,
-    maxSize: "25m",
-    maxFiles: "7d",
-    dirname: "./logs",
-  });
-
-  other_error_transport = new DailyRotateFile({
-    filename: "other_errors-%DATE%.log",
-    datePattern: "YYYY-MM-DD-HH-mm",
-    zippedArchive: true,
-    maxSize: "25m",
-    maxFiles: "7d",
-    dirname: "./logs",
-  });
-} else {
-  console.log("SERVERLESS runtime detected");
-  filesystem_error_transport = new winston.transports.Console();
-  other_error_transport = new winston.transports.Console();
-}
-
-export const file_system_error_logger = winston.createLogger({
-  level: "info", // lowest allowed logger level
-  format: winston.format.combine(
-    winston.format.errors({ stack: true }),
-    winston.format.timestamp(),
-    winston.format.json()
-  ),
-  transports: [filesystem_error_transport, new winston.transports.Console()],
-});
-
-export const other_error_logger = winston.createLogger({
-  level: "info", // lowest allowed logger level
-  format: winston.format.combine(
-    winston.format.errors({ stack: true }),
-    winston.format.timestamp(),
-    winston.format.json()
-  ),
-  transports: [other_error_transport],
-});
-
-if (process.env.LOCAL_HOSTED_RUNTIME) {
-  file_system_error_logger.transports.push(new winston.transports.Console());
-  other_error_logger.transports.push(new winston.transports.Console());
-}
+import { other_error_logger_store } from "./stores.server";
+import { get } from "svelte/store";
 
 export function make_user_cookie(cookies: Cookies, token: string): void {
   let expire_date: Date = new Date();
@@ -164,7 +107,7 @@ export async function is_user_banned(user_id: string) {
       res.rowCount === 0 ||
       (res.rowCount !== 0 && is_object_empty(res.rows[0]) !== false)
     ) {
-      other_error_logger.error(
+      get(other_error_logger_store).error(
         "\nError parsing db function result at is_user_banned() with user id: " +
           user_id +
           ".\n" +

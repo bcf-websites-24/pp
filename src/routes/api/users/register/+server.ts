@@ -117,7 +117,7 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
       res.rowCount === 0 ||
       (res.rowCount !== 0 && is_object_empty(res.rows[0]) !== false)
     ) {
-      other_error_logger.error(
+      get(other_error_logger_store).error(
         "\nError parsing db function result at api/users/register:121.\n" + res
       );
       return error(500);

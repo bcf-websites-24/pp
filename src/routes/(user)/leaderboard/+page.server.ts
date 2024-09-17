@@ -41,7 +41,7 @@ export async function load(load_event: ServerLoadEvent): Promise<any> {
 
   if (res) {
     if (res.rowCount !== 0 && is_object_empty(res.rows[0]) !== false) {
-      other_error_logger.error(
+      get(other_error_logger_store).error(
         "\nError parsing db function result at (user)/leaderboard/+page.server.ts:45.\n" +
           res
       );
@@ -59,7 +59,7 @@ export async function load(load_event: ServerLoadEvent): Promise<any> {
   let s;
   if (res2) {
     if (res2.rowCount !== 0 && is_object_empty(res2.rows[0]) !== false) {
-      other_error_logger.error(
+      get(other_error_logger_store).error(
         "\nError parsing db function result at (user)/leaderboard/+page.server.ts:63.\n" +
           res2
       );

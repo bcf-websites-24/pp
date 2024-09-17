@@ -1,10 +1,8 @@
 import { error, json, type RequestEvent } from "@sveltejs/kit";
-import {
-  is_object_empty,
-  is_valid_admin,
-  other_error_logger,
-} from "$lib/helpers.server";
+import { is_object_empty, is_valid_admin } from "$lib/helpers.server";
 import { run_query } from "$lib/db/index.server";
+import { get } from "svelte/store";
+import { other_error_logger_store } from "$lib/stores.server";
 
 /**
  * @example request: {puzzle_id : 'b62fec79-f6f8-41f1-a282-c2ae1c42690b'}, succesful deletion response: {success: 1}. Failed deletion response: {success: 0}
@@ -30,7 +28,7 @@ export async function POST(req: RequestEvent): Promise<Response> {
       res.rowCount === 0 ||
       (res.rowCount !== 0 && is_object_empty(res.rows[0]) !== false)
     ) {
-      other_error_logger.error(
+      get(other_error_logger_store).error(
         "\nError parsing db function result at api/admin/puzzles/rm:31.\n" + res
       );
       return error(500);
