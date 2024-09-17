@@ -30,7 +30,7 @@ export async function POST(req: RequestEvent): Promise<Response> {
 
   if (res) {
     if (res.rowCount !== 0 && is_object_empty(res.rows[0]) !== false) {
-      other_error_logger.error(
+      get(other_error_logger_store).error(
         "\nError parsing db function result at api/admin/submissions:30.\n" +
           res
       );

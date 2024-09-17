@@ -28,7 +28,7 @@ export async function POST(req: RequestEvent): Promise<Response> {
       res.rowCount === 0 ||
       (res.rowCount !== 0 && is_object_empty(res.rows[0]) !== false)
     ) {
-      other_error_logger.error(
+      get(other_error_logger_store).error(
         "\nError parsing db function result at api/arena/leaderboard_metadata:32.\n" +
           res
       );

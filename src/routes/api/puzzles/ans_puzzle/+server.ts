@@ -31,7 +31,7 @@ export async function POST(req: RequestEvent): Promise<Response> {
 
   // this can happen if jwt token field names were changed for example, this is a server side coding error
   if (given_user_id === null || given_user_id === undefined) {
-    other_error_logger.error(
+    get(other_error_logger_store).error(
       "\nError in api/puzzles/ans_puzzle:35 improper cookie decoding, with user_id from cookies: " +
         given_user_id +
         "\n"
@@ -60,7 +60,7 @@ export async function POST(req: RequestEvent): Promise<Response> {
       res.rowCount === 0 ||
       (res.rowCount !== 0 && is_object_empty(res.rows[0]) !== false)
     ) {
-      other_error_logger.error(
+      get(other_error_logger_store).error(
         "\nError parsing db function result at api/puzzle/ans_puzzle:59.\n" +
           res
       );

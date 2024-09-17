@@ -15,7 +15,7 @@ export async function load(load_event: ServerLoadEvent): Promise<any> {
 
   if (res) {
     if (res.rowCount !== 0 && is_object_empty(res.rows[0]) !== false) {
-      other_error_logger.error(
+      get(other_error_logger_store).error(
         "\nError parsing db function result at admin/puzzle/+page.server.ts:19.\n" +
           res
       );
