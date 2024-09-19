@@ -4,14 +4,11 @@
     current_level_state,
     current_rank_state,
     next_level_id_state,
-    next_level_url_state,
     user_logged_in_state,
     username_state,
   } from "$lib/stores";
   import { Dropdown } from "bootstrap";
-  import { onMount } from "svelte";
 
-  export let data: any;
   let rank_text: string = "Unranked";
 
   $: rank_text =
