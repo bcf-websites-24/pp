@@ -1,9 +1,6 @@
 import { error, json, type RequestEvent } from "@sveltejs/kit";
 import argon2 from "argon2";
-import {
-  is_object_empty,
-  make_otp_cookie,
-} from "$lib/helpers.server";
+import { is_object_empty, make_otp_cookie } from "$lib/helpers.server";
 import { other_error_logger_store } from "$lib/stores.server";
 import jwt from "jsonwebtoken";
 import validator from "validator";
@@ -64,10 +61,9 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
   const year = parseInt(student_id.substring(0, 2));
   let batch: number;
 
-  if (year > 2023) {
+  if (year > 23) {
     batch = 1900 + year;
-  }
-  else {
+  } else {
     batch = 2000 + year;
   }
 
@@ -93,6 +89,7 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
   }
 
   if (batch < 1980 || batch > 2024) {
+    console.log(batch);
     return json({
       registered: -3, // wrong student id
     });

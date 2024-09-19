@@ -3,9 +3,10 @@ import {
   get_user_id,
   is_object_empty,
   is_user_banned,
-  other_error_logger,
 } from "$lib/helpers.server";
 import { run_query } from "$lib/db/index.server";
+import { other_error_logger_store } from "$lib/stores.server";
+import { get } from "svelte/store";
 
 export async function POST(req: RequestEvent): Promise<Response> {
   let given_user_id = get_user_id(req.cookies);
