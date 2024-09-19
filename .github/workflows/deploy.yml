@@ -25,7 +25,7 @@ jobs:
           echo ADMIN_JWT_ID=${{ secrets.ADMIN_JWT_ID }} >> .env.local
           echo DB_CONN_STRING=\'${{ secrets.DB_CONN_STRING }}\' >> .env.local
           echo STORAGE_BUCKET_NAME=${{ secrets.STORAGE_BUCKET_NAME }} >> .env.local
-          echo STORAGE_CDN_ENDPOINT=\'${{ secrets.PUBLIC_STORAGE_CDN_ENDPOINT }}\' >> .env.local
+          echo PUBLIC_STORAGE_CDN_ENDPOINT=\'${{ secrets.PUBLIC_STORAGE_CDN_ENDPOINT }}\' >> .env.local
           echo STORAGE_ENDPOINT=\'${{ secrets.STORAGE_ENDPOINT }}\' >> .env.local
           echo STORAGE_ACCESS_KEY=${{ secrets.STORAGE_ACCESS_KEY }} >> .env.local
           echo STORAGE_SECRET=${{ secrets.STORAGE_SECRET }} >> .env.local
