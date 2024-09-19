@@ -1,6 +1,8 @@
-import { error, type RequestEvent } from "@sveltejs/kit";
-import { is_valid_admin, other_error_logger } from "$lib/helpers.server";
+import { error, json, type RequestEvent } from "@sveltejs/kit";
+import { is_object_empty, is_valid_admin } from "$lib/helpers.server";
 import { run_query } from "$lib/db/index.server";
+import { other_error_logger_store } from "$lib/stores.server";
+import { get } from "svelte/store";
 
 export async function POST(req: RequestEvent): Promise<Response> {
   if (!is_valid_admin(req.cookies)) {
@@ -8,44 +10,18 @@ export async function POST(req: RequestEvent): Promise<Response> {
   }
 
   let res = await run_query(
-    "SELECT public.get_leaderboard_for_admins();",
+    "SELECT * from public.get_leaderboard_for_admins();",
     [],
     req
   );
   if (res) {
-    let t: Array<any> = [];
-
-    res.rows.forEach((element) => {
-      let r: string = element[0];
-      let fields: Array<string> = r.substring(1, r.length - 1).split(",");
-
-      if (fields.length != 8) {
-        other_error_logger.error(
-          "Error parsing db function result at api/admin/leaderboard:24"
-        );
-        return error(500);
-      }
-
-      fields.forEach((elem) => {
-        if (elem.length == 0) {
-          other_error_logger.error(
-            "Error parsing db function result at api/admin/leaderboard:32"
-          );
-          return error(500);
-        }
-      });
-
-      t.push({
-        f_username: fields[0],
-        f_curr_level: Number(fields[1]),
-        f_user_type: fields[2],
-        f_student_id: fields[3],
-        f_email: fields[4],
-        f_last_submission_time: fields[5].substring(1, fields[5].length - 1),
-        f_total_submissions: Number(fields[6]),
-        f_shomobay_score: Number(fields[7]),
-      });
-    });
+    if (res.rowCount !== 0 && is_object_empty(res.rows[0]) !== false) {
+      get(other_error_logger_store).error(
+        "\nError parsing db function result at api/admin/leaderboard:22.\n" +
+          res
+      );
+      return error(500);
+    }
 
     // leaderboard in serial. Array of objects. format:
     /**
@@ -62,11 +38,7 @@ export async function POST(req: RequestEvent): Promise<Response> {
           }
       ]   
    */
-    return new Response(JSON.stringify(t), {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    return json(res.rows);
   } else {
     return error(500);
   }

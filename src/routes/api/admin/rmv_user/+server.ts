@@ -1,6 +1,8 @@
 import { error, json, type RequestEvent } from "@sveltejs/kit";
-import { is_valid_admin, other_error_logger } from "$lib/helpers.server";
+import { is_object_empty, is_valid_admin } from "$lib/helpers.server";
 import { run_query } from "$lib/db/index.server";
+import { other_error_logger_store } from "$lib/stores.server";
+import { get } from "svelte/store";
 
 export async function POST(req: RequestEvent): Promise<Response> {
   if (!is_valid_admin(req.cookies)) {
@@ -14,17 +16,24 @@ export async function POST(req: RequestEvent): Promise<Response> {
     return error(422);
   }
 
-  let res = await run_query("SELECT public.delete_user($1);", [user_id], req);
+  let res = await run_query(
+    "SELECT * from public.delete_user($1) as (success integer);",
+    [user_id],
+    req
+  );
   if (res) {
-    if (res.rows[0][0].length === 0) {
-      other_error_logger.error(
-        "Error parsing db function result in api/admin/rmv_user"
+    if (
+      res.rowCount === 0 ||
+      (res.rowCount !== 0 && is_object_empty(res.rows[0]) !== false)
+    ) {
+      get(other_error_logger_store).error(
+        "\nError parsing db function result at api/admin/rmv_user:32.\n" + res
       );
       return error(500);
     }
 
     return json({
-      success: Number(res.rows[0][0].substring(1, res.rows[0][0].length - 1)),
+      success: res.rows[0].success,
     });
   } else {
     return error(500);

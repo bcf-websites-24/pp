@@ -2,6 +2,14 @@
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
   import Leaderboard from "$lib/components/decorations/leaderboard.svelte";
+  import {
+    current_level_state,
+    current_rank_state,
+    next_level_id_state,
+    next_level_url_state,
+    user_logged_in_state,
+    username_state,
+  } from "$lib/stores";
   import type { Page } from "@sveltejs/kit";
 
   type Stat = {
@@ -24,14 +32,32 @@
   $: load_page($page);
 
   function load_page(page: Page<Record<string, string>, string | null>): void {
+    if (page.data.details !== null && page.data.details !== undefined) {
+      $user_logged_in_state = true;
+      $username_state = page.data.details.username;
+      $current_level_state = parseInt(page.data.details.curr_level) + 1;
+      $next_level_id_state = page.data.details.next_puzzle_id;
+      $next_level_url_state = page.data.details.next_puzzle_url;
+      $current_rank_state = page.data.details.user_rank
+        ? page.data.details.user_rank
+        : -1;
+    }
+
     players = new Array(page.data.players.length);
 
     for (let i = 0; i < players.length; ++i) {
+      let batch_2digit = page.data.players[i].f_student_id
+        .toString()
+        .substring(0, 2);
+      batch_2digit = parseInt(batch_2digit);
+      let batch_4digit =
+        batch_2digit > 23 ? batch_2digit + 1900 : batch_2digit + 2000;
+
       players[i] = {
         rank: parseInt(page.data.players[i].f_rank),
         username: page.data.players[i].f_username,
         current_level: parseInt(page.data.players[i].f_curr_level),
-        batch: page.data.players[i].f_student_id.toString().substring(0, 4),
+        batch: batch_4digit,
         somiti_score: parseFloat(page.data.players[i].f_shomobay_score),
       };
     }
@@ -131,7 +157,7 @@
             <th scope="col">#</th>
             <th scope="col">Username</th>
             <th scope="col">Batch</th>
-            <th scope="col">Level</th>
+            <th scope="col">Solved</th>
           </tr>
         </thead>
         <tbody>

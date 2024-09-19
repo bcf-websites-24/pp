@@ -1,9 +1,11 @@
-import { error, json, type RequestEvent } from "@sveltejs/kit";
+import { error, json, redirect, type RequestEvent } from "@sveltejs/kit";
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
-import { make_user_cookie, other_error_logger } from "$lib/helpers.server";
+import { is_object_empty, make_user_cookie } from "$lib/helpers.server";
 import { JWT_SECRET } from "$env/static/private";
 import { run_query } from "$lib/db/index.server";
+import { other_error_logger_store } from "$lib/stores.server";
+import { get } from "svelte/store";
 
 export async function POST(request_event: RequestEvent): Promise<Response> {
   const request: Request = request_event.request;
@@ -21,45 +23,41 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
   }
 
   let res = await run_query(
-    "SELECT public.get_uuid_hash($1);",
+    "SELECT * from public.get_uuid_hash($1);",
     [username],
     request_event
   );
 
   if (res) {
-    let fields: Array<string> = res.rows[0][0]
-      .substring(1, res.rows[0][0].length - 1)
-      .split('"');
-
-    if (fields.length != 3) {
-      other_error_logger.error(
-        "Error parsing db function call result at api/users/login:38." + res
+    if (
+      res.rowCount === 0 ||
+      (res.rowCount !== 0 && is_object_empty(res.rows[0]) !== false)
+    ) {
+      get(other_error_logger_store).error(
+        "\nError parsing db function result at api/users/login:39.\n" + res
       );
       return error(500);
     }
 
-    let id: string = fields[0].substring(0, fields[0].length - 1);
-    let hash: string = fields[1];
-    let is_banned: boolean = fields[2].substring(1) === "t" ? true : false;
+    let id: string = res.rows[0].id;
+    let hash: string = res.rows[0].hash;
+    let is_banned: boolean = res.rows[0].is_banned;
 
-    if (id.length < 36) {
+    if (id === null || id === undefined || id.length < 36) {
       return json({
         login: -1, // user not found
-        is_banned: is_banned,
       });
     }
 
     if (!(await argon2.verify(hash, password))) {
       return json({
         login: -2, // password mismatch
-        is_banned: is_banned,
       });
     }
 
     if (is_banned) {
       return json({
         login: -3, // banned user
-        is_banned: is_banned,
       });
     }
 
@@ -73,8 +71,7 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
     make_user_cookie(request_event.cookies, token);
 
     return json({
-      login: 0, // success
-      is_banned: is_banned,
+      login: 0,
     });
   } else {
     return error(500);

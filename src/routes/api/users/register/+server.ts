@@ -1,10 +1,13 @@
 import { error, json, type RequestEvent } from "@sveltejs/kit";
 import argon2 from "argon2";
-import { make_user_cookie, other_error_logger } from "$lib/helpers.server";
+import { is_object_empty, make_otp_cookie } from "$lib/helpers.server";
+import { other_error_logger_store } from "$lib/stores.server";
 import jwt from "jsonwebtoken";
 import validator from "validator";
 import { JWT_SECRET } from "$env/static/private";
 import { run_query } from "$lib/db/index.server";
+import { get } from "svelte/store";
+import { getOTP } from "$lib/mailer/mailer.server";
 
 /**
  *
@@ -49,27 +52,26 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
     });
   }
 
-  // we need to ensure student id is a string that converts to a positive integer > 0
-  // otherwise we cannot get batch from student id.
-  // since we could not get a hold of BUET roll formats over time
-  // we are setting rolls as 9 digit: ie.201905000 or 199805000
-  // regex explanation: ^   : start of string
-  //                    \d{9} : 9 digit number, leading 0s fine
-  //                    $   : end of string
-  // stackOverflow sauce 🤡: https://stackoverflow.com/questions/10834796/validate-that-a-string-is-a-positive-integer#:~:text=function%20isInDesiredForm(str)%20%7B%0A%20%20%20%20return%20/%5E%5C%2B%3F%5Cd%2B%24/.test(str)%3B%0A%7D
-  if (!/^\d{9}$/.test(student_id)) {
+  if (!/^\d{7}$/.test(student_id)) {
     // Error code -2 means roll is not numeric
     return json({
       registered: -2,
     });
   }
 
-  let batch: number = Number(student_id.substring(0, 4));
-  // let dept: number = Number(student_id.substring(5, 7));
-  let roll: number = Number(student_id.substring(6));
+  const year = parseInt(student_id.substring(0, 2));
+  let batch: number;
+
+  if (year > 23) {
+    batch = 1900 + year;
+  } else {
+    batch = 2000 + year;
+  }
+
+  let roll: number = parseInt(student_id.substring(4));
   let user_type: string = "";
 
-  if (Number.isNaN(batch) || Number.isNaN(roll)) {
+  if (isNaN(batch) || isNaN(roll)) {
     return error(422);
   }
 
@@ -88,52 +90,71 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
   }
 
   if (batch < 1980 || batch > 2024) {
+    console.log(batch);
     return json({
       registered: -3, // wrong student id
     });
   }
 
-  // if (dept !== 5) {
-  //   delete_jwt_cookie(request_event.cookies);
+  let otp = "";
 
-  //   // Error code: -5 means non cse dept
-  //   return json({
-  //     registered: -5,
-  //   });
+  // for (let i = 0; i < 4; ++i) {
+  //   otp += Math.floor(Math.random() * 10).toString();
   // }
 
+  try {
+    otp = await getOTP(username, email);
+  } catch (err) {
+    get(other_error_logger_store).error(
+      "\nFailed to send user mail for OTP verification at api/users/register:109.\n",
+      err
+    );
+    return json({
+      registered: -8, // -8 means could not send user verification mail
+    });
+  }
+  console.log("OTP: " + otp);
+
+  // getOTP("test user", "af@lfaoinci.com");
   let res = await run_query(
-    "SELECT public.add_user($1, $2, $3, $4, $5, $6);",
-    [username, student_id, batch, password_hash, email, user_type],
+    "SELECT * from public.add_temp_user($1, $2, $3, $4, $5, $6, $7) as (id uuid, time timestamptz);",
+    [username, student_id, batch, password_hash, email, user_type, otp],
     request_event
   );
 
   if (res) {
-    if (res.rows[0][0] === null) {
+    if (
+      res.rowCount === 0 ||
+      (res.rowCount !== 0 && is_object_empty(res.rows[0]) !== false)
+    ) {
+      get(other_error_logger_store).error(
+        "\nError parsing db function result at api/users/register:121.\n" + res
+      );
+      return error(500);
+    }
+
+    if (res.rows[0].id === null) {
       return json({
         // username or student_id already exists
         registered: -7,
       });
     }
 
-    if (res.rows[0][0].length < 36) {
-      other_error_logger.error(
-        "Error parsing db function result in api/users/register:114. " + res
-      );
-      return error(500);
-    }
-
     const token: string = jwt.sign(
       {
-        id: res.rows[0][0],
+        id: res.rows[0].id,
       },
       JWT_SECRET
     );
 
-    make_user_cookie(request_event.cookies, token);
+    let expire = new Date(res.rows[0].time);
+    expire = new Date(expire.getTime() + 30 * 60 * 1000);
+
+    make_otp_cookie(request_event.cookies, token, expire);
 
     return json({
       registered: 0,
+      time: expire,
     });
   } else {
     return error(500);

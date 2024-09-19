@@ -1,10 +1,12 @@
 import { error, json, type RequestEvent } from "@sveltejs/kit";
 import {
   get_user_id,
+  is_object_empty,
   is_user_banned,
-  other_error_logger,
 } from "$lib/helpers.server";
 import { run_query } from "$lib/db/index.server";
+import { other_error_logger_store } from "$lib/stores.server";
+import { get } from "svelte/store";
 
 export async function POST(req: RequestEvent): Promise<Response> {
   let given_user_id = get_user_id(req.cookies);
@@ -17,17 +19,19 @@ export async function POST(req: RequestEvent): Promise<Response> {
   }
 
   let res = await run_query(
-    "SELECT public.get_leaderboard_details();",
+    "SELECT * from public.get_leaderboard_details() as (leaderboard_length bigint);",
     [],
     req
   );
 
   if (res) {
-    let r: string = res.rows[0][0];
-
-    if (r === undefined || r === null || r.length === 0) {
-      other_error_logger.error(
-        "Error parsing db function result at api/arena/leaderboard_metadata:30"
+    if (
+      res.rowCount === 0 ||
+      (res.rowCount !== 0 && is_object_empty(res.rows[0]) !== false)
+    ) {
+      get(other_error_logger_store).error(
+        "\nError parsing db function result at api/arena/leaderboard_metadata:32.\n" +
+          res
       );
       return error(500);
     }
@@ -37,10 +41,9 @@ export async function POST(req: RequestEvent): Promise<Response> {
    *  {
         leaderboard_length : 994
       }
-  
    */
     return json({
-      leaderboard_length: Number(r.substring(1, r.length - 1)),
+      leaderboard_length: res.rows[0].leaderboard_length,
     });
   } else {
     return error(500);

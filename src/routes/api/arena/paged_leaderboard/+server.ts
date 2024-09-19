@@ -1,10 +1,12 @@
 import { error, json, type RequestEvent } from "@sveltejs/kit";
 import {
   get_user_id,
+  is_object_empty,
   is_user_banned,
-  other_error_logger,
 } from "$lib/helpers.server";
 import { run_query } from "$lib/db/index.server";
+import { other_error_logger_store } from "$lib/stores.server";
+import { get } from "svelte/store";
 
 export async function POST(req: RequestEvent): Promise<Response> {
   let given_user_id = get_user_id(req.cookies);
@@ -28,44 +30,19 @@ export async function POST(req: RequestEvent): Promise<Response> {
   }
 
   let res = await run_query(
-    "SELECT public.get_leaderboard_chunk($1);",
+    "SELECT * from public.get_leaderboard_chunk($1);",
     [given_offset],
     req
   );
 
   if (res) {
-    let t: Array<any> = [];
-
-    res.rows.forEach((element) => {
-      let fields: Array<string> = element[0]
-        .substring(1, element[0].length - 1)
-        .split(",");
-
-      if (fields.length != 6) {
-        other_error_logger.error(
-          "Error parsing db function result at api/arena/paged_leaderboard:38"
-        );
-        return error(500);
-      }
-
-      fields.forEach((elem) => {
-        if (elem.length == 0) {
-          other_error_logger.error(
-            "Error parsing db function result at api/arena/paged_leaderboard:47"
-          );
-          return error(500);
-        }
-      });
-
-      t.push({
-        f_username: fields[0],
-        f_curr_level: Number(fields[1]),
-        f_student_id: fields[2],
-        f_last_submission_time: fields[3].substring(1, fields[3].length - 1),
-        f_shomobay_score: Number(fields[4]),
-        f_rank: Number(fields[5]),
-      });
-    });
+    if (res.rowCount !== 0 && is_object_empty(res.rows[0]) !== false) {
+      get(other_error_logger_store).error(
+        "\nError parsing db function result at api/arena/paged_leaderboard:40.\n" +
+          res
+      );
+      return error(500);
+    }
     // leaderboard in serial. Array of objects. format:
     /**
    *  [
@@ -78,7 +55,7 @@ export async function POST(req: RequestEvent): Promise<Response> {
           }
       ]   
    */
-    return json(t);
+    return json(res.rows);
   } else {
     return error(500);
   }
