@@ -2,7 +2,7 @@ import { error, json, type RequestEvent } from "@sveltejs/kit";
 import argon2 from "argon2";
 import {
   is_object_empty,
-  make_user_cookie,
+  make_otp_cookie,
   other_error_logger,
 } from "$lib/helpers.server";
 import jwt from "jsonwebtoken";
@@ -53,27 +53,27 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
     });
   }
 
-  // we need to ensure student id is a string that converts to a positive integer > 0
-  // otherwise we cannot get batch from student id.
-  // since we could not get a hold of BUET roll formats over time
-  // we are setting rolls as 9 digit: ie.201905000 or 199805000
-  // regex explanation: ^   : start of string
-  //                    \d{9} : 9 digit number, leading 0s fine
-  //                    $   : end of string
-  // stackOverflow sauce 🤡: https://stackoverflow.com/questions/10834796/validate-that-a-string-is-a-positive-integer#:~:text=function%20isInDesiredForm(str)%20%7B%0A%20%20%20%20return%20/%5E%5C%2B%3F%5Cd%2B%24/.test(str)%3B%0A%7D
-  if (!/^\d{9}$/.test(student_id)) {
+  if (!/^\d{7}$/.test(student_id)) {
     // Error code -2 means roll is not numeric
     return json({
       registered: -2,
     });
   }
 
-  let batch: number = Number(student_id.substring(0, 4));
-  // let dept: number = Number(student_id.substring(5, 7));
-  let roll: number = Number(student_id.substring(6));
+  const year = parseInt(student_id.substring(0, 2));
+  let batch: number;
+
+  if (year > 2023) {
+    batch = 1900 + year;
+  }
+  else {
+    batch = 2000 + year;
+  }
+
+  let roll: number = parseInt(student_id.substring(4));
   let user_type: string = "";
 
-  if (Number.isNaN(batch) || Number.isNaN(roll)) {
+  if (isNaN(batch) || isNaN(roll)) {
     return error(422);
   }
 
@@ -97,14 +97,11 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
     });
   }
 
-  // if (dept !== 5) {
-  //   delete_jwt_cookie(request_event.cookies);
+  let otp = "";
 
-  //   // Error code: -5 means non cse dept
-  //   return json({
-  //     registered: -5,
-  //   });
-  // }
+  for (let i = 0; i < 4; ++i) {
+    otp += Math.floor(Math.random() * 10).toString();
+  }
 
   let res = await run_query(
     "SELECT * from public.add_user($1, $2, $3, $4, $5, $6) as (id uuid);",
@@ -137,10 +134,14 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
       JWT_SECRET
     );
 
-    make_user_cookie(request_event.cookies, token);
+    let expire = new Date(fields[1]);
+    expire = new Date(expire.getTime() + 30 * 60 * 1000);
+
+    make_otp_cookie(request_event.cookies, token, expire);
 
     return json({
       registered: 0,
+      time: fields[1].substring(1, fields[1].length - 1),
     });
   } else {
     return error(500);
