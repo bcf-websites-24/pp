@@ -25,3 +25,4 @@ export const invalid_email_toast_store = writable(new Toast(""));
 export const duplicate_username_student_id_toast_store = writable(
   new Toast("")
 );
+export const mail_verification_failed_store = writable(new Toast(""));

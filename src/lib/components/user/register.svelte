@@ -5,6 +5,7 @@
     duplicate_username_student_id_toast_store,
     improper_username_toast_store,
     invalid_email_toast_store,
+    mail_verification_failed_store,
     roll_out_of_range_toast_store,
     student_id_misformation_toast_store,
   } from "$lib/stores";
@@ -85,7 +86,7 @@
     if (state === 2) {
       if (register_password !== register_confirm_password) {
         register_confirm_password_elem.setCustomValidity(
-          "Password did not match",
+          "Password did not match"
         );
 
         return;
@@ -118,6 +119,8 @@
               $invalid_email_toast_store.show();
             } else if (response_json.registered === -7) {
               $duplicate_username_student_id_toast_store.show();
+            } else if (response_json.registered === -8) {
+              $mail_verification_failed_store.show();
             } else {
               console.error("Unknown registered value");
             }
