@@ -1,10 +1,8 @@
 import { run_query } from "$lib/db/index.server";
-import {
-  is_object_empty,
-  is_valid_admin,
-  other_error_logger,
-} from "$lib/helpers.server";
+import { is_object_empty, is_valid_admin } from "$lib/helpers.server";
+import { other_error_logger_store } from "$lib/stores.server";
 import { error, type ServerLoadEvent } from "@sveltejs/kit";
+import { get } from "svelte/store";
 
 export async function load(load_event: ServerLoadEvent): Promise<any> {
   if (!is_valid_admin(load_event.cookies)) {

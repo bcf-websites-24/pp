@@ -2,10 +2,11 @@ import { error, json, type RequestEvent } from "@sveltejs/kit";
 import {
   get_user_id,
   is_object_empty,
-  is_user_banned, is_user_unverified,
+  is_user_banned,
 } from "$lib/helpers.server";
 import { run_query } from "$lib/db/index.server";
-import { other_error_logger } from "$lib/helpers.server";
+import { other_error_logger_store } from "$lib/stores.server";
+import { get } from "svelte/store";
 
 /**
  * request format:
@@ -33,8 +34,8 @@ export async function POST(req: RequestEvent): Promise<Response> {
   if (given_user_id === null || given_user_id === undefined) {
     get(other_error_logger_store).error(
       "\nError in api/puzzles/ans_puzzle:35 improper cookie decoding, with user_id from cookies: " +
-      given_user_id +
-      "\n"
+        given_user_id +
+        "\n"
     );
     return error(500);
   }
@@ -62,7 +63,7 @@ export async function POST(req: RequestEvent): Promise<Response> {
     ) {
       get(other_error_logger_store).error(
         "\nError parsing db function result at api/puzzle/ans_puzzle:59.\n" +
-        res
+          res
       );
       return error(500);
     }

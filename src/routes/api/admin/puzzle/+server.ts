@@ -1,13 +1,9 @@
 import { error, json, type RequestEvent } from "@sveltejs/kit";
 import { v4 as uuidv4 } from "uuid";
-import {
-  is_object_empty,
-  is_valid_admin,
-  other_error_logger,
-} from "$lib/helpers.server";
+import { is_object_empty, is_valid_admin } from "$lib/helpers.server";
 import { run_query } from "$lib/db/index.server";
 import { get } from "svelte/store";
-import { s3_store } from "$lib/stores.server";
+import { other_error_logger_store, s3_store } from "$lib/stores.server";
 import { STORAGE_BUCKET_NAME } from "$env/static/private";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import mime from "mime-types";
@@ -66,7 +62,6 @@ export async function POST(req: RequestEvent): Promise<Response> {
     return error(422);
   }
 
-  let puzzle_data;
   let res;
 
   if (!editing) {

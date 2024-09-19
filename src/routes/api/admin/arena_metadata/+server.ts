@@ -1,10 +1,8 @@
 import { error, json, type RequestEvent } from "@sveltejs/kit";
-import {
-  is_object_empty,
-  is_valid_admin,
-  other_error_logger,
-} from "$lib/helpers.server";
+import { is_object_empty, is_valid_admin } from "$lib/helpers.server";
 import { run_query } from "$lib/db/index.server";
+import { get } from "svelte/store";
+import { other_error_logger_store } from "$lib/stores.server";
 
 export async function POST(req: RequestEvent): Promise<Response> {
   if (!is_valid_admin(req.cookies)) {

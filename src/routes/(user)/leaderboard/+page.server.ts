@@ -39,9 +39,21 @@ export async function load(load_event: ServerLoadEvent): Promise<any> {
         next_puzzle_url text,
         next_puzzle_level bigint,
         is_banned boolean
-      );`, [id]);
+      );`,
+    [id]
+  );
 
   if (res) {
+    if (
+      res.rowCount == 0 ||
+      (res?.rowCount !== 0 && is_object_empty(res.rows[0]) !== false)
+    ) {
+      get(other_error_logger_store).error(
+        "\nError parsing db function result at (user)/leaderboard/+page.server.ts:52.\n" +
+          res
+      );
+      return error(500);
+    }
     data.details = res.rows[0];
   } else {
     return error(500);
@@ -70,8 +82,8 @@ export async function load(load_event: ServerLoadEvent): Promise<any> {
   if (res) {
     if (res.rowCount !== 0 && is_object_empty(res.rows[0]) !== false) {
       get(other_error_logger_store).error(
-        "\nError parsing db function result at (user)/leaderboard/+page.server.ts:45.\n" +
-        res
+        "\nError parsing db function result at (user)/leaderboard/+page.server.ts:85.\n" +
+          res
       );
       return error(500);
     }
@@ -88,8 +100,8 @@ export async function load(load_event: ServerLoadEvent): Promise<any> {
   if (res2) {
     if (res2.rowCount !== 0 && is_object_empty(res2.rows[0]) !== false) {
       get(other_error_logger_store).error(
-        "\nError parsing db function result at (user)/leaderboard/+page.server.ts:63.\n" +
-        res2
+        "\nError parsing db function result at (user)/leaderboard/+page.server.ts:103.\n" +
+          res2
       );
       return error(500);
     }
