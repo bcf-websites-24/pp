@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-pp
+  namespace: website
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-cluster-issuer
+spec:
+  tls:
+    - hosts:
+        - puzzle.buetcsefest2024.com
+      secretName: letsencrypt-puzzle
+  rules:
+    - host: puzzle.buetcsefest2024.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: pp
+                port:
+                  number: 80
+  ingressClassName: nginx

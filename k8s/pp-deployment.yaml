@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pp
+  namespace: website
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: pp
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: pp
+    spec:
+      containers:
+        - name: pp
+          image: <IMAGE>
+          ports:
+            - name: http
+              containerPort: 3000
+          resources:
+            requests:
+              cpu: 250m
+              memory: 256Mi
+            limits:
+              cpu: 1150m
+              memory: 1024Mi
