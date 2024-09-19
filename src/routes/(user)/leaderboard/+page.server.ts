@@ -3,9 +3,10 @@ import {
   get_user_id,
   is_object_empty,
   is_user_banned,
-  other_error_logger,
 } from "$lib/helpers.server";
+import { other_error_logger_store } from "$lib/stores.server";
 import { error, redirect, type ServerLoadEvent } from "@sveltejs/kit";
+import { get } from "svelte/store";
 
 export async function load(load_event: ServerLoadEvent): Promise<any> {
   const id = get_user_id(load_event.cookies);
@@ -21,33 +22,27 @@ export async function load(load_event: ServerLoadEvent): Promise<any> {
   }
 
   let data: any = {};
-  let res = await run_query("SELECT public.get_user_details($1);", [id]);
+  let res = await run_query(
+    `select
+      *
+    from
+      public.get_user_details
+      ($1) as 
+      (
+        uid uuid,
+        username text,
+        student_id text,
+        curr_level bigint,
+        email text,
+        user_rank bigint,
+        next_puzzle_id uuid,
+        next_puzzle_url text,
+        next_puzzle_level bigint,
+        is_banned boolean
+      );`, [id]);
 
   if (res) {
-    let fields: Array<any> = res.rows[0][0]
-      .substring(1, res.rows[0][0].length - 1)
-      .split(",");
-
-    if (fields.length !== 10 || fields[0] === "" || fields[1] === "") {
-      other_error_logger.error(
-        "Error at routes/(user)/layout.server.ts:31. Possible wrong user id or db function result parsing error."
-      );
-      return error(500);
-    }
-
-    data.details = {
-      uid: fields[0],
-      username: fields[1],
-      student_id: fields[2],
-      curr_level: Number(fields[3]),
-      email: fields[4],
-      user_rank: Number(fields[5]),
-      next_puzzle_id: fields[6] === "" ? null : fields[6],
-      next_puzzle_url: fields[7],
-
-      next_puzzle_level: Number(fields[8]),
-      is_banned: fields[9] === "t" ? true : false,
-    }
+    data.details = res.rows[0];
   } else {
     return error(500);
   }
@@ -68,8 +63,7 @@ export async function load(load_event: ServerLoadEvent): Promise<any> {
   }
 
   let t: Array<any> = [];
-
-  let res = await run_query("SELECT * from public.get_leaderboard_chunk($1);", [
+  res = await run_query("SELECT * from public.get_leaderboard_chunk($1);", [
     given_offset,
   ]);
 

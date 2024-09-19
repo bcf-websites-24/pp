@@ -3,9 +3,10 @@ import {
   get_user_id,
   is_object_empty,
   is_user_banned,
-  other_error_logger,
 } from "$lib/helpers.server";
+import { other_error_logger_store } from "$lib/stores.server";
 import { run_query } from "$lib/db/index.server";
+import { get } from "svelte/store";
 
 export async function load(load_event: ServerLoadEvent): Promise<any> {
   let id = get_user_id(load_event.cookies);
@@ -48,7 +49,7 @@ export async function load(load_event: ServerLoadEvent): Promise<any> {
     ) {
       get(other_error_logger_store).error(
         "\nError parsing db function result at (user)/+layout.server.ts:48.\n" +
-          res
+        res
       );
       return error(500);
     }

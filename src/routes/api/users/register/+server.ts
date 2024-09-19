@@ -3,12 +3,13 @@ import argon2 from "argon2";
 import {
   is_object_empty,
   make_otp_cookie,
-  other_error_logger,
 } from "$lib/helpers.server";
+import { other_error_logger_store } from "$lib/stores.server";
 import jwt from "jsonwebtoken";
 import validator from "validator";
 import { JWT_SECRET } from "$env/static/private";
 import { run_query } from "$lib/db/index.server";
+import { get } from "svelte/store";
 
 /**
  *
@@ -104,8 +105,8 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
   }
 
   let res = await run_query(
-    "SELECT * from public.add_user($1, $2, $3, $4, $5, $6) as (id uuid);",
-    [username, student_id, batch, password_hash, email, user_type],
+    "SELECT * from public.add_temp_user($1, $2, $3, $4, $5, $6, $7) as (id uuid, time timestamptz);",
+    [username, student_id, batch, password_hash, email, user_type, otp],
     request_event
   );
 
@@ -134,14 +135,14 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
       JWT_SECRET
     );
 
-    let expire = new Date(fields[1]);
+    let expire = new Date(res.rows[0].time);
     expire = new Date(expire.getTime() + 30 * 60 * 1000);
 
     make_otp_cookie(request_event.cookies, token, expire);
 
     return json({
       registered: 0,
-      time: fields[1].substring(1, fields[1].length - 1),
+      time: expire,
     });
   } else {
     return error(500);

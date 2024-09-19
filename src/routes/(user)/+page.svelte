@@ -15,7 +15,7 @@
     if ($page.data.details !== null && $page.data.details !== undefined) {
       $user_logged_in_state = true;
       $username_state = $page.data.details.username;
-      $current_level_state = $page.data.details.curr_level + 1;
+      $current_level_state = parseInt($page.data.details.curr_level) + 1;
       $next_level_id_state = $page.data.details.next_puzzle_id;
       $next_level_url_state = $page.data.details.next_puzzle_url;
       $current_rank_state = $page.data.details.user_rank
