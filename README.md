@@ -1,3 +1,3 @@
 # pp
 
-DO NOT DELETE THE .vscode FOLDER 😡😡😡
+DELETE THE .vscode FOLDER 😡😡😡
