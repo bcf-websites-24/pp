@@ -4,11 +4,12 @@ import {
   delete_otp_cookie,
   get_otp_id,
   get_user_id,
-  make_user_cookie,
-  other_error_logger,
+  make_user_cookie
 } from "$lib/helpers.server";
+import { other_error_logger_store } from "$lib/stores.server";
 import { error, json, redirect, type RequestEvent } from "@sveltejs/kit";
 import jwt from "jsonwebtoken";
+import { get } from "svelte/store";
 
 export async function POST(request_event: RequestEvent): Promise<Response> {
   let id = get_user_id(request_event.cookies);
@@ -31,27 +32,18 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
   }
 
   let res = await run_query(
-    "SELECT public.verify_otp($1, $2);", // send id for access token jwt
+    "SELECT * from public.verify_otp($1, $2) as (id uuid, status integer);", // send id for access token jwt
     [id, given_otp],
     request_event
   );
 
   if (res) {
     // write check if db res ok
-    let r: string = res.rows[0][0];
-    let fields: Array<string> = r.substring(1, r.length - 1).split(",");
 
-    if (fields.length !== 2) {
-      other_error_logger.error(
-        "Error parsing db function result at api/users/otp:46."
-      );
-      return error(500);
-    }
-
-    let status: number = Number(fields[1]);
+    let status: number = Number(res.rows[0].status);
 
     if (Number.isNaN(status)) {
-      other_error_logger.error(
+      get(other_error_logger_store).error(
         "Error parsing db function result at api/users/otp:55."
       );
       return error(500);
@@ -85,7 +77,7 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
     } else if (status === 0) {
       const token: string = jwt.sign(
         {
-          id: fields[0],
+          id: res.rows[0].id,
         },
         JWT_SECRET
       );
@@ -97,7 +89,7 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
         registered: 0
       });
     } else {
-      other_error_logger.error(
+      get(other_error_logger_store).error(
         "Error parsing db function result at api/users/otp:99."
       );
       return error(500);
