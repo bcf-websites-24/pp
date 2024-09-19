@@ -1,7 +1,8 @@
+import type { HandleServerError } from "@sveltejs/kit";
 
 
-export async function handleError({ error, event, status, message }) {
+export const handleError: HandleServerError = async ({ error, event, status, message }) => {
     return {
-        message: message,
+        message: error.message ?? message,
     };
 }
