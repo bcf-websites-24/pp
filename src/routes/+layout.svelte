@@ -14,6 +14,7 @@
     improper_username_toast_store,
     invalid_email_toast_store,
     duplicate_username_student_id_toast_store,
+    mail_verification_failed_store,
   } from "$lib/stores";
   import { Toast } from "bootstrap";
   import { onMount } from "svelte";
@@ -39,6 +40,7 @@
   let improper_username_toast_elem: HTMLDivElement;
   let invalid_email_toast_elem: HTMLDivElement;
   let duplicate_username_student_id_toast_elem: HTMLDivElement;
+  let mail_verification_failed_elem: HTMLDivElement;
 
   onMount((): void => {
     $correct_answer_toast_store = new Toast(correct_answer_toast_elem);
@@ -50,14 +52,16 @@
     $password_unmatched_toast_store = new Toast(password_unmatched_toast_elem);
     $banned_toast_store = new Toast(banned_toast_elem);
     $student_id_misformation_toast_store = new Toast(
-      student_id_misformation_toast_elem,
+      student_id_misformation_toast_elem
     );
     $roll_out_of_range_toast_store = new Toast(roll_out_of_range_toast_elem);
     $improper_username_toast_store = new Toast(improper_username_toast_elem);
     $invalid_email_toast_store = new Toast(invalid_email_toast_elem);
     $duplicate_username_student_id_toast_store = new Toast(
-      duplicate_username_student_id_toast_elem,
+      duplicate_username_student_id_toast_elem
     );
+    $mail_verification_failed_store = new Toast(mail_verification_failed_elem);
+
     mounted = true;
   });
 </script>
@@ -249,6 +253,22 @@
   >
     <div class="d-flex">
       <div class="toast-body">Username or student id already in use.</div>
+      <button
+        type="button"
+        class="btn-close btn-close-white me-2 m-auto"
+        data-bs-dismiss="toast"
+        aria-label="Close"
+      ></button>
+    </div>
+  </div>
+  <div
+    bind:this={mail_verification_failed_elem}
+    class="toast align-items-center text-bg-danger border-0"
+  >
+    <div class="d-flex">
+      <div class="toast-body">
+        Failed to send verification mail, please check your mail address.
+      </div>
       <button
         type="button"
         class="btn-close btn-close-white me-2 m-auto"

@@ -46,11 +46,18 @@
     players = new Array(page.data.players.length);
 
     for (let i = 0; i < players.length; ++i) {
+      let batch_2digit = page.data.players[i].f_student_id
+        .toString()
+        .substring(0, 2);
+      batch_2digit = parseInt(batch_2digit);
+      let batch_4digit =
+        batch_2digit > 23 ? batch_2digit + 1900 : batch_2digit + 2000;
+
       players[i] = {
         rank: parseInt(page.data.players[i].f_rank),
         username: page.data.players[i].f_username,
         current_level: parseInt(page.data.players[i].f_curr_level),
-        batch: page.data.players[i].f_student_id.toString().substring(0, 4),
+        batch: batch_4digit,
         somiti_score: parseFloat(page.data.players[i].f_shomobay_score),
       };
     }

@@ -7,6 +7,7 @@ import validator from "validator";
 import { JWT_SECRET } from "$env/static/private";
 import { run_query } from "$lib/db/index.server";
 import { get } from "svelte/store";
+import { getOTP } from "$lib/mailer/mailer.server";
 
 /**
  *
@@ -97,10 +98,24 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
 
   let otp = "";
 
-  for (let i = 0; i < 4; ++i) {
-    otp += Math.floor(Math.random() * 10).toString();
-  }
+  // for (let i = 0; i < 4; ++i) {
+  //   otp += Math.floor(Math.random() * 10).toString();
+  // }
 
+  try {
+    otp = await getOTP(username, email);
+  } catch (err) {
+    get(other_error_logger_store).error(
+      "\nFailed to send user mail for OTP verification at api/users/register:109.\n",
+      err
+    );
+    return json({
+      registered: -8, // -8 means could not send user verification mail
+    });
+  }
+  console.log("OTP: " + otp);
+
+  // getOTP("test user", "af@lfaoinci.com");
   let res = await run_query(
     "SELECT * from public.add_temp_user($1, $2, $3, $4, $5, $6, $7) as (id uuid, time timestamptz);",
     [username, student_id, batch, password_hash, email, user_type, otp],
