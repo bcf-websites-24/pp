@@ -20,7 +20,12 @@ export async function POST(req: RequestEvent): Promise<Response> {
   if (puzzle_id === undefined || puzzle_id === null) {
     return error(422);
   }
-  console.log("starting deletion of puzzle");
+
+  let img_url_query = await run_query(
+    "select p.img_url from public.puzzles p where p.id = $1;",
+    [puzzle_id]
+  );
+
   let res = await run_query(
     "SELECT * from public.delete_puzzle($1) as (success integer);",
     [puzzle_id],
@@ -36,18 +41,13 @@ export async function POST(req: RequestEvent): Promise<Response> {
       );
       return error(500);
     }
-    console.log("Deleted puzzle, now deleleting file");
-    let img_url_query = await run_query(
-      "select p.img_url from public.puzzles p where p.id = $1;",
-      [puzzle_id]
-    );
 
-    if (img_url_query && img_url_query.rows[0]) {
+    if (img_url_query && img_url_query.rows[0].img_url) {
       try {
         await get(s3_store).send(
           new DeleteObjectCommand({
             Bucket: STORAGE_BUCKET_NAME,
-            Key: `puzzle/${img_url_query.rows[0]}`,
+            Key: `puzzle/${img_url_query.rows[0].img_url}`,
           })
         );
       } catch (err) {
@@ -57,7 +57,7 @@ export async function POST(req: RequestEvent): Promise<Response> {
         );
       }
     }
-    console.log("successfully deleted file");
+
     return json({
       success: res.rows[0].success,
     });
