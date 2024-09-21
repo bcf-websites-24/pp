@@ -10,13 +10,13 @@ import { goto } from "$app/navigation";
 export const username_pattern = /^\w{4,32}$/;
 export const student_id_pattern = /^\d{7}$/;
 
-export class AdminPuzzleItem {
-  public id: string = "";
-  public loaded = false;
-  public level = -1;
-  public answer = "";
-  public img_url = "";
-  public img_data = "";
+export type AdminPuzzleItem = {
+  id: string;
+  loaded: boolean;
+  level: number;
+  answer: string;
+  img_url: string;
+  img_data?: string;
 }
 
 export class AdminMemeItem {
