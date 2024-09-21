@@ -1,6 +1,8 @@
 <script lang="ts">
-  import { goto } from "$app/navigation";
-  import { AdminPuzzleItem, handle_unauthorized_admin } from "$lib/helpers";
+  import {
+    type AdminPuzzleItem,
+    handle_unauthorized_admin,
+  } from "$lib/helpers";
   import { fade, slide } from "svelte/transition";
   import { onMount } from "svelte";
   import {
@@ -39,37 +41,13 @@
               height: target_height + "px",
             },
           ],
-          250
+          250,
         )
         .play();
     }
   }
 
-  function load_puzzle_img(url: string): void {
-    if (puzzle.img_data.length === 0) {
-      img_loading = true;
-
-      fetch("/api/admin/puzzle/get_image", {
-        method: "POST",
-        body: JSON.stringify({
-          url: url,
-        }),
-      }).then(async (response: Response): Promise<void> => {
-        if (response.status === 200) {
-          const response_blob = await response.blob();
-          puzzle.img_data = URL.createObjectURL(response_blob);
-          img_loading = false;
-        } else if (response.status === 401) {
-          handle_unauthorized_admin();
-        } else if (response.status === 500) {
-          $server_error_toast_store.show();
-        }
-      });
-    }
-  }
-
   function load_puzzle(puzzle: AdminPuzzleItem): void {
-    load_puzzle_img(puzzle.img_url);
     init_animation();
   }
 
@@ -80,7 +58,7 @@
     if (edit_puzzle_files) {
       file = edit_puzzle_files.item(0) as File;
     } else {
-      file = await (await fetch(puzzle.img_data)).blob();
+      file = await (await fetch(puzzle.img_data ?? "")).blob();
     }
 
     const form_data = new FormData();
@@ -176,7 +154,7 @@
               height: "0",
             },
           ],
-          250
+          250,
         );
 
         animation.onfinish = () => {
@@ -204,20 +182,13 @@
 <li bind:this={item_elem} class="list-group-item p-0">
   <div class="py-2">
     <div class="d-flex flex-wrap align-items-start px-1">
-      {#if img_loading}
-        <div class="placeholder-glow">
-          <span class="puzzle-image rounded bg-secondary placeholder me-2"
-          ></span>
-        </div>
-      {:else}
-        <a href={puzzle.img_data} target="_blank" in:fade={{ duration: 250 }}>
-          <img
-            src={puzzle.img_data}
-            class="puzzle-image rounded me-2"
-            alt="puzzle-img"
-          />
-        </a>
-      {/if}
+      <a href={puzzle.img_url} target="_blank" in:fade={{ duration: 250 }}>
+        <img
+          src={puzzle.img_url}
+          class="puzzle-image rounded me-2"
+          alt="puzzle-img"
+        />
+      </a>
 
       <div class="flex-fill">
         <div>

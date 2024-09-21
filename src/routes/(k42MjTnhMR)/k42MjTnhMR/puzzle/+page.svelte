@@ -7,7 +7,11 @@
   } from "$lib/stores";
   import { onMount } from "svelte";
   import PuzzleItem from "$lib/components/admin/puzzle-item.svelte";
-  import { AdminPuzzleItem, handle_unauthorized_admin } from "$lib/helpers";
+  import {
+    type AdminPuzzleItem,
+    handle_unauthorized_admin,
+  } from "$lib/helpers";
+  import { PUBLIC_STORAGE_CDN_ENDPOINT } from "$env/static/public";
 
   export let data: any;
   let puzzle_submitting = false;
@@ -42,8 +46,7 @@
           loaded: false,
           level: response_json.puzzle_level,
           answer: response_json.ans,
-          img_url: response_json.img_url,
-          img_data: "",
+          img_url: `${PUBLIC_STORAGE_CDN_ENDPOINT}/puzzle/${response_json.img_url}`,
         };
         let put_in = puzzles.length;
 
@@ -84,8 +87,7 @@
           loaded: true,
           level: data.puzzles[i].f_puzzle_level,
           answer: data.puzzles[i].f_ans,
-          img_url: data.puzzles[i].f_img_url,
-          img_data: "",
+          img_url: `${PUBLIC_STORAGE_CDN_ENDPOINT}/puzzle/${data.puzzles[i].f_img_url}`,
         };
       }
 
