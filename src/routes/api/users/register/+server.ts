@@ -135,8 +135,17 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
 
   // getOTP("test user", "af@lfaoinci.com");
   let res = await run_query(
-    "SELECT * from public.add_temp_user($1, $2, $3, $4, $5, $6, $7) as (id uuid, time timestamptz);",
-    [username, student_id, batch, password_hash, email, user_type, otp],
+    "SELECT * from public.add_temp_user($1, $2, $3, $4, $5, $6, $7, $8) as (id uuid, time timestamptz);",
+    [
+      username,
+      student_id,
+      batch,
+      password_hash,
+      email,
+      user_type,
+      otp,
+      request_event.getClientAddress(),
+    ],
     request_event
   );
 
