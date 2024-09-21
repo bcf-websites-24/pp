@@ -1,5 +1,5 @@
 <script lang="ts">
-  import "$lib/style.scss";
+  import "$lib/styles/global.scss";
   import {
     correct_answer_toast_store,
     fail_toast_store,
@@ -62,13 +62,13 @@
     $password_unmatched_toast_store = new Toast(password_unmatched_toast_elem);
     $banned_toast_store = new Toast(banned_toast_elem);
     $student_id_misformation_toast_store = new Toast(
-      student_id_misformation_toast_elem
+      student_id_misformation_toast_elem,
     );
     $roll_out_of_range_toast_store = new Toast(roll_out_of_range_toast_elem);
     $improper_username_toast_store = new Toast(improper_username_toast_elem);
     $invalid_email_toast_store = new Toast(invalid_email_toast_elem);
     $duplicate_username_student_id_toast_store = new Toast(
-      duplicate_username_student_id_toast_elem
+      duplicate_username_student_id_toast_elem,
     );
     $mail_verification_failed_store = new Toast(mail_verification_failed_elem);
     $duplicate_puzzle_level_store = new Toast(duplicate_puzzle_level_elem);
@@ -76,7 +76,7 @@
     $otp_mismatch_toast_store = new Toast(otp_mismatch_toast_elem);
     $Invalid_otp_user_toast_store = new Toast(Invalid_otp_user_toast_elem);
     $otp_time_limit_over_toast_store = new Toast(
-      otp_time_limit_over_toast_elem
+      otp_time_limit_over_toast_elem,
     );
     mounted = true;
   });

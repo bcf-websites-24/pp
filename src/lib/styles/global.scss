@@ -5,6 +5,7 @@ $table-color: $pp-black;
 $body-color: $pp-black;
 
 @import "../node_modules/bootstrap/scss/bootstrap.scss";
+@import "./switch.scss";
 
 body {
   background-color: #efefef;

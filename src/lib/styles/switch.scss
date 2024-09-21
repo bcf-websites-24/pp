@@ -1,0 +1,33 @@
+.form-switch-input {
+  appearance: none;
+  background-color: rgba($secondary, $alpha: 0.5);
+  width: 2.5rem;
+  height: 1.5rem;
+  border-radius: $border-radius-pill;
+  cursor: pointer;
+  transition: all 250ms ease-in-out;
+}
+
+.form-switch-input:checked {
+  background-color: $primary;
+}
+
+.form-switch-input::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  translate: 0.125rem 0.125rem;
+  background-color: white;
+  border-radius: 50%;
+  height: 1.25rem;
+  width: 1.25rem;
+  transition: all 250ms ease-in-out;
+}
+
+.form-switch-input:hover::after {
+  background-color: mix(white, black, 99%);
+}
+
+.form-switch-input:checked::after {
+  translate: 1.125rem 0.125rem;
+}
