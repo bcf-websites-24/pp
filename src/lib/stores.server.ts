@@ -41,7 +41,7 @@ if (process.env.LOCAL_HOSTED_RUNTIME) {
   );
 }
 
-let other_error_logger = new winston.Logger({
+let other_error_logger = winston.createLogger({
   level: "info", // lowest allowed logger level
   format: winston.format.combine(
     winston.format.errors({ stack: true }),
@@ -51,7 +51,7 @@ let other_error_logger = new winston.Logger({
   transports: other_error_transports,
 });
 
-let db_error_logger = new winston.Logger({
+let db_error_logger = winston.createLogger({
   level: "info", // lowest allowed logger level
   format: winston.format.combine(
     winston.format.errors({ stack: true }),
