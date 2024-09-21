@@ -38,7 +38,7 @@ jobs:
           touch .env
           echo LOCAL_HOSTED_RUNTIME=false >> .env
           cat .env
-          
+
       # Install doctl.
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
