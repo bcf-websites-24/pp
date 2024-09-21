@@ -113,7 +113,6 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
       registered: -8, // -8 means could not send user verification mail
     });
   }
-  console.log("OTP: " + otp);
 
   // getOTP("test user", "af@lfaoinci.com");
   let res = await run_query(
