@@ -24,6 +24,7 @@ vite.config.ts.timestamp-*
 *.log
 *.log.gz
 *.json
+*.json.gz
 
 # bucket
 /bucket

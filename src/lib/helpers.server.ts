@@ -18,12 +18,16 @@ export function make_user_cookie(cookies: Cookies, token: string): void {
   });
 }
 
-export function make_otp_cookie(cookies: Cookies, token: string, expire: Date): void {
+export function make_otp_cookie(
+  cookies: Cookies,
+  token: string,
+  expire: Date
+): void {
   cookies.set("pp-otp-jwt", token, {
     path: "/",
     secure: true,
     httpOnly: true,
-    expires: expire
+    expires: expire,
   });
 }
 
@@ -53,7 +57,7 @@ export function get_user_id(cookies: Cookies): string | null {
 
     cookies.set("pp-jwt", token, {
       path: "/",
-      secure: false,
+      secure: true,
       httpOnly: true,
       expires: expire_date,
     });
@@ -92,7 +96,7 @@ export function is_valid_admin(cookies: Cookies): boolean {
 
     cookies.set("pp-admin-jwt", token, {
       path: "/",
-      secure: false,
+      secure: true,
       httpOnly: true,
       expires: expire_date,
     });
@@ -138,9 +142,9 @@ export async function is_user_banned(user_id: string) {
     ) {
       get(other_error_logger_store).error(
         "\nError parsing db function result at is_user_banned() with user id: " +
-        user_id +
-        ".\n" +
-        res
+          user_id +
+          ".\n" +
+          res
       );
       return false;
     }
