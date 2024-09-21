@@ -84,7 +84,10 @@ export async function POST(req: RequestEvent): Promise<Response> {
         })
       );
     } catch (err) {
-      console.log(err);
+      get(other_error_logger_store).error(
+        "Failure uploading puzzle file for newly added puzzle",
+        err
+      );
 
       return error(500);
     }
@@ -181,7 +184,10 @@ export async function POST(req: RequestEvent): Promise<Response> {
           })
         );
       } catch (err) {
-        console.log(err);
+        get(other_error_logger_store).error(
+          "Failure uploading puzzle file for updated puzzle",
+          err
+        );
 
         return error(500);
       }
