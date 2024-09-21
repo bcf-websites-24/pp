@@ -3,6 +3,8 @@ import argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import { make_admin_cookie } from "$lib/helpers.server";
 import { JWT_SECRET, ADMIN_PWD_HASH, ADMIN_JWT_ID } from "$env/static/private";
+import { get } from "svelte/store";
+import { other_error_logger_store } from "$lib/stores.server";
 
 export async function POST(request_event: RequestEvent): Promise<Response> {
   const request: Request = request_event.request;
@@ -13,16 +15,18 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
     return error(422);
   }
 
-  console.log(
-    "===========================================================\nADMIN_PWD_HASH: ",
-    ADMIN_PWD_HASH,
-    "\n===========================================================\n"
-  );
-
-  if (!(await argon2.verify(ADMIN_PWD_HASH, password))) {
-    return json({
-      login: -2, // password mismatch
-    });
+  try {
+    if (!(await argon2.verify(ADMIN_PWD_HASH, password))) {
+      return json({
+        login: -2, // password mismatch
+      });
+    }
+  } catch (err) {
+    get(other_error_logger_store).error(
+      "Error while verifying hash in api/admin/login",
+      err
+    );
+    return error(500);
   }
 
   const token: string = jwt.sign(
