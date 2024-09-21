@@ -1,5 +1,5 @@
 <script lang="ts">
-  import "$lib/style.scss";
+  import "$lib/styles/global.scss";
   import { admin_logged_in_state, server_error_toast_store } from "$lib/stores";
   import { goto } from "$app/navigation";
   import { handle_unauthorized_admin } from "$lib/helpers";

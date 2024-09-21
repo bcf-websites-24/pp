@@ -11,6 +11,8 @@
     username_state,
   } from "$lib/stores";
   import type { Page } from "@sveltejs/kit";
+  import { cubicInOut } from "svelte/easing";
+  import { tweened } from "svelte/motion";
 
   type Stat = {
     rank: number;
@@ -28,8 +30,22 @@
   let current_page = 0;
   let next_disabled = true;
   let prev_disabled = true;
+  let shomiti_on = false;
+  let shomiti_intensity = tweened(0, {
+    duration: 250,
+    easing: cubicInOut,
+  });
 
   $: load_page($page);
+  $: set_shomiti_intensity(shomiti_on);
+
+  function set_shomiti_intensity(checked: boolean): void {
+    if (checked) {
+      $shomiti_intensity = 1;
+    } else {
+      $shomiti_intensity = 0;
+    }
+  }
 
   function load_page(page: Page<Record<string, string>, string | null>): void {
     if (page.data.details !== null && page.data.details !== undefined) {
@@ -150,6 +166,14 @@
   <Leaderboard />
   <p class="fs-3 fw-semibold text-center">Leaderboard</p>
   <div class="card card-body border-0 shadow-sm mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <p class="m-0">Show Somiti Status</p>
+      <input
+        class="form-switch-input"
+        type="checkbox"
+        bind:checked={shomiti_on}
+      />
+    </div>
     <div class="table-responsive">
       <table class="table p-2 m-0">
         <thead class="text-nowrap">
@@ -164,19 +188,19 @@
           {#each players as player}
             <tr>
               <th
-                style={`background-color: rgb(255, ${255.0 - player.somiti_score * 127.5}, ${255.0 - player.somiti_score * 127.5}); !important`}
+                style={`background-color: rgb(255, ${255.0 - player.somiti_score * $shomiti_intensity * 127.5}, ${255.0 - player.somiti_score * $shomiti_intensity * 127.5}); !important`}
                 scope="row">{player.rank}</th
               >
               <td
-                style={`background-color: rgb(255, ${255.0 - player.somiti_score * 127.5}, ${255.0 - player.somiti_score * 127.5}); !important`}
+                style={`background-color: rgb(255, ${255.0 - player.somiti_score * $shomiti_intensity * 127.5}, ${255.0 - player.somiti_score * $shomiti_intensity * 127.5}); !important`}
                 >{player.username}</td
               >
               <td
-                style={`background-color: rgb(255, ${255.0 - player.somiti_score * 127.5}, ${255.0 - player.somiti_score * 127.5}); !important`}
+                style={`background-color: rgb(255, ${255.0 - player.somiti_score * $shomiti_intensity * 127.5}, ${255.0 - player.somiti_score * $shomiti_intensity * 127.5}); !important`}
                 >{player.batch}</td
               >
               <td
-                style={`background-color: rgb(255, ${255.0 - player.somiti_score * 127.5}, ${255.0 - player.somiti_score * 127.5}); !important`}
+                style={`background-color: rgb(255, ${255.0 - player.somiti_score * $shomiti_intensity * 127.5}, ${255.0 - player.somiti_score * $shomiti_intensity * 127.5}); !important`}
                 >{player.current_level}</td
               >
             </tr>
