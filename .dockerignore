@@ -15,5 +15,5 @@ README.md
 node_modules
 build
 package
-**/.env
+# **/.env
 # .env.local is necessary
