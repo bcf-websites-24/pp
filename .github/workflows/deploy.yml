@@ -32,7 +32,12 @@ jobs:
           echo MAIL_OTP_ENDPOINT=${{ secrets.MAIL_OTP_ENDPOINT }} >> .env.local
           echo MAIL_API_KEY=${{ secrets.MAIL_API_KEY }} >> .env.local
           cat .env.local
-
+          
+      - name: Create .env file
+        run: |
+          touch .env
+          echo LOCAL_HOSTED_RUNTIME=false >> .env
+          cat .env
       # Install doctl.
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
