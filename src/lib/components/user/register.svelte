@@ -64,6 +64,10 @@
     easing: cubicInOut,
   });
 
+  function on_confirm_password_update(event: Event): void {
+    (event.target as HTMLInputElement).setCustomValidity("");
+  }
+
   function restart() {
     state = 0;
     $translate = -(width / sections) * state;
@@ -87,8 +91,9 @@
     if (state === 2) {
       if (register_password !== register_confirm_password) {
         register_confirm_password_elem.setCustomValidity(
-          "Password did not match"
+          "Password did not match",
         );
+        register_confirm_password_elem.reportValidity();
 
         return;
       }
@@ -269,6 +274,7 @@
         <input
           bind:value={register_confirm_password}
           bind:this={register_confirm_password_elem}
+          on:input={on_confirm_password_update}
           type="password"
           class="form-control"
           id="register-confirm-password"

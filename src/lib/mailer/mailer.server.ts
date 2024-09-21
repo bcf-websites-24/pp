@@ -62,19 +62,3 @@ export async function getOTP(name: string, email: string) {
     }
   }
 }
-
-// Call the function with name and email
-// getOTP("test user", "aabaabaab489@gmail.com");
-/**
- * output json format, I could not get it to fail anyway, 
- * so holding my balls and praying that errors are caught really
- * {
-      otp: 5947,
-      message: 'Email sent successfully!',
-      result: {
-        id: '5dc64873-c811-492e-b80b-74a00ee6d2af',
-        status: 'Succeeded',
-        error: null
-      }
-    }
- */
