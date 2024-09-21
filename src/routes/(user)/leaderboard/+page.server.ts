@@ -1,5 +1,6 @@
 import { run_query } from "$lib/db/index.server";
 import {
+  delete_user_cookie,
   get_user_id,
   is_object_empty,
   is_user_banned,
@@ -56,6 +57,7 @@ export async function load(load_event: ServerLoadEvent): Promise<any> {
     }
     data.details = res.rows[0];
   } else {
+    delete_user_cookie(load_event.cookies);
     return error(500);
   }
 

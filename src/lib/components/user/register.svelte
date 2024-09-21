@@ -6,7 +6,10 @@
     duplicate_username_student_id_toast_store,
     improper_username_toast_store,
     invalid_email_toast_store,
+    Invalid_otp_user_toast_store,
     mail_verification_failed_store,
+    otp_mismatch_toast_store,
+    otp_time_limit_over_toast_store,
     roll_out_of_range_toast_store,
     student_id_misformation_toast_store,
   } from "$lib/stores";
@@ -91,7 +94,7 @@
     if (state === 2) {
       if (register_password !== register_confirm_password) {
         register_confirm_password_elem.setCustomValidity(
-          "Password did not match",
+          "Password did not match"
         );
         register_confirm_password_elem.reportValidity();
 
@@ -154,6 +157,18 @@
 
           if (response_json.registered === 0) {
             goto("/", { invalidateAll: true });
+          } else if (response_json.registered === -1) {
+            $otp_mismatch_toast_store.show();
+          } else if (response_json.registered === -2) {
+            $Invalid_otp_user_toast_store.show();
+          } else if (response_json.registered === -3) {
+            $otp_time_limit_over_toast_store.show();
+          } else if (response_json.registered === -4) {
+            $Invalid_otp_user_toast_store.show();
+          } else if (response_json.registered === -5) {
+            $Invalid_otp_user_toast_store.show();
+          } else {
+            console.log("Unknown verification value.");
           }
         }
       });

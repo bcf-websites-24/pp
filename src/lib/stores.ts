@@ -28,3 +28,6 @@ export const duplicate_username_student_id_toast_store = writable(
 export const mail_verification_failed_store = writable(new Toast(""));
 export const duplicate_puzzle_level_store = writable(new Toast(""));
 export const asked_too_many_otp_toast_store = writable(new Toast(""));
+export const otp_mismatch_toast_store = writable(new Toast(""));
+export const Invalid_otp_user_toast_store = writable(new Toast(""));
+export const otp_time_limit_over_toast_store = writable(new Toast(""));

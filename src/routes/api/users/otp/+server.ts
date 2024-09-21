@@ -4,7 +4,7 @@ import {
   delete_otp_cookie,
   get_otp_id,
   get_user_id,
-  make_user_cookie
+  make_user_cookie,
 } from "$lib/helpers.server";
 import { other_error_logger_store } from "$lib/stores.server";
 import { error, json, redirect, type RequestEvent } from "@sveltejs/kit";
@@ -50,26 +50,31 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
     }
 
     if (status === -5) {
+      delete_otp_cookie(request_event.cookies);
       return json({
         registered: -5,
         message: "Username/email/student id already used",
       });
     } else if (status === -4) {
+      delete_otp_cookie(request_event.cookies);
       return json({
         registered: -4,
         message: "User already verified",
       });
     } else if (status === -3) {
+      delete_otp_cookie(request_event.cookies);
       return json({
         registered: -3,
         message: "OTP time limit exceeded",
       });
     } else if (status === -2) {
+      delete_otp_cookie(request_event.cookies);
       return json({
         registered: -2,
         message: "User doesn't exist",
       });
     } else if (status === -1) {
+      delete_otp_cookie(request_event.cookies);
       return json({
         registered: -1,
         message: "OTP mismatch",
@@ -86,7 +91,7 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
       delete_otp_cookie(request_event.cookies);
 
       return json({
-        registered: 0
+        registered: 0,
       });
     } else {
       get(other_error_logger_store).error(

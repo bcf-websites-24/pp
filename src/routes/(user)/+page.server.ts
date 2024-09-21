@@ -1,5 +1,6 @@
 import { error, redirect, type ServerLoadEvent } from "@sveltejs/kit";
 import {
+  delete_user_cookie,
   get_user_id,
   is_object_empty,
   is_user_banned,
@@ -49,8 +50,9 @@ export async function load(load_event: ServerLoadEvent): Promise<any> {
     ) {
       get(other_error_logger_store).error(
         "\nError parsing db function result at (user)/+layout.server.ts:48.\n" +
-        res
+          res
       );
+      delete_user_cookie(load_event.cookies);
       return error(500);
     }
 

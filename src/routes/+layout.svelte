@@ -17,6 +17,9 @@
     mail_verification_failed_store,
     duplicate_puzzle_level_store,
     asked_too_many_otp_toast_store,
+    otp_mismatch_toast_store,
+    Invalid_otp_user_toast_store,
+    otp_time_limit_over_toast_store,
   } from "$lib/stores";
   import { Toast } from "bootstrap";
   import { onMount } from "svelte";
@@ -45,6 +48,9 @@
   let mail_verification_failed_elem: HTMLDivElement;
   let duplicate_puzzle_level_elem: HTMLDivElement;
   let asked_too_many_otp_toast_elem: HTMLDivElement;
+  let otp_mismatch_toast_elem: HTMLDivElement;
+  let Invalid_otp_user_toast_elem: HTMLDivElement;
+  let otp_time_limit_over_toast_elem: HTMLDivElement;
 
   onMount((): void => {
     $correct_answer_toast_store = new Toast(correct_answer_toast_elem);
@@ -67,7 +73,11 @@
     $mail_verification_failed_store = new Toast(mail_verification_failed_elem);
     $duplicate_puzzle_level_store = new Toast(duplicate_puzzle_level_elem);
     $asked_too_many_otp_toast_store = new Toast(asked_too_many_otp_toast_elem);
-
+    $otp_mismatch_toast_store = new Toast(otp_mismatch_toast_elem);
+    $Invalid_otp_user_toast_store = new Toast(Invalid_otp_user_toast_elem);
+    $otp_time_limit_over_toast_store = new Toast(
+      otp_time_limit_over_toast_elem
+    );
     mounted = true;
   });
 </script>
@@ -306,6 +316,54 @@
     <div class="d-flex">
       <div class="toast-body">
         Too many OTPs requested for this email. Please use a different email
+      </div>
+      <button
+        type="button"
+        class="btn-close btn-close-white me-2 m-auto"
+        data-bs-dismiss="toast"
+        aria-label="Close"
+      ></button>
+    </div>
+  </div>
+  <div
+    bind:this={otp_mismatch_toast_elem}
+    class="toast align-items-center text-bg-danger border-0"
+  >
+    <div class="d-flex">
+      <div class="toast-body">
+        OTP verification failed, you may reset input to start again.
+      </div>
+      <button
+        type="button"
+        class="btn-close btn-close-white me-2 m-auto"
+        data-bs-dismiss="toast"
+        aria-label="Close"
+      ></button>
+    </div>
+  </div>
+  <div
+    bind:this={Invalid_otp_user_toast_elem}
+    class="toast align-items-center text-bg-danger border-0"
+  >
+    <div class="d-flex">
+      <div class="toast-body">
+        OTP submitted for invalid user, you may reset input to start again.
+      </div>
+      <button
+        type="button"
+        class="btn-close btn-close-white me-2 m-auto"
+        data-bs-dismiss="toast"
+        aria-label="Close"
+      ></button>
+    </div>
+  </div>
+  <div
+    bind:this={otp_time_limit_over_toast_elem}
+    class="toast align-items-center text-bg-danger border-0"
+  >
+    <div class="d-flex">
+      <div class="toast-body">
+        OTP time limit exceeded, you may reset input to start again.
       </div>
       <button
         type="button"
