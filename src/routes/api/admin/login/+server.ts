@@ -13,6 +13,12 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
     return error(422);
   }
 
+  console.log(
+    "===========================================================\nADMIN_PWD_HASH: ",
+    ADMIN_PWD_HASH,
+    "\n===========================================================\n"
+  );
+
   if (!(await argon2.verify(ADMIN_PWD_HASH, password))) {
     return json({
       login: -2, // password mismatch
