@@ -27,3 +27,4 @@ export const duplicate_username_student_id_toast_store = writable(
 );
 export const mail_verification_failed_store = writable(new Toast(""));
 export const duplicate_puzzle_level_store = writable(new Toast(""));
+export const asked_too_many_otp_toast_store = writable(new Toast(""));

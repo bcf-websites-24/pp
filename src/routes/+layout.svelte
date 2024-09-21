@@ -16,6 +16,7 @@
     duplicate_username_student_id_toast_store,
     mail_verification_failed_store,
     duplicate_puzzle_level_store,
+    asked_too_many_otp_toast_store,
   } from "$lib/stores";
   import { Toast } from "bootstrap";
   import { onMount } from "svelte";
@@ -43,6 +44,7 @@
   let duplicate_username_student_id_toast_elem: HTMLDivElement;
   let mail_verification_failed_elem: HTMLDivElement;
   let duplicate_puzzle_level_elem: HTMLDivElement;
+  let asked_too_many_otp_toast_elem: HTMLDivElement;
 
   onMount((): void => {
     $correct_answer_toast_store = new Toast(correct_answer_toast_elem);
@@ -64,6 +66,7 @@
     );
     $mail_verification_failed_store = new Toast(mail_verification_failed_elem);
     $duplicate_puzzle_level_store = new Toast(duplicate_puzzle_level_elem);
+    $asked_too_many_otp_toast_store = new Toast(asked_too_many_otp_toast_elem);
 
     mounted = true;
   });
@@ -287,6 +290,22 @@
     <div class="d-flex">
       <div class="toast-body">
         Puzzle with same level already exists, please check your inputs.
+      </div>
+      <button
+        type="button"
+        class="btn-close btn-close-white me-2 m-auto"
+        data-bs-dismiss="toast"
+        aria-label="Close"
+      ></button>
+    </div>
+  </div>
+  <div
+    bind:this={asked_too_many_otp_toast_elem}
+    class="toast align-items-center text-bg-danger border-0"
+  >
+    <div class="d-flex">
+      <div class="toast-body">
+        Too many OTPs requested for this email. Please use a different email
       </div>
       <button
         type="button"

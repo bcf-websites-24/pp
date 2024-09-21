@@ -19,6 +19,8 @@ import { getOTP } from "$lib/mailer/mailer.server";
  * UNUSED   -5  non cse dept
  *          -6  invalid email address
  *          -7  username or student id already exists
+ *          -8  means could not send user verification mail
+ *          -9  means user sent 15 otp requests already
  */
 export async function POST(request_event: RequestEvent): Promise<Response> {
   const request: Request = request_event.request;
@@ -101,12 +103,29 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
   // for (let i = 0; i < 4; ++i) {
   //   otp += Math.floor(Math.random() * 10).toString();
   // }
+  let request_count_res = await run_query(
+    "select count(o.id) as otp_request_count from public.otp o where o.email = $1;",
+    [email]
+  );
+
+  if (!request_count_res) {
+    get(other_error_logger_store).error(
+      "\nFailed to count user's previous request for OTP verification at api/users/register:111.\n"
+    );
+    return error(500);
+  } else {
+    if (request_count_res.rows[0].otp_request_count > 15) {
+      return json({
+        registered: -9, // -9  means user sent 15 otp requests already
+      });
+    }
+  }
 
   try {
     otp = await getOTP(username, email);
   } catch (err) {
     get(other_error_logger_store).error(
-      "\nFailed to send user mail for OTP verification at api/users/register:109.\n",
+      "\nFailed to send user mail for OTP verification at api/users/register:119.\n",
       err
     );
     return json({

@@ -2,6 +2,7 @@
   import { goto } from "$app/navigation";
   import { student_id_pattern, username_pattern } from "$lib/helpers";
   import {
+    asked_too_many_otp_toast_store,
     duplicate_username_student_id_toast_store,
     improper_username_toast_store,
     invalid_email_toast_store,
@@ -121,6 +122,8 @@
               $duplicate_username_student_id_toast_store.show();
             } else if (response_json.registered === -8) {
               $mail_verification_failed_store.show();
+            } else if (response_json.registered === -9) {
+              $asked_too_many_otp_toast_store.show();
             } else {
               console.error("Unknown registered value");
             }
