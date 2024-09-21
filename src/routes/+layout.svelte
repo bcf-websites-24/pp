@@ -15,6 +15,7 @@
     invalid_email_toast_store,
     duplicate_username_student_id_toast_store,
     mail_verification_failed_store,
+    duplicate_puzzle_level_store,
   } from "$lib/stores";
   import { Toast } from "bootstrap";
   import { onMount } from "svelte";
@@ -41,6 +42,7 @@
   let invalid_email_toast_elem: HTMLDivElement;
   let duplicate_username_student_id_toast_elem: HTMLDivElement;
   let mail_verification_failed_elem: HTMLDivElement;
+  let duplicate_puzzle_level_elem: HTMLDivElement;
 
   onMount((): void => {
     $correct_answer_toast_store = new Toast(correct_answer_toast_elem);
@@ -61,6 +63,7 @@
       duplicate_username_student_id_toast_elem
     );
     $mail_verification_failed_store = new Toast(mail_verification_failed_elem);
+    $duplicate_puzzle_level_store = new Toast(duplicate_puzzle_level_elem);
 
     mounted = true;
   });
@@ -268,6 +271,22 @@
     <div class="d-flex">
       <div class="toast-body">
         Failed to send verification mail, please check your mail address.
+      </div>
+      <button
+        type="button"
+        class="btn-close btn-close-white me-2 m-auto"
+        data-bs-dismiss="toast"
+        aria-label="Close"
+      ></button>
+    </div>
+  </div>
+  <div
+    bind:this={duplicate_puzzle_level_elem}
+    class="toast align-items-center text-bg-danger border-0"
+  >
+    <div class="d-flex">
+      <div class="toast-body">
+        Puzzle with same level already exists, please check your inputs.
       </div>
       <button
         type="button"

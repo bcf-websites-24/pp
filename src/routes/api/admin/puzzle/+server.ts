@@ -236,5 +236,11 @@ export async function POST(req: RequestEvent): Promise<Response> {
     return error(500);
   }
 
+  if (res.rows[0].id === null) {
+    return json({
+      duplicate_puzzle_level: true,
+    });
+  }
+
   return json(res.rows[0]);
 }

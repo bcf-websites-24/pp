@@ -1,6 +1,7 @@
 <script lang="ts">
   import {
     admin_logged_in_state,
+    duplicate_puzzle_level_store,
     fail_toast_store,
     server_error_toast_store,
     success_toast_store,
@@ -34,9 +35,15 @@
       body: form_data,
     }).then(async (response: Response): Promise<void> => {
       if (response.status === 200) {
-        $success_toast_store.show();
-
         const response_json = await response.json();
+
+        if (response_json.duplicate_puzzle_level === true) {
+          puzzle_submitting = false;
+          $duplicate_puzzle_level_store.show();
+          return;
+        }
+
+        $success_toast_store.show();
         const new_puzzle: AdminPuzzleItem = {
           id: response_json.id,
           loaded: false,
