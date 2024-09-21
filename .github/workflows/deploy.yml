@@ -20,17 +20,7 @@ jobs:
       - name: Create .env.local file
         run: |
           touch .env.local
-          echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> .env.local
-          echo ADMIN_PWD_HASH=\'${{ secrets.ADMIN_PWD_HASH }}\' >> .env.local
-          echo ADMIN_JWT_ID=${{ secrets.ADMIN_JWT_ID }} >> .env.local
-          echo DB_CONN_STRING=\'${{ secrets.DB_CONN_STRING }}\' >> .env.local
-          echo STORAGE_BUCKET_NAME=${{ secrets.STORAGE_BUCKET_NAME }} >> .env.local
-          echo PUBLIC_STORAGE_CDN_ENDPOINT=\'${{ secrets.PUBLIC_STORAGE_CDN_ENDPOINT }}\' >> .env.local
-          echo STORAGE_ENDPOINT=\'${{ secrets.STORAGE_ENDPOINT }}\' >> .env.local
-          echo STORAGE_ACCESS_KEY=${{ secrets.STORAGE_ACCESS_KEY }} >> .env.local
-          echo STORAGE_SECRET=${{ secrets.STORAGE_SECRET }} >> .env.local
-          echo MAIL_OTP_ENDPOINT=${{ secrets.MAIL_OTP_ENDPOINT }} >> .env.local
-          echo MAIL_API_KEY=${{ secrets.MAIL_API_KEY }} >> .env.local
+          echo ${{ secrets.ENV_LOCAL}} | base64 -d >> .env.local
           cat .env.local
           
       - name: Create .env file
@@ -38,7 +28,7 @@ jobs:
           touch .env
           echo LOCAL_HOSTED_RUNTIME=false >> .env
           cat .env
-          
+
       # Install doctl.
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
