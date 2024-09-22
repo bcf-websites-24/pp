@@ -15,6 +15,7 @@ export function make_user_cookie(cookies: Cookies, token: string): void {
     secure: true,
     httpOnly: true,
     expires: expire_date,
+    sameSite: "strict",
   });
 }
 
@@ -40,6 +41,7 @@ export function make_admin_cookie(cookies: Cookies, token: string) {
     secure: true,
     httpOnly: true,
     expires: expire_date,
+    sameSite: "strict",
   });
 }
 
@@ -60,6 +62,7 @@ export function get_user_id(cookies: Cookies): string | null {
       secure: true,
       httpOnly: true,
       expires: expire_date,
+      sameSite: "strict",
     });
 
     return (jwt.verify(token, JWT_SECRET) as any).id;
@@ -99,6 +102,7 @@ export function is_valid_admin(cookies: Cookies): boolean {
       secure: true,
       httpOnly: true,
       expires: expire_date,
+      sameSite: "strict",
     });
 
     return (jwt.verify(token, JWT_SECRET) as any).id === ADMIN_JWT_ID;
