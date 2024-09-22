@@ -98,11 +98,39 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
     });
   }
 
+  let duplication_check_query = await run_query(
+    `
+    select * from
+    public.is_duplicate($1, $2, $3);
+    `,
+    [username, email, student_id]
+  );
+
+  if (!duplication_check_query) {
+    get(other_error_logger_store).error(
+      "\nFailed to verify duplication at api/users/register:111.\n"
+    );
+    return error(500);
+  } else {
+    if (duplication_check_query.rows[0].is_duplicate === 1) {
+      return json({
+        // username already exists
+        registered: -7,
+      });
+    } else if (duplication_check_query.rows[0].is_duplicate === 2) {
+      return json({
+        // email already exists
+        registered: -10,
+      });
+    } else if (duplication_check_query.rows[0].is_duplicate === 3) {
+      return json({
+        // student_id already exists
+        registered: -11,
+      });
+    }
+  }
   let otp = "";
 
-  // for (let i = 0; i < 4; ++i) {
-  //   otp += Math.floor(Math.random() * 10).toString();
-  // }
   let request_count_res = await run_query(
     "select count(o.id) as otp_request_count from public.otp o where o.email = $1;",
     [email]
@@ -110,7 +138,7 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
 
   if (!request_count_res) {
     get(other_error_logger_store).error(
-      "\nFailed to count user's previous request for OTP verification at api/users/register:111.\n"
+      "\nFailed to count user's previous request for OTP verification at api/users/register:141.\n"
     );
     return error(500);
   } else {
@@ -125,7 +153,7 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
     otp = await getOTP(username, email);
   } catch (err) {
     get(other_error_logger_store).error(
-      "\nFailed to send user mail for OTP verification at api/users/register:119.\n",
+      "\nFailed to send user mail for OTP verification at api/users/register:156.\n",
       err
     );
     return json({
@@ -155,16 +183,9 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
       (res.rowCount !== 0 && is_object_empty(res.rows[0]) !== false)
     ) {
       get(other_error_logger_store).error(
-        "\nError parsing db function result at api/users/register:121.\n" + res
+        "\nError parsing db function result at api/users/register:189.\n" + res
       );
       return error(500);
-    }
-
-    if (res.rows[0].id === null) {
-      return json({
-        // username or student_id already exists
-        registered: -7,
-      });
     }
 
     const token: string = jwt.sign(
