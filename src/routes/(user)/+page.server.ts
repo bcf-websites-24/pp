@@ -46,14 +46,16 @@ export async function load(load_event: ServerLoadEvent): Promise<any> {
   if (res) {
     if (
       res.rowCount === 0 ||
-      (res.rowCount !== 0 && is_object_empty(res.rows[0]) !== false)
+      (res.rowCount !== 0 && (is_object_empty(res.rows[0]) !== false || res.rows[0]["uid"] === null))
     ) {
       get(other_error_logger_store).error(
-        "\nError parsing db function result at (user)/+layout.server.ts:48.\n" +
-          res
+        "\nError parsing db function result at (user)/+layout.server.ts:52.\n" +
+        res
       );
+
       delete_user_cookie(load_event.cookies);
-      return error(500);
+
+      return redirect(303, "/login");
     }
 
     return {
