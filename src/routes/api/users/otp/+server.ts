@@ -49,11 +49,23 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
       return error(500);
     }
 
-    if (status === -5) {
+    if (status === -7) {
+      delete_otp_cookie(request_event.cookies);
+      return json({
+        registered: -7,
+        message: "Email already used",
+      });
+    } else if (status === -6) {
+      delete_otp_cookie(request_event.cookies);
+      return json({
+        registered: -6,
+        message: "Student ID already used",
+      });
+    } else if (status === -5) {
       delete_otp_cookie(request_event.cookies);
       return json({
         registered: -5,
-        message: "Username/email/student id already used",
+        message: "Username already used",
       });
     } else if (status === -4) {
       delete_otp_cookie(request_event.cookies);

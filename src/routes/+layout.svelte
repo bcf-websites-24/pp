@@ -20,6 +20,12 @@
     otp_mismatch_toast_store,
     Invalid_otp_user_toast_store,
     otp_time_limit_over_toast_store,
+    otp_user_id_mail_exists_toast_store,
+    otp_user_nonexistent_toast_store,
+    otp_user_already_verified_toast_store,
+    otp_username_exists_toast_store,
+    otp_student_id_exists_toast_store,
+    otp_mail_exists_toast_store,
   } from "$lib/stores";
   import { Toast } from "bootstrap";
   import { onMount } from "svelte";
@@ -51,6 +57,12 @@
   let otp_mismatch_toast_elem: HTMLDivElement;
   let Invalid_otp_user_toast_elem: HTMLDivElement;
   let otp_time_limit_over_toast_elem: HTMLDivElement;
+  let otp_user_id_mail_exists_toast_elem: HTMLDivElement;
+  let otp_user_nonexistent_toast_elem: HTMLDivElement;
+  let otp_user_already_verified_toast_elem: HTMLDivElement;
+  let otp_username_exists_toast_elem: HTMLDivElement;
+  let otp_student_id_exists_toast_elem: HTMLDivElement;
+  let otp_mail_exists_toast_elem: HTMLDivElement;
 
   onMount((): void => {
     $correct_answer_toast_store = new Toast(correct_answer_toast_elem);
@@ -62,13 +74,13 @@
     $password_unmatched_toast_store = new Toast(password_unmatched_toast_elem);
     $banned_toast_store = new Toast(banned_toast_elem);
     $student_id_misformation_toast_store = new Toast(
-      student_id_misformation_toast_elem,
+      student_id_misformation_toast_elem
     );
     $roll_out_of_range_toast_store = new Toast(roll_out_of_range_toast_elem);
     $improper_username_toast_store = new Toast(improper_username_toast_elem);
     $invalid_email_toast_store = new Toast(invalid_email_toast_elem);
     $duplicate_username_student_id_toast_store = new Toast(
-      duplicate_username_student_id_toast_elem,
+      duplicate_username_student_id_toast_elem
     );
     $mail_verification_failed_store = new Toast(mail_verification_failed_elem);
     $duplicate_puzzle_level_store = new Toast(duplicate_puzzle_level_elem);
@@ -76,8 +88,25 @@
     $otp_mismatch_toast_store = new Toast(otp_mismatch_toast_elem);
     $Invalid_otp_user_toast_store = new Toast(Invalid_otp_user_toast_elem);
     $otp_time_limit_over_toast_store = new Toast(
-      otp_time_limit_over_toast_elem,
+      otp_time_limit_over_toast_elem
     );
+    $otp_user_id_mail_exists_toast_store = new Toast(
+      otp_user_already_verified_toast_elem
+    );
+    $otp_user_nonexistent_toast_store = new Toast(
+      otp_user_nonexistent_toast_elem
+    );
+    $otp_user_already_verified_toast_store = new Toast(
+      otp_user_already_verified_toast_elem
+    );
+    $otp_username_exists_toast_store = new Toast(
+      otp_username_exists_toast_elem
+    );
+    $otp_student_id_exists_toast_store = new Toast(
+      otp_student_id_exists_toast_elem
+    );
+    $otp_mail_exists_toast_store = new Toast(otp_mail_exists_toast_elem);
+
     mounted = true;
   });
 </script>
@@ -268,7 +297,7 @@
     class="toast align-items-center text-bg-danger border-0"
   >
     <div class="d-flex">
-      <div class="toast-body">Username or student id already in use.</div>
+      <div class="toast-body">Username already in use.</div>
       <button
         type="button"
         class="btn-close btn-close-white me-2 m-auto"
@@ -364,6 +393,104 @@
     <div class="d-flex">
       <div class="toast-body">
         OTP time limit exceeded, you may reset input to start again.
+      </div>
+      <button
+        type="button"
+        class="btn-close btn-close-white me-2 m-auto"
+        data-bs-dismiss="toast"
+        aria-label="Close"
+      ></button>
+    </div>
+  </div>
+  <div
+    bind:this={otp_user_id_mail_exists_toast_elem}
+    class="toast align-items-center text-bg-danger border-0"
+  >
+    <div class="d-flex">
+      <div class="toast-body">
+        Username/Student ID/email already in use, you may reset input to start
+        again.
+      </div>
+      <button
+        type="button"
+        class="btn-close btn-close-white me-2 m-auto"
+        data-bs-dismiss="toast"
+        aria-label="Close"
+      ></button>
+    </div>
+  </div>
+  <div
+    bind:this={otp_user_nonexistent_toast_elem}
+    class="toast align-items-center text-bg-danger border-0"
+  >
+    <div class="d-flex">
+      <div class="toast-body">
+        OTP submitted for non existent user, you may reset input to start again.
+      </div>
+      <button
+        type="button"
+        class="btn-close btn-close-white me-2 m-auto"
+        data-bs-dismiss="toast"
+        aria-label="Close"
+      ></button>
+    </div>
+  </div>
+  <div
+    bind:this={otp_user_already_verified_toast_elem}
+    class="toast align-items-center text-bg-danger border-0"
+  >
+    <div class="d-flex">
+      <div class="toast-body">
+        OTP submitted for already verified user, you may reset input to start
+        again.
+      </div>
+      <button
+        type="button"
+        class="btn-close btn-close-white me-2 m-auto"
+        data-bs-dismiss="toast"
+        aria-label="Close"
+      ></button>
+    </div>
+  </div>
+  <div
+    bind:this={otp_username_exists_toast_elem}
+    class="toast align-items-center text-bg-danger border-0"
+  >
+    <div class="d-flex">
+      <div class="toast-body">
+        Username already in use, you may reset input to start again.
+      </div>
+      <button
+        type="button"
+        class="btn-close btn-close-white me-2 m-auto"
+        data-bs-dismiss="toast"
+        aria-label="Close"
+      ></button>
+    </div>
+  </div>
+  <div
+    bind:this={otp_student_id_exists_toast_elem}
+    class="toast align-items-center text-bg-danger border-0"
+  >
+    <div class="d-flex">
+      <div class="toast-body">
+        Studnet ID already in use, you may reset input to start again.
+      </div>
+      <button
+        type="button"
+        class="btn-close btn-close-white me-2 m-auto"
+        data-bs-dismiss="toast"
+        aria-label="Close"
+      ></button>
+    </div>
+  </div>
+  <div
+    bind:this={otp_mail_exists_toast_elem}
+    class="toast align-items-center text-bg-danger border-0"
+  >
+    <div class="d-flex">
+      <div class="toast-body">
+        Email already in use, you may reset input to start again.
       </div>
       <button
         type="button"

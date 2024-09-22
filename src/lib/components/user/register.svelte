@@ -6,10 +6,14 @@
     duplicate_username_student_id_toast_store,
     improper_username_toast_store,
     invalid_email_toast_store,
-    Invalid_otp_user_toast_store,
     mail_verification_failed_store,
+    otp_mail_exists_toast_store,
     otp_mismatch_toast_store,
+    otp_student_id_exists_toast_store,
     otp_time_limit_over_toast_store,
+    otp_user_already_verified_toast_store,
+    otp_user_nonexistent_toast_store,
+    otp_username_exists_toast_store,
     roll_out_of_range_toast_store,
     student_id_misformation_toast_store,
   } from "$lib/stores";
@@ -132,6 +136,10 @@
               $mail_verification_failed_store.show();
             } else if (response_json.registered === -9) {
               $asked_too_many_otp_toast_store.show();
+            } else if (response_json.registered === -10) {
+              $otp_mail_exists_toast_store.show();
+            } else if (response_json.registered === -11) {
+              $otp_student_id_exists_toast_store.show();
             } else {
               console.error("Unknown registered value");
             }
@@ -160,13 +168,17 @@
           } else if (response_json.registered === -1) {
             $otp_mismatch_toast_store.show();
           } else if (response_json.registered === -2) {
-            $Invalid_otp_user_toast_store.show();
+            $otp_user_nonexistent_toast_store.show();
           } else if (response_json.registered === -3) {
             $otp_time_limit_over_toast_store.show();
           } else if (response_json.registered === -4) {
-            $Invalid_otp_user_toast_store.show();
+            $otp_user_already_verified_toast_store.show();
           } else if (response_json.registered === -5) {
-            $Invalid_otp_user_toast_store.show();
+            $otp_username_exists_toast_store.show();
+          } else if (response_json.registered === -6) {
+            $otp_student_id_exists_toast_store.show();
+          } else if (response_json.registered === -7) {
+            $otp_mail_exists_toast_store.show();
           } else {
             console.log("Unknown verification value.");
           }
