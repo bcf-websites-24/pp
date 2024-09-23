@@ -1,86 +1,146 @@
 import { error, json, type RequestEvent } from "@sveltejs/kit";
-import { is_object_empty } from "$lib/helpers.server";
+import {
+  get_user_id,
+  is_object_empty,
+  is_user_banned,
+} from "$lib/helpers.server";
 import { run_query } from "$lib/db/index.server";
 import { other_error_logger_store } from "$lib/stores.server";
 import { get } from "svelte/store";
-import { getOTP } from "$lib/mailer/mailer.server";
 import argon2 from "argon2";
+import type { QueryResult } from "pg";
 
 export async function POST(req: RequestEvent): Promise<Response> {
   let request_json = await req.request.json();
 
-  let given_email = request_json.email;
+  let given_is_reset: boolean = request_json.is_reset;
+  let given_new_password: string = request_json.new_password;
 
-  if (given_email === null || given_email === undefined) {
+  if (
+    given_is_reset === undefined ||
+    given_is_reset === null ||
+    given_new_password === undefined ||
+    given_new_password === null
+  ) {
     return error(422);
   }
 
-  let user_exists_query = await run_query(
-    `select * from public.users u where u.email = $1;`,
-    [given_email],
-    req
-  );
+  let given_new_pwd_hash: string = await argon2.hash(given_new_password);
 
-  if (!user_exists_query) {
-    get(other_error_logger_store).error(
-      "\nError querying user existence at api/users/pwd.\n"
-    );
-    return error(500);
-  } else {
-    if (
-      user_exists_query.rowCount === 0 ||
-      (user_exists_query.rowCount !== 0 &&
-        is_object_empty(user_exists_query.rows[0] !== false)) ||
-      user_exists_query.rows[0].id === null
-    ) {
-      return json({
-        reset: -1, // unregistered mail
-      });
-    }
+  let result: QueryResult<any>;
 
-    let pwd_reset_otp: string = "";
-    try {
-      pwd_reset_otp = await getOTP(
-        user_exists_query.rows[0].username,
-        given_email,
-        true
-      );
-    } catch (err) {
-      get(other_error_logger_store).error(
-        "\nFailed to send user mail for password reset OTP at api/users/pwd:156.\n",
-        err
-      );
-      return json({
-        reset: -2, // -2 means could not send reset password mail
-      });
-    }
+  if (given_is_reset) {
+    let given_email: string = request_json.email;
+    let given_otp: string = request_json.otp;
 
-    let hashed_reset_otp = argon2.hash(pwd_reset_otp);
+    let inputs: Array<string> = [given_email, given_otp];
 
-    let add_reset_otp_query = await run_query(
-      `insert into public.password_reset_otp (email, reset_otp) values($1, $2) returning *;`,
-      [given_email, hashed_reset_otp],
+    inputs.forEach((element) => {
+      if (element === undefined || element === null) {
+        return error(422);
+      }
+    });
+
+    let pwd_reset_query = await run_query(
+      `select * from public.update_user_pwd_otp($1, $2, $3);`,
+      [given_email, given_otp, given_new_pwd_hash],
       req
     );
 
-    if (!add_reset_otp_query) {
+    if (!pwd_reset_query) {
       return error(500);
     } else {
+      result = pwd_reset_query;
+
       if (
-        add_reset_otp_query.rowCount === 0 ||
-        (add_reset_otp_query.rowCount !== 0 &&
-          is_object_empty(add_reset_otp_query.rows[0]) !== false) ||
-        add_reset_otp_query.rows[0].id === null
+        result.rowCount === 0 ||
+        (result.rowCount !== 0 && is_object_empty(result.rows[0]) !== false)
       ) {
         get(other_error_logger_store).error(
-          "\nError parsing query result at api/users/pwd.\n" +
-            add_reset_otp_query
+          "\nError parsing password reset query result at api/users/update_pwd.\n" +
+            result
         );
         return error(500);
       }
 
       return json({
-        reset: 0, // password reset otp added successfully
+        updated: result.rows[0].update_user_pwd_otp,
+      });
+    }
+  } else {
+    let given_user_id: string | null = get_user_id(req.cookies);
+
+    if (given_user_id === null) {
+      return error(401);
+    }
+
+    if (await is_user_banned(given_user_id)) {
+      return error(403);
+    }
+
+    let given_old_password = request_json.old_password;
+    let username = request_json.username;
+
+    if (
+      given_old_password === undefined ||
+      given_old_password === null ||
+      username === undefined ||
+      username === null
+    ) {
+      return error(422);
+    }
+
+    let res = await run_query(
+      "SELECT * from public.get_uuid_hash($1);",
+      [username],
+      req
+    );
+
+    if (res) {
+      if (
+        res.rowCount === 0 ||
+        (res.rowCount !== 0 && is_object_empty(res.rows[0]) !== false)
+      ) {
+        get(other_error_logger_store).error(
+          "\nError parsing db function result at api/users/login:39.\n" + res
+        );
+        return error(500);
+      }
+
+      let id: string = res.rows[0].id;
+      let hash: string = res.rows[0].hash;
+
+      if (!(await argon2.verify(hash, given_old_password))) {
+        return json({
+          updated: -4, // old password mismatch
+        });
+      }
+    } else {
+      return error(500);
+    }
+
+    let pwd_update_query = await run_query(
+      `select * from public.update_user_pwd ($1, $2);`,
+      [given_user_id, given_new_pwd_hash],
+      req
+    );
+
+    if (!pwd_update_query) {
+      return error(500);
+    } else {
+      result = pwd_update_query;
+      if (
+        result.rowCount === 0 ||
+        (result.rowCount !== 0 && is_object_empty(result.rows[0]) !== false)
+      ) {
+        get(other_error_logger_store).error(
+          "\nError parsing password update query result at api/users/update_pwd.\n" +
+            result
+        );
+        return error(500);
+      }
+      return json({
+        updated: result.rows[0].update_user_pwd,
       });
     }
   }

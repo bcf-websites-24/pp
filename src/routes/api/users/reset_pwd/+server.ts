@@ -55,11 +55,9 @@ export async function POST(req: RequestEvent): Promise<Response> {
       });
     }
 
-    let hashed_reset_otp = argon2.hash(pwd_reset_otp);
-
     let add_reset_otp_query = await run_query(
       `insert into public.password_reset_otp (email, reset_otp) values($1, $2) returning *;`,
-      [given_email, hashed_reset_otp],
+      [given_email, pwd_reset_otp],
       req
     );
 
@@ -73,7 +71,7 @@ export async function POST(req: RequestEvent): Promise<Response> {
         add_reset_otp_query.rows[0].id === null
       ) {
         get(other_error_logger_store).error(
-          "\nError parsing query result at api/users/pwd.\n" +
+          "\nError parsing query result at api/users/reset_pwd.\n" +
             add_reset_otp_query
         );
         return error(500);
