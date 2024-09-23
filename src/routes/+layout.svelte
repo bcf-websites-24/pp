@@ -121,6 +121,20 @@
   <slot></slot>
 {/if}
 
+<div
+  bind:this={wrong_answer_toast_elem}
+  class="toast align-items-center position-fixed top-50 end-0 translate-middle-y text-bg-danger border-0"
+>
+  <div class="d-flex">
+    <div class="toast-body">Oops! Wrong answer</div>
+    <button
+      type="button"
+      class="btn-close btn-close-white me-2 m-auto"
+      data-bs-dismiss="toast"
+      aria-label="Close"
+    ></button>
+  </div>
+</div>
 <div class="toast-container position-fixed bottom-0 end-0 p-3">
   <div
     bind:this={correct_answer_toast_elem}
@@ -136,20 +150,7 @@
       ></button>
     </div>
   </div>
-  <div
-    bind:this={wrong_answer_toast_elem}
-    class="toast align-items-center text-bg-danger border-0"
-  >
-    <div class="d-flex">
-      <div class="toast-body">Oops! Wrong answer</div>
-      <button
-        type="button"
-        class="btn-close btn-close-white me-2 m-auto"
-        data-bs-dismiss="toast"
-        aria-label="Close"
-      ></button>
-    </div>
-  </div>
+
   <div
     bind:this={success_toast_elem}
     class="toast align-items-center text-bg-success border-0"

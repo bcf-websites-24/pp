@@ -24,6 +24,8 @@
 
   const PAGE_SIZE = 100;
   let players = new Array<Stat>();
+  let non_shomiti_players = new Array<Stat>();
+  let displayed_players = new Array<Stat>();
   let prev_pages = new Array<number>();
   let next_pages = new Array<number>();
   let page_count = 0;
@@ -42,8 +44,10 @@
   function set_shomiti_intensity(checked: boolean): void {
     if (checked) {
       $shomiti_intensity = 1;
+      displayed_players = players;
     } else {
       $shomiti_intensity = 0;
+      displayed_players = non_shomiti_players;
     }
   }
 
@@ -61,7 +65,7 @@
 
     players = new Array(page.data.players.length);
 
-    for (let i = 0; i < players.length; ++i) {
+    for (let i = 0, j = 0; i < players.length; ++i) {
       let batch_2digit = page.data.players[i].f_student_id
         .toString()
         .substring(0, 2);
@@ -76,6 +80,15 @@
         batch: batch_4digit,
         somiti_score: parseFloat(page.data.players[i].f_shomobay_score),
       };
+      if (players[i].somiti_score < 0.7) {
+        non_shomiti_players.push({
+          rank: ++j,
+          username: page.data.players[i].f_username,
+          current_level: parseInt(page.data.players[i].f_curr_level),
+          batch: batch_4digit,
+          somiti_score: parseFloat(page.data.players[i].f_shomobay_score),
+        });
+      }
     }
 
     page_count = Math.ceil(parseInt(page.data.metadata) / PAGE_SIZE);
@@ -167,7 +180,7 @@
   <p class="fs-3 fw-semibold text-center">Leaderboard</p>
   <div class="card card-body border-0 shadow-sm mb-4">
     <div class="d-flex justify-content-between align-items-center mb-2">
-      <p class="m-0">Show Somiti Status</p>
+      <p class="m-0">Show Somiti Users</p>
       <input
         class="form-switch-input"
         type="checkbox"
@@ -185,7 +198,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each players as player}
+          {#each displayed_players as player}
             <tr>
               <th
                 style={`background-color: rgb(255, ${255.0 - player.somiti_score * $shomiti_intensity * 127.5}, ${255.0 - player.somiti_score * $shomiti_intensity * 127.5}); !important`}
