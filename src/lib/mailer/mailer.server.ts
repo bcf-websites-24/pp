@@ -7,7 +7,11 @@ import { get } from "svelte/store";
 const delay = (ms: number | undefined) =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
-export async function getOTP(name: string, email: string) {
+export async function getOTP(
+  name: string,
+  email: string,
+  is_pwd_reset: boolean = false
+) {
   const url = MAIL_OTP_ENDPOINT; // Endpoint from environment variable
   const apiKey = MAIL_API_KEY; // API key from environment variable
 
@@ -19,6 +23,7 @@ export async function getOTP(name: string, email: string) {
   const body = JSON.stringify({
     name: name,
     email: email,
+    pwd_reset: is_pwd_reset,
   });
 
   const maxRetries = 3; // Maximum number of retry attempts
@@ -44,7 +49,7 @@ export async function getOTP(name: string, email: string) {
       attempts++;
 
       get(other_error_logger_store).error(
-        `Error sending otp verificaton mail for user: ${name}, mail: ${email}. (Attempt ${attempts}/${maxRetries}):`,
+        `Error sending otp mail for user: ${name}, mail: ${email}. (Attempt ${attempts}/${maxRetries}):`,
         error
       );
 
