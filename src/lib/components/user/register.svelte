@@ -98,7 +98,7 @@
     if (state === 2) {
       if (register_password !== register_confirm_password) {
         register_confirm_password_elem.setCustomValidity(
-          "Password did not match"
+          "Password did not match",
         );
         register_confirm_password_elem.reportValidity();
 
@@ -195,6 +195,14 @@
     height = heights[state];
 
     onformupdate();
+  }
+
+  function resend_otp(): void {
+    signing = true;
+
+    fetch("/api/users/resend").finally((): void => {
+      signing = false;
+    });
   }
 
   onMount((): void => {
@@ -341,7 +349,7 @@
       class="w-100 p-1"
       action="javascript:"
     >
-      <div class="form-floating mb-3">
+      <div class="form-floating mb-1">
         <input
           bind:value={register_otp}
           type="text"
@@ -355,6 +363,14 @@
         />
         <label for="register-password">OTP</label>
       </div>
+      <button
+        on:click={resend_otp}
+        type="button"
+        class="btn btn-link link-underline link-underline-opacity-0 p-0 mb-3"
+        disabled={signing}
+      >
+        Resend OTP
+      </button>
       <div class="d-flex justify-content-end align-items-center">
         <button
           on:click={restart}

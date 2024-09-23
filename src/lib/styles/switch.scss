@@ -15,7 +15,7 @@
 .form-switch-input::after {
   content: "";
   position: absolute;
-  z-index: 2;
+  z-index: 0;
   translate: 0.125rem 0.125rem;
   background-color: white;
   border-radius: 50%;
