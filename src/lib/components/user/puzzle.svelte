@@ -143,7 +143,11 @@
               placeholder="Answer..."
               required
             />
-            <button class="btn btn-primary" type="submit" disabled={submitting}>
+            <button
+              class="btn btn-primary z-0"
+              type="submit"
+              disabled={submitting}
+            >
               <span>Submit</span>
             </button>
           </form>
