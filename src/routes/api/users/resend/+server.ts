@@ -16,6 +16,10 @@ export async function GET(request_event: RequestEvent): Promise<Response> {
   const temp_user_id = get_otp_id(request_event.cookies);
   let username: string;
   let email: string;
+  let student_id: string;
+  let batch: number;
+  let password_hash: string;
+  let user_type: string;
 
   if (!temp_user_id) {
     return error(401);
@@ -42,6 +46,10 @@ export async function GET(request_event: RequestEvent): Promise<Response> {
     }
     username = temp_user_existence_query.rows[0].username;
     email = temp_user_existence_query.rows[0].email;
+    student_id = temp_user_existence_query.rows[0].student_id;
+    batch = temp_user_existence_query.rows[0].batch;
+    password_hash = temp_user_existence_query.rows[0].password_hash;
+    user_type = temp_user_existence_query.rows[0].user_type;
   }
 
   let otp = "";
@@ -78,8 +86,17 @@ export async function GET(request_event: RequestEvent): Promise<Response> {
 
   // getOTP("test user", "af@lfaoinci.com");
   let res = await run_query(
-    "update public.otp o set otp = $1 where o.id = $2 returning *;",
-    [otp, temp_user_id],
+    "SELECT * from public.add_temp_user($1, $2, $3, $4, $5, $6, $7, $8) as (id uuid, time timestamptz);",
+    [
+      username,
+      student_id,
+      batch,
+      password_hash,
+      email,
+      user_type,
+      otp,
+      request_event.getClientAddress(),
+    ],
     request_event
   );
 
