@@ -58,7 +58,7 @@
             $wrong_answer_toast_store.show();
             setTimeout((): void => {
               wrong_answer = false;
-            }, 3000);
+            }, 1000);
           }
 
           submitting = false;

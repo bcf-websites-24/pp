@@ -31,6 +31,7 @@
   import { onMount } from "svelte";
   import Loader from "$lib/components/loader.svelte";
 
+  const toast_delay = 1000; // milliseconds
   /**
    * ensures that all
    * toasts are loaded
@@ -64,49 +65,60 @@
   let otp_student_id_exists_toast_elem: HTMLDivElement;
   let otp_mail_exists_toast_elem: HTMLDivElement;
 
-  onMount((): void => {
-    $correct_answer_toast_store = new Toast(correct_answer_toast_elem);
-    $wrong_answer_toast_store = new Toast(wrong_answer_toast_elem);
-    $success_toast_store = new Toast(success_toast_elem);
-    $fail_toast_store = new Toast(fail_toast_elem);
-    $unauthorized_toast_store = new Toast(unauthorized_toast_elem);
-    $user_not_found_toast_store = new Toast(user_unavailable_toast_elem);
-    $password_unmatched_toast_store = new Toast(password_unmatched_toast_elem);
-    $banned_toast_store = new Toast(banned_toast_elem);
-    $student_id_misformation_toast_store = new Toast(
-      student_id_misformation_toast_elem
-    );
-    $roll_out_of_range_toast_store = new Toast(roll_out_of_range_toast_elem);
-    $improper_username_toast_store = new Toast(improper_username_toast_elem);
-    $invalid_email_toast_store = new Toast(invalid_email_toast_elem);
-    $duplicate_username_student_id_toast_store = new Toast(
-      duplicate_username_student_id_toast_elem
-    );
-    $mail_verification_failed_store = new Toast(mail_verification_failed_elem);
-    $duplicate_puzzle_level_store = new Toast(duplicate_puzzle_level_elem);
-    $asked_too_many_otp_toast_store = new Toast(asked_too_many_otp_toast_elem);
-    $otp_mismatch_toast_store = new Toast(otp_mismatch_toast_elem);
-    $Invalid_otp_user_toast_store = new Toast(Invalid_otp_user_toast_elem);
-    $otp_time_limit_over_toast_store = new Toast(
-      otp_time_limit_over_toast_elem
-    );
-    $otp_user_id_mail_exists_toast_store = new Toast(
-      otp_user_already_verified_toast_elem
-    );
-    $otp_user_nonexistent_toast_store = new Toast(
-      otp_user_nonexistent_toast_elem
-    );
-    $otp_user_already_verified_toast_store = new Toast(
-      otp_user_already_verified_toast_elem
-    );
-    $otp_username_exists_toast_store = new Toast(
-      otp_username_exists_toast_elem
-    );
-    $otp_student_id_exists_toast_store = new Toast(
-      otp_student_id_exists_toast_elem
-    );
-    $otp_mail_exists_toast_store = new Toast(otp_mail_exists_toast_elem);
+  function create_toast(elem: HTMLElement) {
+    return new Toast(elem, {
+      delay: toast_delay,
+    });
+  }
 
+  onMount((): void => {
+    $correct_answer_toast_store = create_toast(correct_answer_toast_elem);
+    $wrong_answer_toast_store = create_toast(wrong_answer_toast_elem);
+    $success_toast_store = create_toast(success_toast_elem);
+    $fail_toast_store = create_toast(fail_toast_elem);
+    $unauthorized_toast_store = create_toast(unauthorized_toast_elem);
+    $user_not_found_toast_store = create_toast(user_unavailable_toast_elem);
+    $password_unmatched_toast_store = create_toast(
+      password_unmatched_toast_elem,
+    );
+    $banned_toast_store = create_toast(banned_toast_elem);
+    $student_id_misformation_toast_store = create_toast(
+      student_id_misformation_toast_elem,
+    );
+    $roll_out_of_range_toast_store = create_toast(roll_out_of_range_toast_elem);
+    $improper_username_toast_store = create_toast(improper_username_toast_elem);
+    $invalid_email_toast_store = create_toast(invalid_email_toast_elem);
+    $duplicate_username_student_id_toast_store = create_toast(
+      duplicate_username_student_id_toast_elem,
+    );
+    $mail_verification_failed_store = create_toast(
+      mail_verification_failed_elem,
+    );
+    $duplicate_puzzle_level_store = create_toast(duplicate_puzzle_level_elem);
+    $asked_too_many_otp_toast_store = create_toast(
+      asked_too_many_otp_toast_elem,
+    );
+    $otp_mismatch_toast_store = create_toast(otp_mismatch_toast_elem);
+    $Invalid_otp_user_toast_store = create_toast(Invalid_otp_user_toast_elem);
+    $otp_time_limit_over_toast_store = create_toast(
+      otp_time_limit_over_toast_elem,
+    );
+    $otp_user_id_mail_exists_toast_store = create_toast(
+      otp_user_already_verified_toast_elem,
+    );
+    $otp_user_nonexistent_toast_store = create_toast(
+      otp_user_nonexistent_toast_elem,
+    );
+    $otp_user_already_verified_toast_store = create_toast(
+      otp_user_already_verified_toast_elem,
+    );
+    $otp_username_exists_toast_store = create_toast(
+      otp_username_exists_toast_elem,
+    );
+    $otp_student_id_exists_toast_store = create_toast(
+      otp_student_id_exists_toast_elem,
+    );
+    $otp_mail_exists_toast_store = create_toast(otp_mail_exists_toast_elem);
     mounted = true;
   });
 </script>
@@ -121,21 +133,21 @@
   <slot></slot>
 {/if}
 
-<div
-  bind:this={wrong_answer_toast_elem}
-  class="toast align-items-center position-fixed top-50 end-0 translate-middle-y text-bg-danger border-0"
->
-  <div class="d-flex">
-    <div class="toast-body">Oops! Wrong answer</div>
-    <button
-      type="button"
-      class="btn-close btn-close-white me-2 m-auto"
-      data-bs-dismiss="toast"
-      aria-label="Close"
-    ></button>
-  </div>
-</div>
 <div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div
+    bind:this={wrong_answer_toast_elem}
+    class="toast align-items-center text-bg-danger border-0"
+  >
+    <div class="d-flex">
+      <div class="toast-body">Oops! Wrong answer</div>
+      <button
+        type="button"
+        class="btn-close btn-close-white me-2 m-auto"
+        data-bs-dismiss="toast"
+        aria-label="Close"
+      ></button>
+    </div>
+  </div>
   <div
     bind:this={correct_answer_toast_elem}
     class="toast align-items-center text-bg-success border-0"
@@ -167,7 +179,7 @@
   </div>
   <div
     bind:this={fail_toast_elem}
-    class="toast align-items-center text-bg-success border-0"
+    class="toast align-items-center text-bg-danger border-0"
   >
     <div class="d-flex">
       <div class="toast-body">Failed</div>
