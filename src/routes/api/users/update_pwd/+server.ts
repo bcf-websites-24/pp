@@ -10,6 +10,8 @@ import { get } from "svelte/store";
 import argon2 from "argon2";
 import type { QueryResult } from "pg";
 
+// 0, successful, -1 otp mismatch, -2 30 min time over,-3 email not registered
+// for forgot pwd case
 export async function POST(req: RequestEvent): Promise<Response> {
   let request_json = await req.request.json();
 
@@ -63,8 +65,14 @@ export async function POST(req: RequestEvent): Promise<Response> {
         return error(500);
       }
 
+      let status: number =
+        result.rows[0].update_user_pwd_otp === 1
+          ? 0
+          : result.rows[0].update_user_pwd_otp;
+
+      // 0: successful, -1 otp mismatch, -2 30 min time over,-3 email not registered
       return json({
-        updated: result.rows[0].update_user_pwd_otp,
+        updated: status,
       });
     }
   } else {
