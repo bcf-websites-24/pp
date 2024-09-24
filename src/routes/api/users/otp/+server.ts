@@ -104,6 +104,12 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
       return json({
         registered: 0,
       });
+    } else if (status === -12) {
+      delete_otp_cookie(request_event.cookies);
+      return json({
+        registered: -12,
+        message: "Too many otp mismatches",
+      });
     } else {
       get(other_error_logger_store).error(
         "Error parsing db function result at api/users/otp:99."
