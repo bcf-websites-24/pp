@@ -11,10 +11,13 @@
     username_state,
   } from "$lib/stores";
   import type { Page } from "@sveltejs/kit";
+  import { flip } from "svelte/animate";
   import { cubicInOut } from "svelte/easing";
   import { tweened } from "svelte/motion";
+  import { blur, fade, scale, slide } from "svelte/transition";
 
   type Stat = {
+    index: number;
     rank: number;
     username: string;
     current_level: number;
@@ -46,8 +49,9 @@
       $shomiti_intensity = 1;
       displayed_players = players;
     } else {
-      $shomiti_intensity = 0;
-      displayed_players = non_shomiti_players;
+      shomiti_intensity.set(0).then((): void => {
+        displayed_players = non_shomiti_players;
+      });
     }
   }
 
@@ -65,7 +69,7 @@
 
     players = new Array(page.data.players.length);
 
-    for (let i = 0, j = 0; i < players.length; ++i) {
+    for (let i = 0; i < players.length; ++i) {
       let batch_2digit = page.data.players[i].f_student_id
         .toString()
         .substring(0, 2);
@@ -74,6 +78,7 @@
         batch_2digit > 23 ? batch_2digit + 1900 : batch_2digit + 2000;
 
       players[i] = {
+        index: i,
         rank: parseInt(page.data.players[i].f_rank),
         username: page.data.players[i].f_username,
         current_level: parseInt(page.data.players[i].f_curr_level),
@@ -82,7 +87,8 @@
       };
       if (players[i].somiti_score < 0.7) {
         non_shomiti_players.push({
-          rank: ++j,
+          index: i,
+          rank: players[i].rank,
           username: page.data.players[i].f_username,
           current_level: parseInt(page.data.players[i].f_curr_level),
           batch: batch_4digit,
@@ -198,16 +204,18 @@
           </tr>
         </thead>
         <tbody>
-          {#each displayed_players as player}
+          {#each displayed_players as player (player.index)}
             <tr>
               <th
                 style={`background-color: rgb(255, ${255.0 - player.somiti_score * $shomiti_intensity * 127.5}, ${255.0 - player.somiti_score * $shomiti_intensity * 127.5}); !important`}
                 scope="row">{player.rank}</th
               >
               <td
-                style={`background-color: rgb(255, ${255.0 - player.somiti_score * $shomiti_intensity * 127.5}, ${255.0 - player.somiti_score * $shomiti_intensity * 127.5}); !important`}
-                >{player.username}</td
+                class="text-truncate"
+                style={`max-width: 5rem; background-color: rgb(255, ${255.0 - player.somiti_score * $shomiti_intensity * 127.5}, ${255.0 - player.somiti_score * $shomiti_intensity * 127.5}); !important`}
               >
+                {player.username}
+              </td>
               <td
                 style={`background-color: rgb(255, ${255.0 - player.somiti_score * $shomiti_intensity * 127.5}, ${255.0 - player.somiti_score * $shomiti_intensity * 127.5}); !important`}
                 >{player.batch}</td

@@ -86,7 +86,6 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
         message: "User doesn't exist",
       });
     } else if (status === -1) {
-      delete_otp_cookie(request_event.cookies);
       return json({
         registered: -1,
         message: "OTP mismatch",

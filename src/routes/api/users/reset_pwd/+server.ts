@@ -4,7 +4,6 @@ import { run_query } from "$lib/db/index.server";
 import { other_error_logger_store } from "$lib/stores.server";
 import { get } from "svelte/store";
 import { getOTP } from "$lib/mailer/mailer.server";
-import argon2 from "argon2";
 
 export async function POST(req: RequestEvent): Promise<Response> {
   let request_json = await req.request.json();
@@ -72,7 +71,7 @@ export async function POST(req: RequestEvent): Promise<Response> {
       ) {
         get(other_error_logger_store).error(
           "\nError parsing query result at api/users/reset_pwd.\n" +
-            add_reset_otp_query
+          add_reset_otp_query
         );
         return error(500);
       }

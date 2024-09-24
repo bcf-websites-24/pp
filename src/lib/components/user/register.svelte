@@ -4,11 +4,12 @@
   import {
     asked_too_many_otp_toast_store,
     duplicate_username_student_id_toast_store,
+    email_send_failed_toast_store,
     improper_username_toast_store,
     invalid_email_toast_store,
-    mail_verification_failed_store,
     otp_mail_exists_toast_store,
     otp_mismatch_toast_store,
+    otp_sent_toast_store,
     otp_student_id_exists_toast_store,
     otp_time_limit_over_toast_store,
     otp_user_already_verified_toast_store,
@@ -98,7 +99,7 @@
     if (state === 2) {
       if (register_password !== register_confirm_password) {
         register_confirm_password_elem.setCustomValidity(
-          "Password did not match"
+          "Password did not match",
         );
         register_confirm_password_elem.reportValidity();
 
@@ -121,6 +122,7 @@
 
           if (response_json.registered === 0) {
             inc_state();
+            $otp_sent_toast_store.show();
           } else {
             if (response_json.registered === -2) {
               $student_id_misformation_toast_store.show();
@@ -133,7 +135,7 @@
             } else if (response_json.registered === -7) {
               $duplicate_username_student_id_toast_store.show();
             } else if (response_json.registered === -8) {
-              $mail_verification_failed_store.show();
+              $email_send_failed_toast_store.show();
             } else if (response_json.registered === -9) {
               $asked_too_many_otp_toast_store.show();
             } else if (response_json.registered === -10) {
@@ -195,6 +197,14 @@
     height = heights[state];
 
     onformupdate();
+  }
+
+  function resend_otp(): void {
+    signing = true;
+
+    fetch("/api/users/resend").finally((): void => {
+      signing = false;
+    });
   }
 
   onMount((): void => {
@@ -341,7 +351,7 @@
       class="w-100 p-1"
       action="javascript:"
     >
-      <div class="form-floating mb-3">
+      <div class="form-floating mb-1">
         <input
           bind:value={register_otp}
           type="text"
@@ -355,6 +365,14 @@
         />
         <label for="register-password">OTP</label>
       </div>
+      <button
+        on:click={resend_otp}
+        type="button"
+        class="btn btn-link link-underline link-underline-opacity-0 p-0 mb-3"
+        disabled={signing}
+      >
+        Resend OTP
+      </button>
       <div class="d-flex justify-content-end align-items-center">
         <button
           on:click={restart}

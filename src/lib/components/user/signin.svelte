@@ -160,9 +160,19 @@
                 <label for="login-password">Password</label>
               </div>
               <div class="d-flex justify-content-end align-items-center">
-                <button type="submit" class="btn btn-primary" disabled={signing}
-                  >Login</button
+                <a
+                  href="/forgor"
+                  class="link-underline link-underline-opacity-0 me-2"
                 >
+                  Forgot Password
+                </a>
+                <button
+                  type="submit"
+                  class="btn btn-primary"
+                  disabled={signing}
+                >
+                  Login
+                </button>
                 {#if signing}
                   <div
                     transition:slide={{ duration: 250, axis: "x" }}
