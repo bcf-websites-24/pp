@@ -31,6 +31,11 @@
           <li class="nav-item">
             <a class="nav-link" href="/k42MjTnhMR/submissions">Submissions</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/k42MjTnhMR/user_submissions"
+              >User Submissions</a
+            >
+          </li>
         </ul>
         <button on:click={logout} class="btn btn-primary">Logout</button>
       </div>
