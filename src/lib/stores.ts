@@ -25,7 +25,6 @@ export const invalid_email_toast_store = writable(new Toast(""));
 export const duplicate_username_student_id_toast_store = writable(
   new Toast("")
 );
-export const mail_verification_failed_store = writable(new Toast(""));
 export const duplicate_puzzle_level_store = writable(new Toast(""));
 export const asked_too_many_otp_toast_store = writable(new Toast(""));
 export const otp_mismatch_toast_store = writable(new Toast(""));
@@ -37,3 +36,6 @@ export const otp_student_id_exists_toast_store = writable(new Toast(""));
 export const otp_mail_exists_toast_store = writable(new Toast(""));
 export const otp_user_nonexistent_toast_store = writable(new Toast(""));
 export const otp_user_already_verified_toast_store = writable(new Toast(""));
+export const otp_sent_toast_store = writable(new Toast(""));
+export const email_not_found_toast_store = writable(new Toast(""));
+export const email_send_failed_toast_store = writable(new Toast(""));

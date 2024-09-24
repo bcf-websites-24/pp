@@ -4,11 +4,12 @@
   import {
     asked_too_many_otp_toast_store,
     duplicate_username_student_id_toast_store,
+    email_send_failed_toast_store,
     improper_username_toast_store,
     invalid_email_toast_store,
-    mail_verification_failed_store,
     otp_mail_exists_toast_store,
     otp_mismatch_toast_store,
+    otp_sent_toast_store,
     otp_student_id_exists_toast_store,
     otp_time_limit_over_toast_store,
     otp_user_already_verified_toast_store,
@@ -121,6 +122,7 @@
 
           if (response_json.registered === 0) {
             inc_state();
+            $otp_sent_toast_store.show();
           } else {
             if (response_json.registered === -2) {
               $student_id_misformation_toast_store.show();
@@ -133,7 +135,7 @@
             } else if (response_json.registered === -7) {
               $duplicate_username_student_id_toast_store.show();
             } else if (response_json.registered === -8) {
-              $mail_verification_failed_store.show();
+              $email_send_failed_toast_store.show();
             } else if (response_json.registered === -9) {
               $asked_too_many_otp_toast_store.show();
             } else if (response_json.registered === -10) {
