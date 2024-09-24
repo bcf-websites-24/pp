@@ -63,7 +63,9 @@
           $server_error_toast_store.show();
         } else if (response.status === 422) {
           $fail_toast_store.show();
-        } else {
+        } else if (response.status === 403) {
+          $fail_toast_store.show();
+          goto("/", { invalidateAll: true });
         }
       })
       .finally((): void => {
