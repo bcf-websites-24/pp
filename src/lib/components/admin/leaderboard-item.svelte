@@ -15,8 +15,13 @@
 </script>
 
 <tr>
-  <th scope="row">{index + 1}</th>
-  <td>
+  <th
+    style={`background-color: rgb(255, ${255.0 - user.details.shomobay_score * 127.5}, ${255.0 - user.details.shomobay_score * 127.5}); !important`}
+    scope="row">{index + 1}</th
+  >
+  <td
+    style={`background-color: rgb(255, ${255.0 - user.details.shomobay_score * 127.5}, ${255.0 - user.details.shomobay_score * 127.5}); !important`}
+  >
     <div class="d-flex">
       <button
         on:click={toggle_details}
@@ -25,8 +30,16 @@
       >
     </div>
   </td>
-  <td></td>
-  <td>{user.level}</td>
-  <td>{user.attemps}</td>
-  <td>{user.last_submission}</td>
+  <td
+    style={`background-color: rgb(255, ${255.0 - user.details.shomobay_score * 127.5}, ${255.0 - user.details.shomobay_score * 127.5}); !important`}
+    >{user.level}</td
+  >
+  <td
+    style={`background-color: rgb(255, ${255.0 - user.details.shomobay_score * 127.5}, ${255.0 - user.details.shomobay_score * 127.5}); !important`}
+    >{user.attemps}</td
+  >
+  <td
+    style={`background-color: rgb(255, ${255.0 - user.details.shomobay_score * 127.5}, ${255.0 - user.details.shomobay_score * 127.5}); !important`}
+    >{user.last_submission}</td
+  >
 </tr>
