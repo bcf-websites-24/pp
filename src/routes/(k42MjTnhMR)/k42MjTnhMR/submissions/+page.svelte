@@ -82,7 +82,7 @@
     </div>
   </form>
 
-  <p class="fs-3 fw-semibold text-center">Puzzle Submissions Last 8 Hours</p>
+  <p class="fs-3 fw-semibold text-center">Puzzle Submissions</p>
   <div class="card card-body table-responsive border-0 shadow-sm">
     <table class=" table" style="table-layout:fixed">
       <thead>
