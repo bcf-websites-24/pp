@@ -5,6 +5,7 @@
     asked_too_many_otp_toast_store,
     duplicate_username_student_id_toast_store,
     email_send_failed_toast_store,
+    fail_toast_store,
     improper_username_toast_store,
     invalid_email_toast_store,
     otp_mail_exists_toast_store,
@@ -16,6 +17,7 @@
     otp_user_nonexistent_toast_store,
     otp_username_exists_toast_store,
     roll_out_of_range_toast_store,
+    server_error_toast_store,
     student_id_misformation_toast_store,
     too_many_otp_mismatch_toast_store,
   } from "$lib/stores";
@@ -151,6 +153,9 @@
 
             restart();
           }
+        } else if (response.status === 500) {
+          $server_error_toast_store.show();
+          goto("/", { invalidateAll: true });
         }
         signing = false;
       });
@@ -184,9 +189,19 @@
             $otp_student_id_exists_toast_store.show();
           } else if (response_json.registered === -7) {
             $otp_mail_exists_toast_store.show();
+          } else if (response_json.registered === -12) {
+            $too_many_otp_mismatch_toast_store.show();
           } else {
             console.log("Unknown verification value.");
           }
+        } else if (response.status === 403) {
+          $fail_toast_store.show();
+          goto("/", { invalidateAll: true });
+        } else if (response.status === 500) {
+          $server_error_toast_store.show();
+          goto("/", { invalidateAll: true });
+        } else if (response.status === 422) {
+          $fail_toast_store.show();
         }
       });
     } else {
