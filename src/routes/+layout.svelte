@@ -28,6 +28,7 @@
     otp_sent_toast_store,
     email_not_found_toast_store,
     email_send_failed_toast_store,
+    too_many_otp_mismatch_toast_store,
   } from "$lib/stores";
   import { Toast } from "bootstrap";
   import { onMount } from "svelte";
@@ -68,6 +69,7 @@
   let otp_sent_toast_elem: HTMLDivElement;
   let email_not_found_toast_elem: HTMLDivElement;
   let email_send_failed_toast_elem: HTMLDivElement;
+  let too_many_otp_mismatch_toast_elem: HTMLDivElement;
 
   function create_toast(elem: HTMLElement) {
     return new Toast(elem, {
@@ -83,46 +85,50 @@
     $unauthorized_toast_store = create_toast(unauthorized_toast_elem);
     $user_not_found_toast_store = create_toast(user_unavailable_toast_elem);
     $password_unmatched_toast_store = create_toast(
-      password_unmatched_toast_elem,
+      password_unmatched_toast_elem
     );
     $banned_toast_store = create_toast(banned_toast_elem);
     $student_id_misformation_toast_store = create_toast(
-      student_id_misformation_toast_elem,
+      student_id_misformation_toast_elem
     );
     $roll_out_of_range_toast_store = create_toast(roll_out_of_range_toast_elem);
     $improper_username_toast_store = create_toast(improper_username_toast_elem);
     $invalid_email_toast_store = create_toast(invalid_email_toast_elem);
     $duplicate_username_student_id_toast_store = create_toast(
-      duplicate_username_student_id_toast_elem,
+      duplicate_username_student_id_toast_elem
     );
     $duplicate_puzzle_level_store = create_toast(duplicate_puzzle_level_elem);
     $asked_too_many_otp_toast_store = create_toast(
-      asked_too_many_otp_toast_elem,
+      asked_too_many_otp_toast_elem
     );
     $otp_mismatch_toast_store = create_toast(otp_mismatch_toast_elem);
     $Invalid_otp_user_toast_store = create_toast(Invalid_otp_user_toast_elem);
     $otp_time_limit_over_toast_store = create_toast(
-      otp_time_limit_over_toast_elem,
+      otp_time_limit_over_toast_elem
     );
     $otp_user_id_mail_exists_toast_store = create_toast(
-      otp_user_already_verified_toast_elem,
+      otp_user_already_verified_toast_elem
     );
     $otp_user_nonexistent_toast_store = create_toast(
-      otp_user_nonexistent_toast_elem,
+      otp_user_nonexistent_toast_elem
     );
     $otp_user_already_verified_toast_store = create_toast(
-      otp_user_already_verified_toast_elem,
+      otp_user_already_verified_toast_elem
     );
     $otp_username_exists_toast_store = create_toast(
-      otp_username_exists_toast_elem,
+      otp_username_exists_toast_elem
     );
     $otp_student_id_exists_toast_store = create_toast(
-      otp_student_id_exists_toast_elem,
+      otp_student_id_exists_toast_elem
     );
     $otp_mail_exists_toast_store = create_toast(otp_mail_exists_toast_elem);
     $otp_sent_toast_store = create_toast(otp_sent_toast_elem);
     $email_not_found_toast_store = create_toast(email_not_found_toast_elem);
     $email_send_failed_toast_store = create_toast(email_send_failed_toast_elem);
+    $too_many_otp_mismatch_toast_store = create_toast(
+      too_many_otp_mismatch_toast_elem
+    );
+
     mounted = true;
   });
 </script>
@@ -511,6 +517,23 @@
   >
     <div class="d-flex">
       <div class="toast-body">Email sending failed</div>
+      <button
+        type="button"
+        class="btn-close btn-close-white me-2 m-auto"
+        data-bs-dismiss="toast"
+        aria-label="Close"
+      ></button>
+    </div>
+  </div>
+  <div
+    bind:this={too_many_otp_mismatch_toast_elem}
+    class="toast align-items-center text-bg-danger border-0"
+  >
+    <div class="d-flex">
+      <div class="toast-body">
+        Too many OTP mismatch ocurred, please contact the developers to complete
+        your operation
+      </div>
       <button
         type="button"
         class="btn-close btn-close-white me-2 m-auto"

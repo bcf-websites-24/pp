@@ -1,9 +1,13 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import {
-    email_not_found_toast_store,
-    email_send_failed_toast_store,
-    otp_sent_toast_store,
+    fail_toast_store,
+    otp_mismatch_toast_store,
+    otp_time_limit_over_toast_store,
+    otp_user_nonexistent_toast_store,
+    server_error_toast_store,
+    success_toast_store,
+    too_many_otp_mismatch_toast_store,
   } from "$lib/stores";
   import { slide } from "svelte/transition";
 
@@ -42,7 +46,24 @@
           const response_json = await response.json();
           const updated = parseInt(response_json.updated);
 
-          console.log(response_json);
+          if (updated === 0) {
+            $success_toast_store.show();
+            goto("/", { invalidateAll: true });
+          } else if (updated === -1) {
+            $otp_mismatch_toast_store.show();
+          } else if (updated === -2) {
+            $otp_time_limit_over_toast_store.show();
+          } else if (updated === -3) {
+            $otp_user_nonexistent_toast_store.show();
+          } else if (updated === -5) {
+            $too_many_otp_mismatch_toast_store.show();
+          } else {
+          }
+        } else if (response.status === 500) {
+          $server_error_toast_store.show();
+        } else if (response.status === 422) {
+          $fail_toast_store.show();
+        } else {
         }
       })
       .finally((): void => {
@@ -80,7 +101,7 @@
         id="reset-otp"
         placeholder="OTP"
         minlength="4"
-        maxlength="4"
+        maxlength="6"
         name="otp"
         required
       />

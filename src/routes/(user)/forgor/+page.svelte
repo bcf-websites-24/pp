@@ -4,6 +4,7 @@
     email_not_found_toast_store,
     email_send_failed_toast_store,
     otp_sent_toast_store,
+    too_many_otp_mismatch_toast_store,
   } from "$lib/stores";
   import { slide } from "svelte/transition";
 
@@ -31,6 +32,8 @@
             $email_not_found_toast_store.show();
           } else if (reset === -2) {
             $email_send_failed_toast_store.show();
+          } else if (reset === -5) {
+            $too_many_otp_mismatch_toast_store.show();
           }
         }
       })

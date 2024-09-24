@@ -39,3 +39,4 @@ export const otp_user_already_verified_toast_store = writable(new Toast(""));
 export const otp_sent_toast_store = writable(new Toast(""));
 export const email_not_found_toast_store = writable(new Toast(""));
 export const email_send_failed_toast_store = writable(new Toast(""));
+export const too_many_otp_mismatch_toast_store = writable(new Toast(""));

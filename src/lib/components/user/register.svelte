@@ -17,6 +17,7 @@
     otp_username_exists_toast_store,
     roll_out_of_range_toast_store,
     student_id_misformation_toast_store,
+    too_many_otp_mismatch_toast_store,
   } from "$lib/stores";
   import { onMount } from "svelte";
   import { cubicInOut } from "svelte/easing";
@@ -99,7 +100,7 @@
     if (state === 2) {
       if (register_password !== register_confirm_password) {
         register_confirm_password_elem.setCustomValidity(
-          "Password did not match",
+          "Password did not match"
         );
         register_confirm_password_elem.reportValidity();
 
@@ -142,6 +143,8 @@
               $otp_mail_exists_toast_store.show();
             } else if (response_json.registered === -11) {
               $otp_student_id_exists_toast_store.show();
+            } else if (response_json.registered === -12) {
+              $too_many_otp_mismatch_toast_store.show();
             } else {
               console.error("Unknown registered value");
             }
