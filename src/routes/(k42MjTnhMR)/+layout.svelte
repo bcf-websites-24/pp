@@ -36,6 +36,9 @@
               >User Submissions</a
             >
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/k42MjTnhMR/raise_level">Raise Level</a>
+          </li>
         </ul>
         <button on:click={logout} class="btn btn-primary">Logout</button>
       </div>
