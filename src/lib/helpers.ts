@@ -17,7 +17,7 @@ export type AdminPuzzleItem = {
   answer: string;
   img_url: string;
   img_data?: string;
-}
+};
 
 export class AdminMemeItem {
   public id: string = "";
@@ -46,6 +46,7 @@ export class SubmissionDetails {
   public is_correct = true;
   public username = "";
   public student_id = "";
+  public puzzle_level = 0;
 }
 
 const months = [
@@ -77,10 +78,10 @@ export function make_date(date: Date): string {
   return `${hour.toString().padStart(2, "0")}:${minute
     .toString()
     .padStart(2, "0")}:${second
-      .toString()
-      .padStart(2, "0")} ${ampm} ${month} ${day
-        .toString()
-        .padStart(2, "0")}, ${year}`;
+    .toString()
+    .padStart(2, "0")} ${ampm} ${month} ${day
+    .toString()
+    .padStart(2, "0")}, ${year}`;
 }
 
 export function handle_unauthorized_user(): void {

@@ -9,20 +9,20 @@
 
   let submissions: Array<SubmissionDetails> = new Array<SubmissionDetails>();
   let submitting: boolean = false;
-  let given_puzzle_level: number = 1;
-  let puzzle_level_form_elem: HTMLFormElement;
+  let given_username: string = "";
+  let username_form_elem: HTMLFormElement;
 
   function submit_input(): void {
     submitting = true;
-    load_submissions(given_puzzle_level);
+    load_submissions(given_username);
     submitting = false;
   }
 
-  function load_submissions(puzzle_level: number): void {
-    fetch("/api/admin/submissions", {
+  function load_submissions(given_username: string): void {
+    fetch("/api/admin/user_submissions", {
       method: "POST",
       body: JSON.stringify({
-        puzzle_level: puzzle_level,
+        username: given_username,
       }),
     }).then(async (response: Response): Promise<void> => {
       if (response.status == 200) {
@@ -34,12 +34,13 @@
           let single_submission = new SubmissionDetails();
 
           single_submission.submission_time = make_date(
-            new Date(element.f_submitted_at)
+            new Date(element.submitted_at)
           );
-          single_submission.submitted_ans = element.f_submitted_ans;
-          single_submission.is_correct = element.f_is_correct;
-          single_submission.username = element.f_username;
-          single_submission.student_id = element.f_student_id;
+          single_submission.submitted_ans = element.submitted_ans;
+          single_submission.is_correct = element.is_correct;
+          single_submission.username = given_username;
+          single_submission.student_id = "";
+          single_submission.puzzle_level = element.puzzle_level;
 
           submissions.push(single_submission);
         });
@@ -58,17 +59,17 @@
 
 <div class="admin-page-root mx-auto mt-4 p-2">
   <form
-    bind:this={puzzle_level_form_elem}
+    bind:this={username_form_elem}
     on:submit={submit_input}
     class="card card-body shadow border-0 mb-4"
     action="javascript:"
   >
     <div class="add-puzzle-input p-1">
-      <label for="answer-input" class="form-label">Puzzle Level</label>
+      <label for="answer-input" class="form-label">Username</label>
       <input
-        bind:value={given_puzzle_level}
+        bind:value={given_username}
         id="answer-input"
-        type="number"
+        type="text"
         class="form-control"
         autocomplete="off"
         required
@@ -82,13 +83,12 @@
     </div>
   </form>
 
-  <p class="fs-3 fw-semibold text-center">Puzzle Submissions</p>
+  <p class="fs-3 fw-semibold text-center">Submissions</p>
   <div class="card card-body table-responsive border-0 shadow-sm">
     <table class=" table" style="table-layout:fixed">
       <thead>
         <tr>
-          <th scope="col">Username</th>
-          <th scope="col">Student ID</th>
+          <th scope="col">Puzzle Level</th>
           <th scope="col">Answer</th>
           <th scope="col">Status</th>
           <th scope="col">Submitted At</th>
@@ -97,8 +97,7 @@
       <tbody>
         {#each submissions as single_submission}
           <tr>
-            <td>{single_submission.username}</td>
-            <td>{single_submission.student_id}</td>
+            <td>{single_submission.puzzle_level}</td>
             <td style="word-wrap:break-word"
               >{single_submission.submitted_ans}</td
             >
