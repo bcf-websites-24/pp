@@ -40,7 +40,7 @@
               height: target_height + "px",
             },
           ],
-          250,
+          250
         )
         .play();
     }
@@ -153,7 +153,7 @@
               height: "0",
             },
           ],
-          250,
+          250
         );
 
         animation.onfinish = () => {
@@ -283,7 +283,9 @@
             </svg>
           </button>
           <button
-            on:click={delete_puzzle}
+            on:click={() => {
+              $fail_toast_store.show();
+            }}
             class="btn btn-link link-danger p-0"
             disabled={deleting}
           >
