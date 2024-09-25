@@ -14,6 +14,7 @@
   import { cubicInOut } from "svelte/easing";
   import { tweened } from "svelte/motion";
   import { slide } from "svelte/transition";
+  import Logo from "../decorations/logo.svelte";
 
   export let reset: boolean;
   let login_mode = true;
@@ -99,7 +100,8 @@
   class="position-absolute top-0 bottom-0 start-0 end-0 d-flex align-items-center justify-content-center"
 >
   <div class="mw-100">
-    <div class="fs-5 text-center text-secondary mb-0">Welcome to</div>
+    <Logo />
+    <div class="fs-5 text-center text-secondary mt-2 mb-0">Welcome to</div>
     <div class="fs-1 text-center">
       Picture Puzzle <span class="text-primary">2024</span>
     </div>
