@@ -16,7 +16,6 @@
   let editing = false;
   let deleting = false;
   let edit_submiting = false;
-  let img_loading = false;
   let item_elem: HTMLLIElement;
   let edit_form_elem: HTMLFormElement;
   let edit_puzzle_level: number;
