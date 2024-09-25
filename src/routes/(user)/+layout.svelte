@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Logo from "$lib/components/decorations/logo.svelte";
   import { logout_user } from "$lib/helpers";
   import {
     current_level_state,
@@ -20,9 +21,21 @@
     class="navbar navbar-expand-lg bg-body-tertiary shadow-sm position-sticky top-0 z-1"
   >
     <div class="container-fluid">
-      <a class="navbar-brand" href="/"
-        >Picture Puzzle <span class="text-primary">2024</span></a
-      >
+      <div class="d-flex flex-row align-items-center">
+        <!-- <div class="mx-2">
+          <object
+            title="logo"
+            data="pp-fest-logo-01.svg"
+            width="50vh"
+            height="50vh"
+          />
+        </div> -->
+
+        <a class="navbar-brand" href="/"
+          >Picture Puzzle <span class="text-primary">2024</span></a
+        >
+      </div>
+
       <div class="d-flex justify-content-end">
         <div class="dropdown dropdown-toggle pp-dropdown-toggle">
           <button
@@ -58,6 +71,9 @@
             </li>
             <li>
               <hr class="dropdown-divider mx-3" />
+            </li>
+            <li>
+              <a class="dropdown-item" href="/">Puzzle</a>
             </li>
             <li>
               <a class="dropdown-item" href="/leaderboard">Leaderboard</a>
