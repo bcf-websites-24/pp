@@ -27,7 +27,7 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
   const request_json: any = await request_event.request.json();
   const given_otp: string = request_json.otp;
 
-  if (given_otp === undefined || given_otp === null || given_otp.length != 4) {
+  if (given_otp === undefined || given_otp === null || given_otp.length != 6) {
     return error(422);
   }
 
