@@ -47,6 +47,7 @@
         <tr>
           <th scope="col">#</th>
           <th scope="col">Username</th>
+          <th scope="col">ID</th>
           <th scope="col">Solved</th>
           <th scope="col">Attempts</th>
           <th scope="col">Last Submission</th>
