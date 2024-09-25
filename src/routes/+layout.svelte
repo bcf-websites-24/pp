@@ -34,7 +34,7 @@
   import { onMount } from "svelte";
   import Loader from "$lib/components/loader.svelte";
 
-  const toast_delay = 1000; // milliseconds
+  const toast_delay = 3000; // milliseconds
   /**
    * ensures that all
    * toasts are loaded
@@ -71,15 +71,15 @@
   let email_send_failed_toast_elem: HTMLDivElement;
   let too_many_otp_mismatch_toast_elem: HTMLDivElement;
 
-  function create_toast(elem: HTMLElement) {
+  function create_toast(elem: HTMLElement, delay: number = toast_delay) {
     return new Toast(elem, {
-      delay: toast_delay,
+      delay: delay,
     });
   }
 
   onMount((): void => {
-    $correct_answer_toast_store = create_toast(correct_answer_toast_elem);
-    $wrong_answer_toast_store = create_toast(wrong_answer_toast_elem);
+    $correct_answer_toast_store = create_toast(correct_answer_toast_elem, 1000);
+    $wrong_answer_toast_store = create_toast(wrong_answer_toast_elem, 1000);
     $success_toast_store = create_toast(success_toast_elem);
     $fail_toast_store = create_toast(fail_toast_elem);
     $unauthorized_toast_store = create_toast(unauthorized_toast_elem);
