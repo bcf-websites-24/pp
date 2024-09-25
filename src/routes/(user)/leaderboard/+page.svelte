@@ -68,6 +68,7 @@
     }
 
     players = new Array(page.data.players.length);
+    non_shomiti_players = [];
 
     for (let i = 0; i < players.length; ++i) {
       let batch_2digit = page.data.players[i].f_student_id
@@ -158,6 +159,8 @@
     } else {
       next_disabled = true;
     }
+
+    set_shomiti_intensity(shomiti_on);
   }
 
   function next_page(): void {
