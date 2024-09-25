@@ -102,7 +102,7 @@
     if (state === 2) {
       if (register_password !== register_confirm_password) {
         register_confirm_password_elem.setCustomValidity(
-          "Password did not match"
+          "Password did not match",
         );
         register_confirm_password_elem.reportValidity();
 
@@ -377,8 +377,8 @@
           id="register-otp"
           placeholder="OTP"
           name="otp"
-          minlength="4"
-          maxlength="4"
+          minlength="6"
+          maxlength="6"
           required
         />
         <label for="register-password">OTP</label>
