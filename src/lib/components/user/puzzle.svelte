@@ -98,7 +98,9 @@
       in:fade={{ delay: 100, duration: 250 }}
       class="d-flex flex-column align-items-center w-100"
     >
-      <p class="fs-1 fw-bold mb-0">Wow! You solved all the puzzles</p>
+      <p class="text-center fs-1 fw-bold mb-0">
+        Wow! You solved all the puzzles
+      </p>
       <img
         src="/pochita.webp"
         class="puzzle-img rounded mt-4"
