@@ -10,7 +10,7 @@ export async function load(load_event: ServerLoadEvent): Promise<any> {
   }
 
   let res = await run_query(
-    "SELECT * from public.get_leaderboard_for_admins();",
+    "SELECT * from public.get_leaderboard_for_admins_check();",
     []
   );
 
@@ -18,7 +18,7 @@ export async function load(load_event: ServerLoadEvent): Promise<any> {
     if (res.rowCount !== 0 && is_object_empty(res.rows[0]) !== false) {
       get(other_error_logger_store).error(
         "\nError parsing db function result at api/admin/leaderboard:22.\n" +
-        res
+          res
       );
       return error(500);
     }

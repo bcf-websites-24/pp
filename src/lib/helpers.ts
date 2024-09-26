@@ -38,6 +38,7 @@ export class AdminUserItem {
   public level = -1;
   public attemps = -1;
   public last_submission = "";
+  public last_corr_submission = "";
 }
 
 export class SubmissionDetails {

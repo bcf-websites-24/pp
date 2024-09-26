@@ -33,6 +33,9 @@
           last_submission: make_date(
             new Date(leaderboard[i].f_last_submission_time)
           ),
+          last_corr_submission: make_date(
+            new Date(leaderboard[i].f_last_corr_submission_time)
+          ),
         };
       }
     }
@@ -51,6 +54,7 @@
           <th scope="col">Solved</th>
           <th scope="col">Attempts</th>
           <th scope="col">Last Submission</th>
+          <th scope="col">Last Correct Submission</th>
         </tr>
       </thead>
       <tbody>
