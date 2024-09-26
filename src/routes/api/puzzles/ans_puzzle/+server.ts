@@ -50,9 +50,12 @@ export async function POST(req: RequestEvent): Promise<Response> {
     return error(422);
   }
 
+  let ip_addr =
+    req.request.headers.get("X-Forwarded-For") || req.getClientAddress() || "";
+
   let res = await run_query(
-    "SELECT * from public.add_puzzle_attempt($1, $2, $3);",
-    [given_user_id, given_puzzle_id, given_ans],
+    "SELECT * from public.add_puzzle_attempt_ip($1, $2, $3, $4);",
+    [given_user_id, given_puzzle_id, given_ans, ip_addr],
     req
   );
 

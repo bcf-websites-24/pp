@@ -46,4 +46,8 @@
     style={`background-color: rgb(255, ${255.0 - user.details.shomobay_score * 127.5}, ${255.0 - user.details.shomobay_score * 127.5}); !important`}
     >{user.last_submission}</td
   >
+  <td
+    style={`background-color: rgb(255, ${255.0 - user.details.shomobay_score * 127.5}, ${255.0 - user.details.shomobay_score * 127.5}); !important`}
+    >{user.last_corr_submission}</td
+  >
 </tr>

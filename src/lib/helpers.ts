@@ -38,6 +38,7 @@ export class AdminUserItem {
   public level = -1;
   public attemps = -1;
   public last_submission = "";
+  public last_corr_submission = "";
 }
 
 export class SubmissionDetails {
@@ -47,6 +48,7 @@ export class SubmissionDetails {
   public username = "";
   public student_id = "";
   public puzzle_level = 0;
+  public ip_addr = "";
 }
 
 const months = [

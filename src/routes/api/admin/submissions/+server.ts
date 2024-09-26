@@ -21,7 +21,7 @@ export async function POST(req: RequestEvent): Promise<Response> {
   }
 
   let res = await run_query(
-    "SELECT * from public.get_submissions_puzzle($1);",
+    "SELECT * from public.get_submissions_puzzle_ip($1);",
     [given_puzzle_level],
     req
   );
