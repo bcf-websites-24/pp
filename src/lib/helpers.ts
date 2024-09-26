@@ -48,6 +48,7 @@ export class SubmissionDetails {
   public username = "";
   public student_id = "";
   public puzzle_level = 0;
+  public ip_addr = "";
 }
 
 const months = [

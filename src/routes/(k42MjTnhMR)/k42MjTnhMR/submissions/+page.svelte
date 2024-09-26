@@ -40,6 +40,7 @@
           single_submission.is_correct = element.f_is_correct;
           single_submission.username = element.f_username;
           single_submission.student_id = element.f_student_id;
+          single_submission.ip_addr = element.f_ip_addr;
 
           submissions.push(single_submission);
         });
@@ -92,6 +93,7 @@
           <th scope="col">Answer</th>
           <th scope="col">Status</th>
           <th scope="col">Submitted At</th>
+          <th scope="col">IP</th>
         </tr>
       </thead>
       <tbody>
@@ -108,6 +110,7 @@
                 : "Incorrect"}</td
             >
             <td>{single_submission.submission_time}</td>
+            <td>{single_submission.ip_addr}</td>
           </tr>
         {/each}
       </tbody>
