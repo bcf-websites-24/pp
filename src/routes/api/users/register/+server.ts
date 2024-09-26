@@ -161,6 +161,10 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
     });
   }
 
+  let ip_addr =
+    request_event.request.headers.get("X-Forwarded-For") ||
+    request_event.getClientAddress() ||
+    "";
   // getOTP("test user", "af@lfaoinci.com");
   let res = await run_query(
     "SELECT * from public.add_temp_user($1, $2, $3, $4, $5, $6, $7, $8) as (id uuid, time timestamptz);",
@@ -172,7 +176,7 @@ export async function POST(request_event: RequestEvent): Promise<Response> {
       email,
       user_type,
       otp,
-      request_event.getClientAddress(),
+      ip_addr,
     ],
     request_event
   );
