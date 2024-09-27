@@ -99,17 +99,33 @@
       <tbody>
         {#each submissions as single_submission}
           <tr>
-            <td>{single_submission.puzzle_level}</td>
-            <td style="word-wrap:break-word"
+            <td
+              style={single_submission.is_correct
+                ? `background-color:#90EE90;color:black !important`
+                : ``}>{single_submission.puzzle_level}</td
+            >
+            <td
+              style={`word-wrap:break-word;${single_submission.is_correct ? "background-color:#90EE90;color:black" : ""} !important`}
               >{single_submission.submitted_ans}</td
             >
             <td
+              style={single_submission.is_correct
+                ? `background-color:#90EE90;color:black !important`
+                : ``}
               >{single_submission.is_correct === true
                 ? "Correct"
                 : "Incorrect"}</td
             >
-            <td>{single_submission.submission_time}</td>
-            <td>{single_submission.ip_addr}</td>
+            <td
+              style={single_submission.is_correct
+                ? `background-color:#90EE90;color:black !important`
+                : ``}>{single_submission.submission_time}</td
+            >
+            <td
+              style={single_submission.is_correct
+                ? `background-color:#90EE90;color:black !important`
+                : ``}>{single_submission.ip_addr}</td
+            >
           </tr>
         {/each}
       </tbody>
