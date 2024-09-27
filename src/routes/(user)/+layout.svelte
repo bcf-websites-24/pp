@@ -13,7 +13,9 @@
   let rank_text: string = "Unranked";
 
   $: rank_text =
-    $current_rank_state === -1 ? "Unranked" : $current_rank_state.toString();
+    $current_rank_state === null || $current_rank_state === -1
+      ? "Unranked"
+      : $current_rank_state.toString();
 </script>
 
 {#if $user_logged_in_state}
@@ -22,15 +24,6 @@
   >
     <div class="container-fluid">
       <div class="d-flex flex-row align-items-center">
-        <!-- <div class="mx-2">
-          <object
-            title="logo"
-            data="pp-fest-logo-01.svg"
-            width="50vh"
-            height="50vh"
-          />
-        </div> -->
-
         <a class="navbar-brand" href="/"
           >Picture Puzzle <span class="text-primary">2024</span></a
         >
