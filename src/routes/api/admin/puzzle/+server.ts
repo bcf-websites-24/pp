@@ -132,7 +132,11 @@ export async function POST(req: RequestEvent): Promise<Response> {
       return error(422);
     }
 
-    if (puzzle_file === undefined || puzzle_file === null) {
+    if (
+      puzzle_file === undefined ||
+      puzzle_file === null ||
+      puzzle_file.name === "blob"
+    ) {
       res = await run_query(
         `select
           *
