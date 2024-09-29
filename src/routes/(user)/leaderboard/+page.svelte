@@ -70,7 +70,7 @@
     players = new Array(page.data.players.length);
     non_shomiti_players = [];
 
-    for (let i = 0; i < players.length; ++i) {
+    for (let i = 0, j = 0; i < players.length; ++i) {
       let batch_2digit = page.data.players[i].f_student_id
         .toString()
         .substring(0, 2);
@@ -88,7 +88,7 @@
       };
       if (players[i].somiti_score < 0.7) {
         non_shomiti_players.push({
-          index: i,
+          index: j++,
           rank: players[i].rank,
           username: page.data.players[i].f_username,
           current_level: parseInt(page.data.players[i].f_curr_level),
