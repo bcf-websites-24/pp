@@ -10,13 +10,11 @@ Here it is, none other than the fan-favourite picture puzzle site of buet cse fe
 
 - [General Info](#general-information)
 - [Technologies Used](#main-technologies-used)
-- [Features](#features)
-- [Demonstration](#demonstration)
 - [Setup](#setup)
+- [Associate Projects](#associate-projects)
 - [Project Status](#project-status)
 - [Room for Improvement](#room-for-improvement)
 - [Acknowledgements](#acknowledgements)
-- [License](#license)
 
 ## General Information
 
